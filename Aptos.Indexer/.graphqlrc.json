@@ -1,0 +1,22 @@
+{
+  "schema": "schema.graphql",
+  "documents": "**/*.graphql",
+  "extensions": {
+    "strawberryShake": {
+      "name": "AptosIndexerClient",
+      "url": "https://api.mainnet.aptoslabs.com/v1/graphql",
+      "namespace": "Aptos.Indexer.GraphQL",
+      "dependencyInjection": false,
+      "records": {
+        "inputs": false,
+        "entities": false
+      },
+      "transportProfiles": [
+        {
+          "default": "Http",
+          "subscription": "WebSocket"
+        }
+      ]
+    }
+  }
+}

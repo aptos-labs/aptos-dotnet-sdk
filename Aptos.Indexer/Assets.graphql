@@ -1,0 +1,101 @@
+fragment CdnAssetUris on nft_metadata_crawler_parsed_asset_uris {
+  cdn_image_uri
+  cdn_json_uri
+  cdn_animation_uri
+}
+
+fragment CollectionData on current_collections_v2 {
+  collection_id
+  collection_name
+  creator_address
+  current_supply
+  description
+  max_supply
+  mutable_description
+  mutable_uri
+  table_handle_v1
+  token_standard
+  total_minted_v2
+  uri
+  collection_properties
+  cdn_asset_uris {
+    ...CdnAssetUris
+  }
+}
+
+fragment DigitalAssetData on current_token_datas_v2 {
+  description
+  is_fungible_v2
+  largest_property_version_v1
+  token_data_id
+  token_name
+  token_properties
+  token_standard
+  token_uri
+  decimals
+  current_collection {
+    ...CollectionData
+  }
+  cdn_asset_uris {
+    ...CdnAssetUris
+  }
+}
+
+fragment FungibleAssetMetadata on fungible_asset_metadata {
+  symbol
+  name
+  decimals
+  creator_address
+  project_uri
+  icon_uri
+}
+
+query GetDigitalAssetOwnerships(
+  $where_condition: current_token_ownerships_v2_bool_exp!
+  $offset: Int
+  $limit: Int
+  $order_by: [current_token_ownerships_v2_order_by!]
+) {
+  current_token_ownerships_v2(
+    where: $where_condition
+    offset: $offset
+    limit: $limit
+    order_by: $order_by
+  ) {
+    token_properties_mutated_v1
+    table_type_v1
+    storage_id
+    property_version_v1
+    owner_address
+    is_soulbound_v2
+    amount
+    current_token_data {
+      ...DigitalAssetData
+    }
+  }
+}
+
+query GetFungibleAssetBalances(
+  $where_condition: current_fungible_asset_balances_bool_exp!
+  $offset: Int
+  $limit: Int
+  $order_by: [current_fungible_asset_balances_order_by!]
+) {
+  current_fungible_asset_balances(
+    where: { _and: [$where_condition, { asset_type: { _is_null: false } }] }
+    offset: $offset
+    limit: $limit
+    order_by: $order_by
+  ) {
+    amount
+    asset_type
+    is_frozen
+    is_primary
+    owner_address
+    token_standard
+    storage_id
+    metadata {
+      ...FungibleAssetMetadata
+    }
+  }
+}

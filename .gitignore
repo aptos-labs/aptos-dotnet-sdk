@@ -1,0 +1,10 @@
+# npm
+node_modules
+
+# Build results
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+
+# General
+.DS_Store

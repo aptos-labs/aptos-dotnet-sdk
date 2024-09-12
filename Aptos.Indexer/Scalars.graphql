@@ -1,0 +1,15 @@
+extend scalar numeric
+  @serializationType(name: "global::System.Decimal")
+  @runtimeType(name: "global::System.Decimal")
+
+extend scalar timestamp
+  @serializationType(name: "global::System.String")
+  @runtimeType(name: "global::System.DateTime")
+
+extend scalar bigint
+  @serializationType(name: "global::System.Int64")
+  @runtimeType(name: "global::System.Int64")
+
+extend scalar jsonb
+  @serializationType(name: "global::System.Text.Json.JsonElement")
+  @runtimeType(name: "global::System.Text.Json.JsonElement")

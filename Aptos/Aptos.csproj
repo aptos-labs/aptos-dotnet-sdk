@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>
+    <PackageVersion>$(DefaultVersion)</PackageVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="StrawberryShake.Transport.Http" Version="13.9.11" />
+    <PackageReference Include="StrawberryShake" Version="13.9.11" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="NBitcoin" Version="7.0.37" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.2" />
+  </ItemGroup>
+
+  <PropertyGroup Label="C#">
+        <LangVersion>latest</LangVersion>
+        <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+        <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Aptos.Indexer\Aptos.Indexer.csproj" />
+    <ProjectReference Include="..\Aptos.Poseidon\Aptos.Poseidon.csproj" />
+  </ItemGroup>
+
+</Project>
