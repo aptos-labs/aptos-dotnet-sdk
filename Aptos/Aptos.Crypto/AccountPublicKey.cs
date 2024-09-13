@@ -31,7 +31,7 @@ public interface ILegacyPublicKey
     public PublicKeyVariant Type { get; }
 
     [JsonProperty("value")]
-    public abstract Hex Value { get; }
+    public Hex Value { get; }
 }
 
 public abstract class LegacyPublicKey(PublicKeyVariant type) : PublicKey, ILegacyPublicKey
@@ -72,9 +72,9 @@ public class LegacyPublicKeyConverter : JsonConverter<ILegacyPublicKey>
         {
             writer.WriteStartObject();
             writer.WritePropertyName("type");
-            writer.WriteValue(JsonConvert.SerializeObject(value!.Type).Replace("\"", ""));
+            writer.WriteValue(JsonConvert.SerializeObject(value.Type).Replace("\"", ""));
             writer.WritePropertyName("value");
-            writer.WriteValue(value!.Value.ToString());
+            writer.WriteValue(value.Value.ToString());
             writer.WriteEndObject();
         }
     }

@@ -117,7 +117,7 @@ public abstract class TransactionArgument : Serializable, IScriptFunctionArgumen
         if (typeTag is TypeTagGeneric typeTagGeneric)
         {
             var genericIndex = typeTagGeneric.Value;
-            if (genericIndex < 0 || genericIndex >= genericTypeParams.Count) throw new ArgumentException($"Generic type parameter index {genericIndex} is out of range");
+            if (genericIndex >= genericTypeParams.Count) throw new ArgumentException($"Generic type parameter index {genericIndex} is out of range");
             return ConvertArgument(value, genericTypeParams[(int)genericIndex], genericTypeParams);
         }
 

@@ -21,7 +21,7 @@ internal static class Utilities
         {
             (List<BigInteger> C, List<List<BigInteger>> M) res = (
                 tuple.Item1.Select(UnstringifyBigInts).Cast<BigInteger>().ToList(),
-                tuple.Item2.Select((e) => e.Select(UnstringifyBigInts).Cast<BigInteger>().ToList()).Cast<List<BigInteger>>().ToList()
+                tuple.Item2.Select((e) => e.Select(UnstringifyBigInts).Cast<BigInteger>().ToList()).ToList()
             );
             return res;
         }

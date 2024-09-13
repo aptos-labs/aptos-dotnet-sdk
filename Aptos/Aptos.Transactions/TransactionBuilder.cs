@@ -76,7 +76,7 @@ public static class TransactionBuilder
 
             FeePayerRawTransaction transactionToSign = new(data.Transaction.RawTransaction, data.Transaction.SecondarySignerAddresses ?? [], data.Transaction.FeePayerAddress);
 
-            List<AccountAuthenticator> secondaryAccountAuthenticators = secondaryAccountAuthenticators = data.SecondarySignersPublicKeys?.Select(GetAuthenticatorForSimulation).ToList() ?? [];
+            List<AccountAuthenticator> secondaryAccountAuthenticators = data.SecondarySignersPublicKeys?.Select(GetAuthenticatorForSimulation).ToList() ?? [];
 
             AccountAuthenticator feePayerAuthenticator = GetAuthenticatorForSimulation(data.FeePayerPublicKey);
 
@@ -99,7 +99,7 @@ public static class TransactionBuilder
                 data.Transaction.SecondarySignerAddresses
             );
 
-            List<AccountAuthenticator> secondaryAccountAuthenticators = secondaryAccountAuthenticators = data.SecondarySignersPublicKeys?.Select(GetAuthenticatorForSimulation).ToList() ?? [];
+            List<AccountAuthenticator> secondaryAccountAuthenticators = data.SecondarySignersPublicKeys?.Select(GetAuthenticatorForSimulation).ToList() ?? [];
 
             TransactionAuthenticatorMultiAgent multiAgentTransactionAuthenticator = new(senderAuthenticator, data.Transaction.SecondarySignerAddresses, secondaryAccountAuthenticators);
             return new SignedTransaction(transactionToSign.RawTransaction, multiAgentTransactionAuthenticator);

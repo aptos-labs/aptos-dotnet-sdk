@@ -69,7 +69,7 @@ public class ContractClient(AptosClient client)
     public async Task<T> View<T>(GenerateViewFunctionPayloadData data, ulong? ledgerVersion = null) where T : class
     {
         Dictionary<string, string> queryParams = [];
-        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
+        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion.ToString()!); }
 
         var viewFunctionPayload = await TransactionBuilder.GenerateViewFunctionPayload(_client, data);
         var response = await _client.PostFullNode<T>(new(

@@ -1,6 +1,5 @@
 namespace Aptos;
 
-using System.Text;
 using Aptos.Schemes;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +38,7 @@ public class KeylessAccount : Account
 
     public readonly string Jwt;
 
-    public KeylessAccount(string jwt, EphemeralKeyPair ekp, ZeroKnowledgeSignature proof, byte[] pepper, string uidKey = "sub", AccountAddress? address = null) : base()
+    public KeylessAccount(string jwt, EphemeralKeyPair ekp, ZeroKnowledgeSignature proof, byte[] pepper, string uidKey = "sub", AccountAddress? address = null)
     {
         if (pepper.Length != PEPPER_LENGTH) throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
 

@@ -70,7 +70,7 @@ public class TransactionSignatureConverter : JsonConverter<TransactionSignature>
 
                 if (signature == null) throw new Exception("Invalid account signature");
 
-                return signature != null ? new TransactionSingleSenderSignature(signature) : null;
+                return new TransactionSingleSenderSignature(signature);
             default:
                 throw new Exception($"Unknown transaction signature type: {type}");
         }
