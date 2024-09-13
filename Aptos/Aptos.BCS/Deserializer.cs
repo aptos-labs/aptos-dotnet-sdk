@@ -10,9 +10,9 @@ public interface Deserializable<T>
 
 public class Deserializer
 {
-    private MemoryStream _input;
+    private readonly MemoryStream _input;
 
-    private int _length;
+    private readonly int _length;
 
     public Deserializer(string data) : this(Hex.FromHexString(data).ToByteArray()) { }
     public Deserializer(byte[] data)

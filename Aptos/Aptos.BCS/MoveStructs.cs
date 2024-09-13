@@ -44,17 +44,20 @@ public class MoveString(string value) : TransactionArgument
 
 public class MoveOption<T> : TransactionArgument where T : class
 {
-    private readonly MoveVector<T> _vec;
-
     public readonly T? Value;
 
     public MoveOption(T? value)
     {
-        if (value != null) _vec = new([value]);
-        else _vec = new([]);
+        Value = value;
     }
 
-    public override void Serialize(Serializer s) => _vec.Serialize(s);
+    public override void Serialize(Serializer s)
+    {
+        MoveVector<T> vec;
+        if (Value != null) vec = new([Value]);
+        else vec = new([]);
+        vec.Serialize(s);
+    }
 
     public static MoveOption<T> Deserialize(Deserializer d, Func<Deserializer, T> deserializeFunc)
     {
