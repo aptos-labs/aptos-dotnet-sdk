@@ -123,7 +123,7 @@ public abstract class TransactionArgument : Serializable, IScriptFunctionArgumen
 
         if (typeTag is TypeTagVector typeTagVector)
         {
-            if (typeTagVector.Value is TypeTagU8 typeTagU8)
+            if (typeTagVector.Value is TypeTagU8)
             {
                 if (value is byte[] bytes) return new MoveVector<U8>(bytes.Select(b => new U8(b)).ToList());
             }
