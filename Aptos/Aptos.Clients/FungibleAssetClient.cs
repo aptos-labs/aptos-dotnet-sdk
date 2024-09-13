@@ -41,7 +41,6 @@ public class FungibleAssetClient(AptosClient client)
             {
                 try
                 {
-                    var type = (await _client.View<ResourceStruct>(new("0x1::coin::paired_coin", [formattedAddress]))).ToString();
                     return [formattedAddress, (await _client.View<ResourceStruct>(new("0x1::coin::paired_coin", [formattedAddress]))).ToString()];
                 }
                 catch
