@@ -88,7 +88,7 @@ public class AccountClient(AptosClient client)
     public async Task<T> GetResource<T>(string address, string resourceType, ulong? ledgerVersion = null) where T : class
     {
         Dictionary<string, string> queryParams = [];
-        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
+        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion.ToString()!); }
         var response = await _client.GetFullNode<MoveResource>(new(
             path: $"accounts/{AccountAddress.From(address)}/resource/{resourceType}",
             originMethod: "getResource",
@@ -109,8 +109,8 @@ public class AccountClient(AptosClient client)
     public async Task<List<MoveResource>> GetResources(string address, int? start = null, int? limit = null)
     {
         Dictionary<string, string> queryParams = [];
-        if (start != null) { queryParams.Add("start", start!.ToString()!); }
-        if (limit != null) { queryParams.Add("limit", limit!.ToString()!); }
+        if (start != null) { queryParams.Add("start", start.ToString()!); }
+        if (limit != null) { queryParams.Add("limit", limit.ToString()!); }
         var response = await _client.GetFullNodeWithPagination<MoveResource>(new(
             originMethod: "getResources",
             path: $"accounts/{address}/resources",
@@ -156,7 +156,7 @@ public class AccountClient(AptosClient client)
     /// <param name="where">The condition to filter the coin balances.</param>
     /// <param name="orderBy">The order by condition of the query.</param>
     /// <returns>The coin balance of the given address and coin type.</returns>
-    public async Task<CoinBalance?> GetCoinBalance(string address, string type = "0xa", int offset = 0, int limit = 50, current_fungible_asset_balances_bool_exp? where = null, current_fungible_asset_balances_order_by? orderBy = null) => (await GetCoinBalances(address.ToString(), await _client.FungibleAsset.GetPairedTypes(type), offset, limit, where, orderBy)).FirstOrDefault();
+    public async Task<CoinBalance?> GetCoinBalance(string address, string type = "0xa", int offset = 0, int limit = 50, current_fungible_asset_balances_bool_exp? where = null, current_fungible_asset_balances_order_by? orderBy = null) => (await GetCoinBalances(address, await _client.FungibleAsset.GetPairedTypes(type), offset, limit, where, orderBy)).FirstOrDefault();
 
     /// <inheritdoc cref="GetTokenOwnerships(string, List{string}?, int, int, current_token_ownerships_v2_bool_exp?, current_token_ownerships_v2_order_by?)"/>
     public async Task<List<TokenOwnership>> GetTokenOwnerships(AccountAddress address, List<string>? collectionIds = null, int offset = 0, int limit = 50, current_token_ownerships_v2_bool_exp? where = null, current_token_ownerships_v2_order_by? orderBy = null) => await GetTokenOwnerships(address.ToString(), collectionIds, offset, limit, where, orderBy);

@@ -1,5 +1,4 @@
 using Aptos.Core;
-using NBitcoin.RPC;
 
 namespace Aptos;
 

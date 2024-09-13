@@ -1,7 +1,6 @@
 namespace Aptos.Examples;
 
 using Aptos.Core;
-using Newtonsoft.Json;
 
 public class PlaygroundExample
 {

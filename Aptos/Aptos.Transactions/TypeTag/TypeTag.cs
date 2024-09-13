@@ -1,8 +1,5 @@
 namespace Aptos;
 
-using System.Net.Sockets;
-using System.Numerics;
-
 public enum TypeTagVariant : uint
 {
     Bool = 0,
@@ -169,7 +166,6 @@ class TypeTagGeneric : TypeTag
     public TypeTagGeneric(uint value) : base(TypeTagVariant.Generic)
     {
         Value = value;
-        if (Value < 0) throw new ArgumentException("Generic type parameter index cannot be negative");
     }
 
     public override void Serialize(Serializer s)

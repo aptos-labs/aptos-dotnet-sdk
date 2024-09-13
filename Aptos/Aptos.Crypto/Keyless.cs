@@ -5,7 +5,7 @@ using Aptos.Poseidon;
 using Aptos.Schemes;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-public static partial class Keyless
+public static class Keyless
 {
 
     const int EPK_HORIZON_SECS = 10000000;
@@ -20,7 +20,7 @@ public static partial class Keyless
     public static byte[] ComputeIdCommitment(string jwt, string pepper, string uidKey = "sub") => ComputeIdCommitment(jwt, Hex.FromHexInput(pepper).ToByteArray(), uidKey);
     public static byte[] ComputeIdCommitment(string jwt, byte[] pepper, string uidKey = "sub")
     {
-        var token = new JsonWebToken(jwt);
+        JsonWebToken token = new(jwt);
         var aud = token.GetClaim("aud").Value;
         var uidVal = token.GetClaim(uidKey).Value;
         return ComputeIdCommitment(uidKey, uidVal, aud, pepper);

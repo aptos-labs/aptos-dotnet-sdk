@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 
 namespace Aptos;
 
@@ -9,7 +8,7 @@ public class TableClient(AptosClient client)
     public async Task<T> GetItem<T>(string handle, (dynamic keyType, dynamic valueType, dynamic key) request, ulong? ledgerVersion = null) where T : class
     {
         Dictionary<string, string> queryParams = [];
-        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
+        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion.ToString()!); }
 
         var response = await _client.PostFullNode<T>(new(
             path: $"tables/{handle}/item",
@@ -23,7 +22,7 @@ public class TableClient(AptosClient client)
             originMethod: "getTableItem"
         ));
 
-        return response.Data as T;
+        return response.Data;
     }
 
 }

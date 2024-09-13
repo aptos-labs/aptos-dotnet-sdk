@@ -71,9 +71,9 @@ public class LegacySignatureConverter : JsonConverter<LegacySignature>
         {
             writer.WriteStartObject();
             writer.WritePropertyName("type");
-            writer.WriteValue(JsonConvert.SerializeObject(value!.Type).Replace("\"", ""));
+            writer.WriteValue(JsonConvert.SerializeObject(value.Type).Replace("\"", ""));
             writer.WritePropertyName("value");
-            writer.WriteValue(value!.Value.ToString());
+            writer.WriteValue(value.Value.ToString());
             writer.WriteEndObject();
         }
     }

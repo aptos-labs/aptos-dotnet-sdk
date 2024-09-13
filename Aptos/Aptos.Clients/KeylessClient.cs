@@ -83,7 +83,7 @@ public class KeylessClient(AptosClient client)
     public async Task<KeylessConfiguration> GetConfigurationResource(ulong? ledgerVersion = null)
     {
         Dictionary<string, string> queryParams = [];
-        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
+        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion.ToString()!); }
 
         var response = await _client.GetFullNode<MoveResource>(new(
             path: $"accounts/{AccountAddress.From("0x1")}/resource/0x1::keyless_account::Configuration",
@@ -97,7 +97,7 @@ public class KeylessClient(AptosClient client)
     public async Task<Groth16VerificationKey> GetGroth16VerificationKey(ulong? ledgerVersion = null)
     {
         Dictionary<string, string> queryParams = [];
-        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
+        if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion.ToString()!); }
 
         var response = await _client.GetFullNode<MoveResource>(new(
             path: $"accounts/{AccountAddress.From("0x1")}/resource/0x1::keyless_account::Groth16VerificationKey",
