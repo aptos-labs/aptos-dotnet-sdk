@@ -34,7 +34,6 @@ public class Serializer
     public void Serialize(ushort v) => U16(v);
     public void Serialize(uint v) => U32(v);
     public void Serialize(ulong v) => U64(v);
-    public void Serialize(BigInteger v) => U128(v);
     public void Serialize(Serializable v) => v.Serialize(this);
     public void Serialize<T>(List<T> v) where T : Serializable => Vector(v);
 
