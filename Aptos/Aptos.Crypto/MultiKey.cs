@@ -59,8 +59,8 @@ public partial class MultiKey : UnifiedAccountPublicKey
 
     public int GetIndex(PublicKey publicKey)
     {
-        var pk = publicKey is AnyPublicKey anyPublicKey ? anyPublicKey : new AnyPublicKey(publicKey);
-        var index = PublicKeys.FindIndex((pk) => pk.ToString().Equals(pk.ToString()));
+        var pubkey = publicKey is AnyPublicKey anyPublicKey ? anyPublicKey : new AnyPublicKey(publicKey);
+        var index = PublicKeys.FindIndex((pk) => pk.ToString().Equals(pubkey.ToString()));
         if (index == -1) throw new ArgumentException("Public key not found");
         return index;
     }
