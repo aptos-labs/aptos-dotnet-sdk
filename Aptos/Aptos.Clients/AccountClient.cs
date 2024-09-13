@@ -42,9 +42,12 @@ public class AccountClient(AptosClient client)
     {
         async Task<MoveModuleBytecode> GetModuleInner(string address, string moduleName, ulong? ledgerVersion = null)
         {
+            Dictionary<string, string> queryParams = [];
+            if (ledgerVersion != null) { queryParams.Add("ledger_version", ledgerVersion!.ToString()!); }
             return (await _client.GetFullNode<MoveModuleBytecode>(new(
                  path: $"accounts/{address}/module/{moduleName}",
-                 originMethod: "getModule"
+                 originMethod: "getModule",
+                 queryParams: queryParams
              ))).Data;
         }
 
