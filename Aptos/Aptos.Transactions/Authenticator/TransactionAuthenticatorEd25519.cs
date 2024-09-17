@@ -1,6 +1,7 @@
 namespace Aptos;
 
-public class TransactionAuthenticatorEd25519(Ed25519PublicKey publicKey, Ed25519Signature signature) : TransactionAuthenticator
+public class TransactionAuthenticatorEd25519(Ed25519PublicKey publicKey, Ed25519Signature signature)
+    : TransactionAuthenticator
 {
     public readonly Ed25519PublicKey PublicKey = publicKey;
 

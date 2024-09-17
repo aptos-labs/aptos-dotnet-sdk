@@ -16,13 +16,11 @@ public abstract class Serializable
     }
 
     public Hex BcsToHex() => new(BcsToBytes());
-
 }
 
 public class Serializer
 {
     private MemoryStream _output;
-
 
     public Serializer()
     {
@@ -30,12 +28,19 @@ public class Serializer
     }
 
     public void Serialize(bool v) => Bool(v);
+
     public void Serialize(byte v) => U8(v);
+
     public void Serialize(ushort v) => U16(v);
+
     public void Serialize(uint v) => U32(v);
+
     public void Serialize(ulong v) => U64(v);
+
     public void Serialize(Serializable v) => v.Serialize(this);
-    public void Serialize<T>(List<T> v) where T : Serializable => Vector(v);
+
+    public void Serialize<T>(List<T> v)
+        where T : Serializable => Vector(v);
 
     public void Bool(bool v)
     {
@@ -50,28 +55,32 @@ public class Serializer
     public void U16(ushort v)
     {
         byte[] ub = BitConverter.GetBytes(v);
-        if (!BitConverter.IsLittleEndian) Array.Reverse(ub);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(ub);
         _output.Write(ub, 0, ub.Length);
     }
 
     public void U32(uint v)
     {
         byte[] ub = BitConverter.GetBytes(v);
-        if (!BitConverter.IsLittleEndian) Array.Reverse(ub);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(ub);
         _output.Write(ub, 0, ub.Length);
     }
 
     public void U64(ulong v)
     {
         byte[] ub = BitConverter.GetBytes(v);
-        if (!BitConverter.IsLittleEndian) Array.Reverse(ub);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(ub);
         _output.Write(ub, 0, ub.Length);
     }
 
     public void U128(BigInteger v)
     {
         // Ensure the BigInteger is unsigned
-        if (v.Sign == -1) throw new SerializationException("Invalid value for an unsigned int128");
+        if (v.Sign == -1)
+            throw new SerializationException("Invalid value for an unsigned int128");
 
         // This is already little-endian
         byte[] content = v.ToByteArray(isUnsigned: true, isBigEndian: false);
@@ -83,13 +92,15 @@ public class Serializer
 
         // Ensure we're padded to 16
         _output.Write(content);
-        if (content.Length != 16) _output.Write(new byte[16 - content.Length]);
+        if (content.Length != 16)
+            _output.Write(new byte[16 - content.Length]);
     }
 
     public void U256(BigInteger v)
     {
         // Ensure the BigInteger is unsigned
-        if (v.Sign == -1) throw new SerializationException("Invalid value for an unsigned int256");
+        if (v.Sign == -1)
+            throw new SerializationException("Invalid value for an unsigned int256");
 
         // This is already little-endian
         byte[] content = v.ToByteArray(isUnsigned: true, isBigEndian: false);
@@ -101,7 +112,8 @@ public class Serializer
 
         // Ensure we're padded to 32
         _output.Write(content);
-        if (content.Length != 32) _output.Write(new byte[32 - content.Length]);
+        if (content.Length != 32)
+            _output.Write(new byte[32 - content.Length]);
     }
 
     public void U32AsUleb128(uint v)
@@ -119,6 +131,7 @@ public class Serializer
     }
 
     public void String(string v) => Bytes(Encoding.UTF8.GetBytes(v));
+
     public void OptionString(string? v)
     {
         if (v == null)
@@ -132,9 +145,9 @@ public class Serializer
         }
     }
 
-    public void Option<T>(T? v) where T : Serializable
+    public void Option<T>(T? v)
+        where T : Serializable
     {
-
         if (v == null)
         {
             Bool(false);
@@ -154,18 +167,22 @@ public class Serializer
         _output.Write(v);
     }
 
-
     public void FixedBytes(byte[] v) => _output.Write(v);
 
-    public void Vector<T>(T[] v) where T : Serializable => Vector(v.ToList());
-    public void Vector<T>(List<T> v) where T : Serializable
+    public void Vector<T>(T[] v)
+        where T : Serializable => Vector(v.ToList());
+
+    public void Vector<T>(List<T> v)
+        where T : Serializable
     {
         // Write the length of the vector
         U32AsUleb128((uint)v.Count);
         // Serialize each element of the vector
         v.ForEach(e => e.Serialize(this));
     }
+
     public void Vector<T>(T[] v, Action<T> serializerFunc) => Vector(v.ToList(), serializerFunc);
+
     public void Vector<T>(List<T> v, Action<T> serializerFunc)
     {
         // Write the length of the vector
@@ -173,7 +190,6 @@ public class Serializer
         // Serialize each element of the vector
         v.ForEach(e => serializerFunc(e));
     }
-
 
     public byte[] ToBytes()
     {
@@ -184,5 +200,4 @@ public class Serializer
     {
         _output = new MemoryStream();
     }
-
 }

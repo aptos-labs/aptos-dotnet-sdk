@@ -36,7 +36,10 @@ public class IndexerClient
         _indexerClient = services.GetRequiredService<IAptosIndexerClient>();
     }
 
-    public async Task<AptosResponse<Res>> Query<Res>(Func<IAptosIndexerClient, Task<IOperationResult<Res>>> query) where Res : class
+    public async Task<AptosResponse<Res>> Query<Res>(
+        Func<IAptosIndexerClient, Task<IOperationResult<Res>>> query
+    )
+        where Res : class
     {
         var result = await query(_indexerClient);
 
@@ -48,10 +51,31 @@ public class IndexerClient
         }
         catch (GraphQLClientException exception)
         {
-            throw new ApiException(ApiType.Indexer, request, new AptosResponse<JObject>(200, exception.Message, JObject.FromObject(new { errors = exception.Errors }), _baseUrl, []));
+            throw new ApiException(
+                ApiType.Indexer,
+                request,
+                new AptosResponse<JObject>(
+                    200,
+                    exception.Message,
+                    JObject.FromObject(new { errors = exception.Errors }),
+                    _baseUrl,
+                    []
+                )
+            );
         }
     }
 
-    public async Task<AptosResponse<Res>> Query<Res>(string query, Dictionary<string, object>? variables = null, string? originMethod = null) where Res : class => await _client.PostIndexer<Res>(new(originMethod: originMethod ?? "queryIndexer", path: "", body: new { query, variables }));
-
+    public async Task<AptosResponse<Res>> Query<Res>(
+        string query,
+        Dictionary<string, object>? variables = null,
+        string? originMethod = null
+    )
+        where Res : class =>
+        await _client.PostIndexer<Res>(
+            new(
+                originMethod: originMethod ?? "queryIndexer",
+                path: "",
+                body: new { query, variables }
+            )
+        );
 }

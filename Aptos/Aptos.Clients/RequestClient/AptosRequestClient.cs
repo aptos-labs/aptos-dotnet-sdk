@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 
 public class AptosRequestClient : RequestClient
 {
-
     private readonly HttpClient _httpClient;
 
     public AptosRequestClient()
@@ -18,7 +17,8 @@ public class AptosRequestClient : RequestClient
         _httpClient = new HttpClient(handler);
     }
 
-    public override async Task<ClientResponse<Res>> Get<Res>(ClientRequest request) where Res : class
+    public override async Task<ClientResponse<Res>> Get<Res>(ClientRequest request)
+        where Res : class
     {
         HttpRequestMessage httpRequest = new(HttpMethod.Get, request.Url);
 
@@ -44,7 +44,9 @@ public class AptosRequestClient : RequestClient
                 {
                     queryBuilder.Append('&');
                 }
-                queryBuilder.Append($"{Uri.EscapeDataString(queryParam.Key)}={Uri.EscapeDataString(queryParam.Value)}");
+                queryBuilder.Append(
+                    $"{Uri.EscapeDataString(queryParam.Key)}={Uri.EscapeDataString(queryParam.Value)}"
+                );
             }
 
             uriBuilder.Query = queryBuilder.ToString();
@@ -59,10 +61,12 @@ public class AptosRequestClient : RequestClient
                 (int)response.StatusCode,
                 response.ReasonPhrase ?? "",
                 response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<Res>(content)! : null,
-                !response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<JObject>(content) : null,
+                !response.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<JObject>(content)
+                    : null,
                 response,
-                response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value)
-            ));
+                response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value))
+            );
         }
         catch (Exception e)
         {
@@ -70,7 +74,8 @@ public class AptosRequestClient : RequestClient
         }
     }
 
-    public override async Task<ClientResponse<Res>> Post<Res>(ClientRequest request) where Res : class
+    public override async Task<ClientResponse<Res>> Post<Res>(ClientRequest request)
+        where Res : class
     {
         HttpRequestMessage httpRequest = new(HttpMethod.Post, request.Url);
 
@@ -93,10 +98,17 @@ public class AptosRequestClient : RequestClient
             else
             {
                 string jsonBody = JsonConvert.SerializeObject(request.Body);
-                httpRequest.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                httpRequest.Content = new StringContent(
+                    jsonBody,
+                    Encoding.UTF8,
+                    "application/json"
+                );
             }
 
-            if (request.ContentType != null) httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
+            if (request.ContentType != null)
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(
+                    request.ContentType
+                );
         }
 
         // Add query params
@@ -112,7 +124,9 @@ public class AptosRequestClient : RequestClient
                 {
                     queryBuilder.Append('&');
                 }
-                queryBuilder.Append($"{Uri.EscapeDataString(queryParam.Key)}={Uri.EscapeDataString(queryParam.Value)}");
+                queryBuilder.Append(
+                    $"{Uri.EscapeDataString(queryParam.Key)}={Uri.EscapeDataString(queryParam.Value)}"
+                );
             }
 
             uriBuilder.Query = queryBuilder.ToString();
@@ -127,15 +141,16 @@ public class AptosRequestClient : RequestClient
                 (int)response.StatusCode,
                 response.ReasonPhrase ?? "",
                 response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<Res>(content)! : null,
-                !response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<JObject>(content) : null,
+                !response.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<JObject>(content)
+                    : null,
                 response,
-                response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value)
-            ));
+                response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value))
+            );
         }
         catch (Exception e)
         {
             throw new Exception($"Error making request to {request.Url}", e);
         }
     }
-
 }

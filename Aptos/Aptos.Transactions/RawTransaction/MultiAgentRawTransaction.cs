@@ -1,8 +1,10 @@
 namespace Aptos;
 
-public class MultiAgentRawTransaction(RawTransaction rawTransaction, List<AccountAddress> secondarySignerAddresses) : RawTransactionWithData(rawTransaction, null, secondarySignerAddresses)
+public class MultiAgentRawTransaction(
+    RawTransaction rawTransaction,
+    List<AccountAddress> secondarySignerAddresses
+) : RawTransactionWithData(rawTransaction, null, secondarySignerAddresses)
 {
-
     public new readonly List<AccountAddress> SecondarySignerAddresses = secondarySignerAddresses;
 
     public override void Serialize(Serializer s)
@@ -12,6 +14,6 @@ public class MultiAgentRawTransaction(RawTransaction rawTransaction, List<Accoun
         s.Vector(SecondarySignerAddresses);
     }
 
-    public static new MultiAgentRawTransaction Deserialize(Deserializer d) => new(RawTransaction.Deserialize(d), d.Vector(AccountAddress.Deserialize));
-
+    public static new MultiAgentRawTransaction Deserialize(Deserializer d) =>
+        new(RawTransaction.Deserialize(d), d.Vector(AccountAddress.Deserialize));
 }

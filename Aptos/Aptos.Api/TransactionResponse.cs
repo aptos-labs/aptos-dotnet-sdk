@@ -27,7 +27,7 @@ public enum TransactionResponseType
     Validator,
 
     [EnumMember(Value = "block_epilogue_transaction")]
-    BlockEpilogue
+    BlockEpilogue,
 }
 
 [JsonConverter(typeof(TransactionResponseConverter))]
@@ -42,34 +42,79 @@ public abstract class TransactionResponse(TransactionResponseType type, Hex hash
 
 public class TransactionResponseConverter : JsonConverter<TransactionResponse>
 {
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
+        new()
+        {
+            ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionResponse>(),
+        };
 
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new() { ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionResponse>() };
-
-    public override TransactionResponse? ReadJson(JsonReader reader, Type objectType, TransactionResponse? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override TransactionResponse? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        TransactionResponse? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
         return type switch
         {
-            "user_transaction" => JsonConvert.DeserializeObject<UserTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "genesis_transaction" => JsonConvert.DeserializeObject<GenesisTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "block_metadata_transaction" => JsonConvert.DeserializeObject<BlockMetadataTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "state_checkpoint_transaction" => JsonConvert.DeserializeObject<StateCheckpointTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "validator_transaction" => JsonConvert.DeserializeObject<ValidatorTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "block_epilogue_transaction" => JsonConvert.DeserializeObject<BlockEpilogueTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
+            "user_transaction" => JsonConvert.DeserializeObject<UserTransactionResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "genesis_transaction" => JsonConvert.DeserializeObject<GenesisTransactionResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "block_metadata_transaction" =>
+                JsonConvert.DeserializeObject<BlockMetadataTransactionResponse>(
+                    jsonObject.ToString(),
+                    SpecifiedSubclassConversion
+                ),
+            "state_checkpoint_transaction" =>
+                JsonConvert.DeserializeObject<StateCheckpointTransactionResponse>(
+                    jsonObject.ToString(),
+                    SpecifiedSubclassConversion
+                ),
+            "validator_transaction" => JsonConvert.DeserializeObject<ValidatorTransactionResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "block_epilogue_transaction" =>
+                JsonConvert.DeserializeObject<BlockEpilogueTransactionResponse>(
+                    jsonObject.ToString(),
+                    SpecifiedSubclassConversion
+                ),
             // Covers "pending_transaction" and submitted transactions
-            _ => JsonConvert.DeserializeObject<PendingTransactionResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
+            _ => JsonConvert.DeserializeObject<PendingTransactionResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
         };
     }
 
-    public override void WriteJson(JsonWriter writer, TransactionResponse? value, JsonSerializer serializer) => serializer.Serialize(writer, value);
+    public override void WriteJson(
+        JsonWriter writer,
+        TransactionResponse? value,
+        JsonSerializer serializer
+    ) => serializer.Serialize(writer, value);
 }
 
 [Serializable]
-public class PendingTransactionResponse(Hex hash, AccountAddress sender, ulong sequenceNumber, ulong maxGasAmount, ulong gasUnitPrice, ulong expirationTimestampSecs, TransactionPayloadResponse payload, TransactionSignature? signature = null) : TransactionResponse(TransactionResponseType.Pending, hash)
+public class PendingTransactionResponse(
+    Hex hash,
+    AccountAddress sender,
+    ulong sequenceNumber,
+    ulong maxGasAmount,
+    ulong gasUnitPrice,
+    ulong expirationTimestampSecs,
+    TransactionPayloadResponse payload,
+    TransactionSignature? signature = null
+) : TransactionResponse(TransactionResponseType.Pending, hash)
 {
-
     [JsonProperty("sender")]
     public AccountAddress Sender = sender;
 
@@ -93,7 +138,18 @@ public class PendingTransactionResponse(Hex hash, AccountAddress sender, ulong s
 }
 
 [Serializable]
-public abstract class CommittedTransactionResponse(TransactionResponseType type, Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes) : TransactionResponse(type, hash)
+public abstract class CommittedTransactionResponse(
+    TransactionResponseType type,
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes
+) : TransactionResponse(type, hash)
 {
     [JsonProperty("version")]
     public ulong Version = version;
@@ -118,11 +174,42 @@ public abstract class CommittedTransactionResponse(TransactionResponseType type,
 
     [JsonProperty("changes")]
     public List<WriteSetChange> Changes = changes;
-
 }
 
 [Serializable]
-public class UserTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, string? stateCheckpointHash, AccountAddress sender, ulong sequenceNumber, ulong maxGasAmount, ulong gasUnitPrice, ulong expirationTimestampSecs, List<WriteSetChange> changes, TransactionPayloadResponse payload, TransactionSignature? signature, List<Event> events, ulong timestamp) : CommittedTransactionResponse(TransactionResponseType.User, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class UserTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    string? stateCheckpointHash,
+    AccountAddress sender,
+    ulong sequenceNumber,
+    ulong maxGasAmount,
+    ulong gasUnitPrice,
+    ulong expirationTimestampSecs,
+    List<WriteSetChange> changes,
+    TransactionPayloadResponse payload,
+    TransactionSignature? signature,
+    List<Event> events,
+    ulong timestamp
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.User,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash", NullValueHandling = NullValueHandling.Ignore)]
     public string? StateCheckpointHash = stateCheckpointHash;
@@ -153,11 +240,35 @@ public class UserTransactionResponse(Hex hash, ulong version, Hex stateChangeHas
 
     [JsonProperty("timestamp")]
     public ulong Timestamp = timestamp;
-
 }
 
 [Serializable]
-public class GenesisTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes, string stateCheckpointHash, GenesisPayloadResponse payload, List<Event> events) : CommittedTransactionResponse(TransactionResponseType.Genesis, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class GenesisTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes,
+    string stateCheckpointHash,
+    GenesisPayloadResponse payload,
+    List<Event> events
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.Genesis,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash")]
     public string? StateCheckpointHash = stateCheckpointHash;
@@ -170,7 +281,38 @@ public class GenesisTransactionResponse(Hex hash, ulong version, Hex stateChange
 }
 
 [Serializable]
-public class BlockMetadataTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes, string stateCheckpointHash, string id, ulong epoch, ulong round, List<byte> previousBlockVotesBitvec, string proposer, List<uint> failedProposerIndices, List<Event> events, ulong timestamp) : CommittedTransactionResponse(TransactionResponseType.BlockMetadata, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class BlockMetadataTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes,
+    string stateCheckpointHash,
+    string id,
+    ulong epoch,
+    ulong round,
+    List<byte> previousBlockVotesBitvec,
+    string proposer,
+    List<uint> failedProposerIndices,
+    List<Event> events,
+    ulong timestamp
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.BlockMetadata,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash")]
     public string? StateCheckpointHash = stateCheckpointHash;
@@ -200,7 +342,32 @@ public class BlockMetadataTransactionResponse(Hex hash, ulong version, Hex state
     public ulong Timestamp = timestamp;
 }
 
-public class ValidatorTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes, string stateCheckpointHash, List<Event> events, ulong timestamp) : CommittedTransactionResponse(TransactionResponseType.Validator, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class ValidatorTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes,
+    string stateCheckpointHash,
+    List<Event> events,
+    ulong timestamp
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.Validator,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash")]
     public string? StateCheckpointHash = stateCheckpointHash;
@@ -213,7 +380,31 @@ public class ValidatorTransactionResponse(Hex hash, ulong version, Hex stateChan
 }
 
 [Serializable]
-public class StateCheckpointTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes, string? stateCheckpointHash, ulong timestamp) : CommittedTransactionResponse(TransactionResponseType.StateCheckpoint, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class StateCheckpointTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes,
+    string? stateCheckpointHash,
+    ulong timestamp
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.StateCheckpoint,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash")]
     public string? StateCheckpointHash = stateCheckpointHash;
@@ -223,7 +414,32 @@ public class StateCheckpointTransactionResponse(Hex hash, ulong version, Hex sta
 }
 
 [Serializable]
-public class BlockEpilogueTransactionResponse(Hex hash, ulong version, Hex stateChangeHash, Hex eventRootHash, ulong gasUsed, bool success, string vmStatus, Hex accumulatorRootHash, List<WriteSetChange> changes, string stateCheckpointHash, ulong timestamp, BlockEndInfo? blockEndInfo) : CommittedTransactionResponse(TransactionResponseType.BlockEpilogue, hash, version, stateChangeHash, eventRootHash, gasUsed, success, vmStatus, accumulatorRootHash, changes)
+public class BlockEpilogueTransactionResponse(
+    Hex hash,
+    ulong version,
+    Hex stateChangeHash,
+    Hex eventRootHash,
+    ulong gasUsed,
+    bool success,
+    string vmStatus,
+    Hex accumulatorRootHash,
+    List<WriteSetChange> changes,
+    string stateCheckpointHash,
+    ulong timestamp,
+    BlockEndInfo? blockEndInfo
+)
+    : CommittedTransactionResponse(
+        TransactionResponseType.BlockEpilogue,
+        hash,
+        version,
+        stateChangeHash,
+        eventRootHash,
+        gasUsed,
+        success,
+        vmStatus,
+        accumulatorRootHash,
+        changes
+    )
 {
     [JsonProperty("state_checkpoint_hash")]
     public string? StateCheckpointHash = stateCheckpointHash;

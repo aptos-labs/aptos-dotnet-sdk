@@ -4,36 +4,67 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 [JsonConverter(typeof(TransactionPayloadResponseConverter))]
-abstract public class TransactionPayloadResponse(string type)
+public abstract class TransactionPayloadResponse(string type)
 {
-
     [JsonProperty("type")]
     public string Type = type;
 }
 
 public class TransactionPayloadResponseConverter : JsonConverter<TransactionPayloadResponse>
 {
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new() { ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionPayloadResponse>() };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
+        new()
+        {
+            ContractResolver =
+                new SubclassSpecifiedConcreteClassConverter<TransactionPayloadResponse>(),
+        };
 
-    public override TransactionPayloadResponse? ReadJson(JsonReader reader, Type objectType, TransactionPayloadResponse? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override TransactionPayloadResponse? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        TransactionPayloadResponse? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
         return type switch
         {
-            "entry_function_payload" => JsonConvert.DeserializeObject<EntryFunctionPayloadResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "script_payload" => JsonConvert.DeserializeObject<ScriptPayloadResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "multisig_payload" => JsonConvert.DeserializeObject<MultisigPayloadResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
-            "write_set_payload" => JsonConvert.DeserializeObject<GenesisPayloadResponse>(jsonObject.ToString(), SpecifiedSubclassConversion),
+            "entry_function_payload" => JsonConvert.DeserializeObject<EntryFunctionPayloadResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "script_payload" => JsonConvert.DeserializeObject<ScriptPayloadResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "multisig_payload" => JsonConvert.DeserializeObject<MultisigPayloadResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
+            "write_set_payload" => JsonConvert.DeserializeObject<GenesisPayloadResponse>(
+                jsonObject.ToString(),
+                SpecifiedSubclassConversion
+            ),
             _ => throw new Exception($"Unknown transaction payload response type: {type}"),
         };
     }
 
-    public override void WriteJson(JsonWriter writer, TransactionPayloadResponse? value, JsonSerializer serializer) => serializer.Serialize(writer, value);
+    public override void WriteJson(
+        JsonWriter writer,
+        TransactionPayloadResponse? value,
+        JsonSerializer serializer
+    ) => serializer.Serialize(writer, value);
 }
 
-public class EntryFunctionPayloadResponse(string type, string function, List<object> typeArguments, List<object> arguments) : TransactionPayloadResponse(type)
+public class EntryFunctionPayloadResponse(
+    string type,
+    string function,
+    List<object> typeArguments,
+    List<object> arguments
+) : TransactionPayloadResponse(type)
 {
     [JsonProperty("function")]
     public string Function = function;
@@ -45,9 +76,13 @@ public class EntryFunctionPayloadResponse(string type, string function, List<obj
     public List<object> Arguments = arguments;
 }
 
-public class ScriptPayloadResponse(string type, MoveScriptBytecode code, List<object> typeArguments, List<object> arguments) : TransactionPayloadResponse(type)
+public class ScriptPayloadResponse(
+    string type,
+    MoveScriptBytecode code,
+    List<object> typeArguments,
+    List<object> arguments
+) : TransactionPayloadResponse(type)
 {
-
     [JsonProperty("code")]
     public MoveScriptBytecode Code = code;
 
@@ -58,9 +93,12 @@ public class ScriptPayloadResponse(string type, MoveScriptBytecode code, List<ob
     public List<object> Arguments = arguments;
 }
 
-public class MultisigPayloadResponse(string type, string multisigAddress, EntryFunctionPayloadResponse transactionPayload) : TransactionPayloadResponse(type)
+public class MultisigPayloadResponse(
+    string type,
+    string multisigAddress,
+    EntryFunctionPayloadResponse transactionPayload
+) : TransactionPayloadResponse(type)
 {
-
     [JsonProperty("multisig_address")]
     public string MultisigAddress = multisigAddress;
 
@@ -68,7 +106,8 @@ public class MultisigPayloadResponse(string type, string multisigAddress, EntryF
     public EntryFunctionPayloadResponse TransactionPayload = transactionPayload;
 }
 
-public class GenesisPayloadResponse(string type, WriteSet writeSet) : TransactionPayloadResponse(type)
+public class GenesisPayloadResponse(string type, WriteSet writeSet)
+    : TransactionPayloadResponse(type)
 {
     [JsonProperty("write_set")]
     public WriteSet WriteSet = writeSet;

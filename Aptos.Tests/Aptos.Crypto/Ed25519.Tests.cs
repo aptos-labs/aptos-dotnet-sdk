@@ -26,40 +26,52 @@ public sealed class Ed25519FeatureTests : Feature
     [When(@"I derive public key")]
     public void WhenIDerivePublicKey()
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
-        if (_inputValue is Ed25519PrivateKey privateKey) _output = privateKey.PublicKey().BcsToHex();
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
+        if (_inputValue is Ed25519PrivateKey privateKey)
+            _output = privateKey.PublicKey().BcsToHex();
     }
 
     [When(@"I sign message (.*)")]
     public void WhenISignMessage(string message)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
-        if (_inputValue is Ed25519PrivateKey privateKey) _output = privateKey.Sign(message).BcsToHex();
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
+        if (_inputValue is Ed25519PrivateKey privateKey)
+            _output = privateKey.Sign(message).BcsToHex();
     }
-
 
     [When(@"I verify signature (.*) with message (.*)")]
     public void WhenIVerifySignatureWithMessage(string signature, string message)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         if (_inputValue is Ed25519PrivateKey privateKey)
         {
-            _output = privateKey.PublicKey().VerifySignature(message, Ed25519Signature.Deserialize(new Deserializer(signature)));
+            _output = privateKey
+                .PublicKey()
+                .VerifySignature(
+                    message,
+                    Ed25519Signature.Deserialize(new Deserializer(signature))
+                );
         }
     }
 
     [When(@"I derive from derivation path (.*)")]
     public void WhenIDeriveFromDerivationPath(string path)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
-        if (_inputValue is string mnemonic) _output = Ed25519PrivateKey.FromDerivationPath(path, mnemonic).BcsToHex();
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
+        if (_inputValue is string mnemonic)
+            _output = Ed25519PrivateKey.FromDerivationPath(path, mnemonic).BcsToHex();
     }
 
     [Then(@"the result should be (.*) (.*)")]
     public void ThenTheResultShouldBeTypeValue(string type, string value)
     {
-        if (_output == null) throw new ArgumentException("No output value");
+        if (_output == null)
+            throw new ArgumentException("No output value");
 
         switch (type)
         {
@@ -71,5 +83,4 @@ public sealed class Ed25519FeatureTests : Feature
                 break;
         }
     }
-
 }

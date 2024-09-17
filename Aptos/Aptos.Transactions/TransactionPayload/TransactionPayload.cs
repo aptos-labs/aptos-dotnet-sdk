@@ -14,7 +14,9 @@ public abstract class TransactionPayload : Serializable
         return variant switch
         {
             TransactionPayloadVariant.Script => TransactionScriptPayload.Deserialize(d),
-            TransactionPayloadVariant.EntryFunction => TransactionEntryFunctionPayload.Deserialize(d),
+            TransactionPayloadVariant.EntryFunction => TransactionEntryFunctionPayload.Deserialize(
+                d
+            ),
             _ => throw new ArgumentException("Invalid variant"),
         };
     }

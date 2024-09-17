@@ -15,9 +15,12 @@ using Org.BouncyCastle.Security;
 
 public static class Secp256k1
 {
-    public static readonly ECDomainParameters DOMAIN_PARAMS = new(SecNamedCurves.GetByName("secp256k1"));
+    public static readonly ECDomainParameters DOMAIN_PARAMS =
+        new(SecNamedCurves.GetByName("secp256k1"));
 
-    public static readonly BigInteger HALF_CURVE_ORDER = CustomNamedCurves.GetByName("secp256k1").Curve.Order.ShiftRight(1);
+    public static readonly BigInteger HALF_CURVE_ORDER = CustomNamedCurves
+        .GetByName("secp256k1")
+        .Curve.Order.ShiftRight(1);
 }
 
 public class Secp256k1PublicKey : LegacyPublicKey
@@ -28,10 +31,14 @@ public class Secp256k1PublicKey : LegacyPublicKey
 
     public override Hex Value => _key;
 
-    public Secp256k1PublicKey(string publicKey) : this(Hex.FromHexInput(publicKey).ToByteArray()) { }
-    public Secp256k1PublicKey(byte[] publicKey) : base(PublicKeyVariant.Secp256k1Ecdsa)
+    public Secp256k1PublicKey(string publicKey)
+        : this(Hex.FromHexInput(publicKey).ToByteArray()) { }
+
+    public Secp256k1PublicKey(byte[] publicKey)
+        : base(PublicKeyVariant.Secp256k1Ecdsa)
     {
-        if (publicKey.Length != LENGTH) throw new KeyLengthMismatch("Secp256k1PublicKey", LENGTH);
+        if (publicKey.Length != LENGTH)
+            throw new KeyLengthMismatch("Secp256k1PublicKey", LENGTH);
         _key = new(publicKey);
     }
 
@@ -44,8 +51,9 @@ public class Secp256k1PublicKey : LegacyPublicKey
         // Hash the message
         byte[] hash = DigestUtilities.CalculateDigest("SHA3-256", message);
 
-        // Initialize the signer with the public key 
-        ECPublicKeyParameters publicKeyParams = new(Secp256k1.DOMAIN_PARAMS.Curve.DecodePoint(ToByteArray()), Secp256k1.DOMAIN_PARAMS);
+        // Initialize the signer with the public key
+        ECPublicKeyParameters publicKeyParams =
+            new(Secp256k1.DOMAIN_PARAMS.Curve.DecodePoint(ToByteArray()), Secp256k1.DOMAIN_PARAMS);
         ECDsaSigner signer = new();
         signer.Init(false, publicKeyParams);
 
@@ -58,23 +66,23 @@ public class Secp256k1PublicKey : LegacyPublicKey
     }
 
     public static Secp256k1PublicKey Deserialize(Deserializer d) => new(d.Bytes());
-
 }
 
 public class Secp256k1PrivateKey : PrivateKey
 {
-
     static readonly int LENGTH = 32;
 
     private readonly Hex _key;
 
-    public Secp256k1PrivateKey(string privateKey) : this(Hex.FromHexInput(privateKey).ToByteArray()) { }
+    public Secp256k1PrivateKey(string privateKey)
+        : this(Hex.FromHexInput(privateKey).ToByteArray()) { }
+
     public Secp256k1PrivateKey(byte[] privateKey)
     {
-        if (privateKey.Length != LENGTH) throw new KeyLengthMismatch("Secp256k1PrivateKey", LENGTH);
+        if (privateKey.Length != LENGTH)
+            throw new KeyLengthMismatch("Secp256k1PrivateKey", LENGTH);
         _key = new(privateKey);
     }
-
 
     public override PublicKey PublicKey()
     {
@@ -94,6 +102,7 @@ public class Secp256k1PrivateKey : PrivateKey
     }
 
     public override Signature Sign(string message) => Sign(SigningMessage.Convert(message));
+
     public override Signature Sign(byte[] message)
     {
         // Hash the message
@@ -101,7 +110,8 @@ public class Secp256k1PrivateKey : PrivateKey
 
         // Create the ECDsaSigner
         ECDsaSigner signer = new(new HMacDsaKCalculator(new Sha256Digest()));
-        ECPrivateKeyParameters privateKeyParams = new(new BigInteger(1, ToByteArray()), Secp256k1.DOMAIN_PARAMS);
+        ECPrivateKeyParameters privateKeyParams =
+            new(new BigInteger(1, ToByteArray()), Secp256k1.DOMAIN_PARAMS);
         signer.Init(true, privateKeyParams);
 
         // Generate the signature
@@ -130,16 +140,20 @@ public class Secp256k1PrivateKey : PrivateKey
         ECKeyPairGenerator keyPairGenerator = new("ECDSA");
         keyPairGenerator.Init(keyParams);
 
-        return new Secp256k1PrivateKey(((ECPrivateKeyParameters)keyPairGenerator.GenerateKeyPair().Private).D.ToByteArrayUnsigned());
+        return new Secp256k1PrivateKey(
+            (
+                (ECPrivateKeyParameters)keyPairGenerator.GenerateKeyPair().Private
+            ).D.ToByteArrayUnsigned()
+        );
     }
 
     public static Secp256k1PrivateKey FromDerivationPath(string path, string mnemonic)
     {
-        if (!HdKey.IsValidBip44Path(path)) throw new InvalidDerivationPath(path);
+        if (!HdKey.IsValidBip44Path(path))
+            throw new InvalidDerivationPath(path);
         ExtKey masterKey = new Mnemonic(mnemonic).DeriveExtKey().Derive(KeyPath.Parse(path));
         return new Secp256k1PrivateKey(masterKey.PrivateKey.ToBytes());
     }
-
 
     public static Secp256k1PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
@@ -152,10 +166,14 @@ public class Secp256k1Signature : LegacySignature
 
     public override Hex Value => _value;
 
-    public Secp256k1Signature(string signature) : this(Hex.FromHexInput(signature).ToByteArray()) { }
-    public Secp256k1Signature(byte[] signature) : base(SignatureVariant.Secp256k1Ecdsa)
+    public Secp256k1Signature(string signature)
+        : this(Hex.FromHexInput(signature).ToByteArray()) { }
+
+    public Secp256k1Signature(byte[] signature)
+        : base(SignatureVariant.Secp256k1Ecdsa)
     {
-        if (signature.Length != LENGTH) throw new KeyLengthMismatch("Secp256k1Signature", LENGTH);
+        if (signature.Length != LENGTH)
+            throw new KeyLengthMismatch("Secp256k1Signature", LENGTH);
         _value = new(signature);
     }
 

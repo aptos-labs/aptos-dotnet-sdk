@@ -21,7 +21,8 @@ public sealed class DeserializerFeatureTests : Feature
     [When(@"I deserialize as (.*) with length (.*)")]
     public void WhenIDeserializedAsTypeWithLength(string type, string length)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         try
         {
@@ -35,13 +36,13 @@ public sealed class DeserializerFeatureTests : Feature
         {
             _exception = err;
         }
-
     }
 
     [When(@"I deserialize as sequence of (.*)")]
     public void WhenIDeserializeAsSequenceOfType(string type)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         try
         {
@@ -64,13 +65,13 @@ public sealed class DeserializerFeatureTests : Feature
         {
             _exception = err;
         }
-
     }
 
     [When(@"I deserialize as (.*)")]
     public void WhenIDeserializeAsType(string type)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         try
         {
@@ -96,22 +97,28 @@ public sealed class DeserializerFeatureTests : Feature
         }
     }
 
-
     [Then(@"the result should be (.*) (.*)")]
     public void ThenTheResultShouldBeTypeValue(string type, string value)
     {
-        if (_output == null) throw new ArgumentException("No output");
+        if (_output == null)
+            throw new ArgumentException("No output");
 
         switch (type)
         {
             case "address":
-                Assert.Equal(AccountAddress.From(value).BcsToBytes(), ((AccountAddress)_output).BcsToBytes());
+                Assert.Equal(
+                    AccountAddress.From(value).BcsToBytes(),
+                    ((AccountAddress)_output).BcsToBytes()
+                );
                 break;
             case "string":
                 Assert.Equal(value.Trim('\"'), _output);
                 break;
             case "bytes":
-                Assert.Equal(value == "0x" ? [] : Hex.FromHexString(value).ToByteArray(), (byte[])_output);
+                Assert.Equal(
+                    value == "0x" ? [] : Hex.FromHexString(value).ToByteArray(),
+                    (byte[])_output
+                );
                 break;
             case "bool":
                 Assert.Equal(bool.Parse(value), (bool)_output);
@@ -145,5 +152,4 @@ public sealed class DeserializerFeatureTests : Feature
     {
         Assert.NotNull(_exception);
     }
-
 }

@@ -12,11 +12,14 @@ public class G1Bytes : Serializable
 {
     public byte[] Data;
 
-    public G1Bytes(string data) : this(Hex.FromHexInput(data).ToByteArray()) { }
+    public G1Bytes(string data)
+        : this(Hex.FromHexInput(data).ToByteArray()) { }
+
     public G1Bytes(byte[] data)
     {
         Data = data;
-        if (Data.Length != 32) throw new ArgumentException("Invalid G1 bytes length");
+        if (Data.Length != 32)
+            throw new ArgumentException("Invalid G1 bytes length");
     }
 
     public override void Serialize(Serializer s) => s.FixedBytes(Data);
@@ -26,7 +29,13 @@ public class G1Bytes : Serializable
 
 public class G1BytesConverter : JsonConverter<G1Bytes>
 {
-    public override G1Bytes? ReadJson(JsonReader reader, Type objectType, G1Bytes? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override G1Bytes? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        G1Bytes? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         if (reader.TokenType == JsonToken.String)
         {
@@ -35,7 +44,9 @@ public class G1BytesConverter : JsonConverter<G1Bytes>
         }
         return null;
     }
-    public override void WriteJson(JsonWriter writer, G1Bytes? value, JsonSerializer serializer) => serializer.Serialize(writer, value);
+
+    public override void WriteJson(JsonWriter writer, G1Bytes? value, JsonSerializer serializer) =>
+        serializer.Serialize(writer, value);
 }
 
 [JsonConverter(typeof(G2BytesConverter))]
@@ -43,11 +54,14 @@ public class G2Bytes : Serializable
 {
     public byte[] Data;
 
-    public G2Bytes(string data) : this(Hex.FromHexInput(data).ToByteArray()) { }
+    public G2Bytes(string data)
+        : this(Hex.FromHexInput(data).ToByteArray()) { }
+
     public G2Bytes(byte[] data)
     {
         Data = Hex.FromHexInput(data).ToByteArray();
-        if (Data.Length != 64) throw new ArgumentException("Invalid G2 bytes length");
+        if (Data.Length != 64)
+            throw new ArgumentException("Invalid G2 bytes length");
     }
 
     public override void Serialize(Serializer s) => s.FixedBytes(Data);
@@ -57,7 +71,13 @@ public class G2Bytes : Serializable
 
 public class G2BytesConverter : JsonConverter<G2Bytes>
 {
-    public override G2Bytes? ReadJson(JsonReader reader, Type objectType, G2Bytes? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override G2Bytes? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        G2Bytes? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         if (reader.TokenType == JsonToken.String)
         {
@@ -66,12 +86,13 @@ public class G2BytesConverter : JsonConverter<G2Bytes>
         }
         return null;
     }
-    public override void WriteJson(JsonWriter writer, G2Bytes? value, JsonSerializer serializer) => serializer.Serialize(writer, value);
+
+    public override void WriteJson(JsonWriter writer, G2Bytes? value, JsonSerializer serializer) =>
+        serializer.Serialize(writer, value);
 }
 
 public class Groth16Zkp : Proof
 {
-
     [JsonProperty("a")]
     public G1Bytes A;
 
@@ -82,8 +103,12 @@ public class Groth16Zkp : Proof
     public G1Bytes C;
 
     [JsonConstructor]
-    public Groth16Zkp(string a, string b, string c) : this(new G1Bytes(a), new G2Bytes(b), new G1Bytes(c)) { }
-    public Groth16Zkp(byte[] a, byte[] b, byte[] c) : this(new G1Bytes(a), new G2Bytes(b), new G1Bytes(c)) { }
+    public Groth16Zkp(string a, string b, string c)
+        : this(new G1Bytes(a), new G2Bytes(b), new G1Bytes(c)) { }
+
+    public Groth16Zkp(byte[] a, byte[] b, byte[] c)
+        : this(new G1Bytes(a), new G2Bytes(b), new G1Bytes(c)) { }
+
     public Groth16Zkp(G1Bytes a, G2Bytes b, G1Bytes c)
     {
         A = a;
@@ -98,8 +123,8 @@ public class Groth16Zkp : Proof
         C.Serialize(s);
     }
 
-    public static Groth16Zkp Deserialize(Deserializer d) => new(G1Bytes.Deserialize(d), G2Bytes.Deserialize(d), G1Bytes.Deserialize(d));
-
+    public static Groth16Zkp Deserialize(Deserializer d) =>
+        new(G1Bytes.Deserialize(d), G2Bytes.Deserialize(d), G1Bytes.Deserialize(d));
 }
 
 public enum ZkpVariant
@@ -109,7 +134,6 @@ public enum ZkpVariant
 
 public class ZkProof : Serializable
 {
-
     public readonly Proof Proof;
 
     public readonly ZkpVariant Variant;
@@ -135,5 +159,4 @@ public class ZkProof : Serializable
             _ => throw new ArgumentException("Invalid proof variant"),
         };
     }
-
 }

@@ -1,6 +1,11 @@
 namespace Aptos;
 
-public class StructTag(AccountAddress address, string moduleName, string name, List<TypeTag> typeArgs) : Serializable
+public class StructTag(
+    AccountAddress address,
+    string moduleName,
+    string name,
+    List<TypeTag> typeArgs
+) : Serializable
 {
     public readonly AccountAddress Address = address;
 
@@ -18,6 +23,6 @@ public class StructTag(AccountAddress address, string moduleName, string name, L
         s.Vector(TypeArgs);
     }
 
-    public static StructTag Deserialize(Deserializer d) => new(AccountAddress.Deserialize(d), d.String(), d.String(), d.Vector(TypeTag.Deserialize));
-
+    public static StructTag Deserialize(Deserializer d) =>
+        new(AccountAddress.Deserialize(d), d.String(), d.String(), d.Vector(TypeTag.Deserialize));
 }

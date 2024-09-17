@@ -1,8 +1,8 @@
 namespace Aptos;
 
-public class Script(byte[] bytecode, List<TypeTag> typeArgs, List<IScriptFunctionArgument> args) : Serializable
+public class Script(byte[] bytecode, List<TypeTag> typeArgs, List<IScriptFunctionArgument> args)
+    : Serializable
 {
-
     public readonly byte[] Bytecode = bytecode;
 
     public readonly List<TypeTag> TypeArgs = typeArgs;
@@ -29,7 +29,8 @@ public class Script(byte[] bytecode, List<TypeTag> typeArgs, List<IScriptFunctio
             // Note that we deserialize directly to the Move value, not its Script argument representation.
             // We are abstracting away the Script argument representation because knowing about it is
             // functionally useless.
-            IScriptFunctionArgument scriptArgument = TransactionArgument.DeserializeFromScriptArgument(d);
+            IScriptFunctionArgument scriptArgument =
+                TransactionArgument.DeserializeFromScriptArgument(d);
             args.Add(scriptArgument);
         }
 

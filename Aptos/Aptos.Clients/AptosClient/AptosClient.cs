@@ -3,7 +3,6 @@ namespace Aptos;
 /// <inheritdoc cref="AptosClient(AptosConfig?)"/>
 public partial class AptosClient
 {
-
     public readonly AptosConfig Config;
 
     public readonly TransactionClient Transaction;
@@ -58,17 +57,32 @@ public partial class AptosClient
     #region Contract
 
     /// <inheritdoc cref="ContractClient.View(GenerateViewFunctionPayloadData, ulong?)"/>
-    public async Task<List<object>> View(GenerateViewFunctionPayloadData data, ulong? ledgerVersion = null) => await Contract.View(data, ledgerVersion);
+    public async Task<List<object>> View(
+        GenerateViewFunctionPayloadData data,
+        ulong? ledgerVersion = null
+    ) => await Contract.View(data, ledgerVersion);
 
     /// <inheritdoc cref="ContractClient.View{T}(GenerateViewFunctionPayloadData, ulong?)"/>
-    public async Task<T> View<T>(GenerateViewFunctionPayloadData data, ulong? ledgerVersion = null) where T : class => await Contract.View<T>(data, ledgerVersion);
+    public async Task<T> View<T>(GenerateViewFunctionPayloadData data, ulong? ledgerVersion = null)
+        where T : class => await Contract.View<T>(data, ledgerVersion);
 
     #endregion
 
     #region Transaction
 
     /// <inheritdoc cref="TransactionClient.SignAndSubmitTransaction(Aptos.Account, AnyRawTransaction, AccountAuthenticator?, List{AccountAuthenticator}?)"/>
-    public async Task<PendingTransactionResponse> SignAndSubmitTransaction(Account signer, AnyRawTransaction transaction, AccountAuthenticator? feePayerAuthenticator = null, List<AccountAuthenticator>? additionalSignersAuthenticators = null) => await Transaction.SignAndSubmitTransaction(signer, transaction, feePayerAuthenticator, additionalSignersAuthenticators);
+    public async Task<PendingTransactionResponse> SignAndSubmitTransaction(
+        Account signer,
+        AnyRawTransaction transaction,
+        AccountAuthenticator? feePayerAuthenticator = null,
+        List<AccountAuthenticator>? additionalSignersAuthenticators = null
+    ) =>
+        await Transaction.SignAndSubmitTransaction(
+            signer,
+            transaction,
+            feePayerAuthenticator,
+            additionalSignersAuthenticators
+        );
 
     #endregion
 
@@ -82,33 +96,58 @@ public partial class AptosClient
     #region Faucet
 
     /// <inheritdoc cref="FaucetClient.FundAccount(string, ulong)"/>
-    public async Task<UserTransactionResponse> FundAccount(string address, ulong amount) => await Faucet.FundAccount(address, amount);
+    public async Task<UserTransactionResponse> FundAccount(string address, ulong amount) =>
+        await Faucet.FundAccount(address, amount);
 
     /// <inheritdoc cref="FaucetClient.FundAccount(AccountAddress, ulong)"/>
-    public async Task<UserTransactionResponse> FundAccount(AccountAddress address, ulong amount) => await Faucet.FundAccount(address, amount);
+    public async Task<UserTransactionResponse> FundAccount(AccountAddress address, ulong amount) =>
+        await Faucet.FundAccount(address, amount);
 
     #endregion
 
     #region Account
 
     /// <inheritdoc cref="AccountClient.GetModule(string, string, ulong?)"/>
-    public async Task<MoveModuleBytecode> GetModule(string address, string moduleName, ulong? ledgerVersion = null) => await Account.GetModule(address, moduleName, ledgerVersion);
+    public async Task<MoveModuleBytecode> GetModule(
+        string address,
+        string moduleName,
+        ulong? ledgerVersion = null
+    ) => await Account.GetModule(address, moduleName, ledgerVersion);
 
     /// <inheritdoc cref="AccountClient.GetModule(AccountAddress, string, ulong?)"/>
-    public async Task<MoveModuleBytecode> GetModule(AccountAddress address, string moduleName, ulong? ledgerVersion = null) => await Account.GetModule(address, moduleName, ledgerVersion);
+    public async Task<MoveModuleBytecode> GetModule(
+        AccountAddress address,
+        string moduleName,
+        ulong? ledgerVersion = null
+    ) => await Account.GetModule(address, moduleName, ledgerVersion);
 
     /// <inheritdoc cref="AccountClient.GetResource(string, string, ulong?)"/>
-    public async Task<MoveResource> GetResource(string address, string resourceType, ulong? ledgerVersion = null) => await Account.GetResource(address, resourceType, ledgerVersion);
+    public async Task<MoveResource> GetResource(
+        string address,
+        string resourceType,
+        ulong? ledgerVersion = null
+    ) => await Account.GetResource(address, resourceType, ledgerVersion);
 
     /// <inheritdoc cref="AccountClient.GetResource(AccountAddress, string, ulong?)"/>
-    public async Task<MoveResource> GetResource(AccountAddress address, string resourceType, ulong? ledgerVersion = null) => await Account.GetResource(address, resourceType, ledgerVersion);
+    public async Task<MoveResource> GetResource(
+        AccountAddress address,
+        string resourceType,
+        ulong? ledgerVersion = null
+    ) => await Account.GetResource(address, resourceType, ledgerVersion);
 
     /// <inheritdoc cref="AccountClient.GetResources(string, int?, int?)"/>
-    public async Task<List<MoveResource>> GetResources(string address, int? start = null, int? limit = null) => await Account.GetResources(address, start, limit);
+    public async Task<List<MoveResource>> GetResources(
+        string address,
+        int? start = null,
+        int? limit = null
+    ) => await Account.GetResources(address, start, limit);
 
     /// <inheritdoc cref="AccountClient.GetResources(AccountAddress, int?, int?)"/>
-    public async Task<List<MoveResource>> GetResources(AccountAddress address, int? start = null, int? limit = null) => await Account.GetResources(address, start, limit);
+    public async Task<List<MoveResource>> GetResources(
+        AccountAddress address,
+        int? start = null,
+        int? limit = null
+    ) => await Account.GetResources(address, start, limit);
 
     #endregion
-
 }

@@ -1,0 +1,11 @@
+name: "Check Formatting"
+description: |
+  Checks that the code is formatted correctly.
+
+runs:
+  using: composite
+  steps:
+    - name: Check Formatting
+      run: dotnet csharpier --check .
+      working-directory: ./
+      shell: bash

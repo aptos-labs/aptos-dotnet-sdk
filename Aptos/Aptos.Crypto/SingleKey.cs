@@ -4,7 +4,6 @@ using Aptos.Schemes;
 
 public class AnyPublicKey : UnifiedAccountPublicKey
 {
-
     public readonly PublicKey PublicKey;
 
     public readonly PublicKeyVariant Type;
@@ -27,9 +26,14 @@ public class AnyPublicKey : UnifiedAccountPublicKey
         }
     }
 
-    public override bool VerifySignature(byte[] message, Signature signature) => PublicKey.VerifySignature(message, signature is AnySignature anySignature ? anySignature.Signature : signature);
+    public override bool VerifySignature(byte[] message, Signature signature) =>
+        PublicKey.VerifySignature(
+            message,
+            signature is AnySignature anySignature ? anySignature.Signature : signature
+        );
 
-    public override AuthenticationKey AuthKey() => AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, BcsToBytes());
+    public override AuthenticationKey AuthKey() =>
+        AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, BcsToBytes());
 
     public override byte[] ToByteArray() => PublicKey.ToByteArray();
 
@@ -50,7 +54,6 @@ public class AnyPublicKey : UnifiedAccountPublicKey
             _ => throw new ArgumentException("Invalid public key variant"),
         };
     }
-
 }
 
 public class AnySignature(LegacySignature signature) : UnifiedSignature
@@ -59,7 +62,12 @@ public class AnySignature(LegacySignature signature) : UnifiedSignature
 
     public readonly SignatureVariant Type = signature.Type;
 
-    public AnySignature(Signature signature) : this(signature is LegacySignature accountSignature ? accountSignature : throw new ArgumentException("Invalid signature type")) { }
+    public AnySignature(Signature signature)
+        : this(
+            signature is LegacySignature accountSignature
+                ? accountSignature
+                : throw new ArgumentException("Invalid signature type")
+        ) { }
 
     public override byte[] ToByteArray() => Signature.ToByteArray();
 

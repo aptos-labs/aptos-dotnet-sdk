@@ -1,3 +1,5 @@
 {
-  "preprocessorSymbolSets": ["", "DEBUG"]
+  "preprocessorSymbolSets": ["", "DEBUG"],
+  "useTabs": false,
+  "tabWidth": 4
 }

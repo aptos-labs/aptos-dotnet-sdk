@@ -11,9 +11,14 @@ public class MoveModuleBytecode(string bytecode, MoveModule? abi)
     public MoveModule? Abi = abi;
 }
 
-public class MoveModule(string address, string name, List<string> friends, List<MoveFunction> exposedFunctions, List<MoveStruct> structs)
+public class MoveModule(
+    string address,
+    string name,
+    List<string> friends,
+    List<MoveFunction> exposedFunctions,
+    List<MoveStruct> structs
+)
 {
-
     [JsonProperty("address")]
     public string Address = address;
 
@@ -30,7 +35,13 @@ public class MoveModule(string address, string name, List<string> friends, List<
     public List<MoveStruct> Structs = structs;
 }
 
-public class MoveStruct(string name, bool isNative, List<MoveAbility> abilities, List<MoveFunctionGenericTypeParam> genericTypeParams, List<MoveStructField> fields)
+public class MoveStruct(
+    string name,
+    bool isNative,
+    List<MoveAbility> abilities,
+    List<MoveFunctionGenericTypeParam> genericTypeParams,
+    List<MoveStructField> fields
+)
 {
     [JsonProperty("name")]
     public string Name = name;
@@ -46,7 +57,6 @@ public class MoveStruct(string name, bool isNative, List<MoveAbility> abilities,
 
     [JsonProperty("fields")]
     public List<MoveStructField> Fields = fields;
-
 }
 
 public class MoveStructField(string name, string type)
@@ -67,7 +77,15 @@ public class MoveScriptBytecode(string bytecode, MoveFunction abi)
     public MoveFunction Abi = abi;
 }
 
-public class MoveFunction(string name, MoveFunctionVisibility visibility, bool isEntry, bool isView, List<MoveFunctionGenericTypeParam> genericTypeParams, List<string> parameters, List<string> returnType)
+public class MoveFunction(
+    string name,
+    MoveFunctionVisibility visibility,
+    bool isEntry,
+    bool isView,
+    List<MoveFunctionGenericTypeParam> genericTypeParams,
+    List<string> parameters,
+    List<string> returnType
+)
 {
     [JsonProperty("name")]
     public string Name = name;
@@ -100,7 +118,7 @@ public enum MoveFunctionVisibility
     Public,
 
     [JsonProperty("friend")]
-    Friend
+    Friend,
 }
 
 public class MoveFunctionGenericTypeParam(List<MoveAbility> constraints)
@@ -121,7 +139,7 @@ public enum MoveAbility
     Key,
 
     [JsonProperty("copy")]
-    Copy
+    Copy,
 }
 
 public class MoveResource(string type, object data)

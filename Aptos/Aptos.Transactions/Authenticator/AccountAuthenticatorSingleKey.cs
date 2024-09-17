@@ -1,6 +1,7 @@
 namespace Aptos;
 
-public class AccountAuthenticatorSingleKey(AnyPublicKey publicKey, AnySignature signature) : AccountAuthenticator
+public class AccountAuthenticatorSingleKey(AnyPublicKey publicKey, AnySignature signature)
+    : AccountAuthenticator
 {
     public readonly AnyPublicKey PublicKey = publicKey;
 

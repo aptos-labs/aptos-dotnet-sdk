@@ -1,6 +1,10 @@
 namespace Aptos;
 
-public abstract class AnyRawTransaction(RawTransaction rawTransaction, AccountAddress? feePayerAddress = null, List<AccountAddress>? secondarySignerAddresses = null) : Serializable
+public abstract class AnyRawTransaction(
+    RawTransaction rawTransaction,
+    AccountAddress? feePayerAddress = null,
+    List<AccountAddress>? secondarySignerAddresses = null
+) : Serializable
 {
     public RawTransaction RawTransaction { get; } = rawTransaction;
 

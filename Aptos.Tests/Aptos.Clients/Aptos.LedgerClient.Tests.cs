@@ -5,7 +5,6 @@ public class AptosLedgerClientTests(ITestOutputHelper output) : BaseTests(output
     [Fact(Timeout = 10000)]
     public async Task GetLedgerInfo()
     {
-
         var client = new AptosClient(new AptosConfig(Networks.Mainnet));
 
         var ledgerInfo = await client.Block.GetLedgerInfo();

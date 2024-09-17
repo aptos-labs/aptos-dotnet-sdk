@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 public static class Keyless
 {
-
     const int EPK_HORIZON_SECS = 10000000;
     const int MAX_AUD_VAL_BYTES = 120;
     const int MAX_UID_KEY_BYTES = 30;
@@ -17,7 +16,9 @@ public static class Keyless
     const int MAX_JWT_HEADER_B64_BYTES = 300;
     const int MAX_COMMITED_EPK_BYTES = 93;
 
-    public static byte[] ComputeIdCommitment(string jwt, string pepper, string uidKey = "sub") => ComputeIdCommitment(jwt, Hex.FromHexInput(pepper).ToByteArray(), uidKey);
+    public static byte[] ComputeIdCommitment(string jwt, string pepper, string uidKey = "sub") =>
+        ComputeIdCommitment(jwt, Hex.FromHexInput(pepper).ToByteArray(), uidKey);
+
     public static byte[] ComputeIdCommitment(string jwt, byte[] pepper, string uidKey = "sub")
     {
         JsonWebToken token = new(jwt);
@@ -26,19 +27,33 @@ public static class Keyless
         return ComputeIdCommitment(uidKey, uidVal, aud, pepper);
     }
 
-    public static byte[] ComputeIdCommitment(string uidKey, string uidVal, string aud, string pepper) => ComputeIdCommitment(uidKey, uidVal, aud, Hex.FromHexInput(pepper).ToByteArray());
-    public static byte[] ComputeIdCommitment(string uidKey, string uidVal, string aud, byte[] pepper)
+    public static byte[] ComputeIdCommitment(
+        string uidKey,
+        string uidVal,
+        string aud,
+        string pepper
+    ) => ComputeIdCommitment(uidKey, uidVal, aud, Hex.FromHexInput(pepper).ToByteArray());
+
+    public static byte[] ComputeIdCommitment(
+        string uidKey,
+        string uidVal,
+        string aud,
+        byte[] pepper
+    )
     {
-        List<BigInteger> fields = [
+        List<BigInteger> fields =
+        [
             BytesHash.BytesToBigIntegerLE(pepper),
             BytesHash.HashWithLength(aud, MAX_AUD_VAL_BYTES),
             BytesHash.HashWithLength(uidVal, MAX_UID_VAL_BYTES),
             BytesHash.HashWithLength(uidKey, MAX_UID_KEY_BYTES),
         ];
 
-        return BytesHash.BigIntegerToBytesLE(Hash.PoseidonHash(fields), KeylessPublicKey.ID_COMMITMENT_LENGTH);
+        return BytesHash.BigIntegerToBytesLE(
+            Hash.PoseidonHash(fields),
+            KeylessPublicKey.ID_COMMITMENT_LENGTH
+        );
     }
-
 }
 
 public class KeylessPublicKey : LegacyAccountPublicKey
@@ -51,12 +66,20 @@ public class KeylessPublicKey : LegacyAccountPublicKey
 
     public override Hex Value => Hex.FromHexInput(BcsToBytes());
 
-    public KeylessPublicKey(string iss, string uidKey, string uidVal, string aud, string pepper) : this(iss, Keyless.ComputeIdCommitment(uidKey, uidVal, aud, pepper)) { }
-    public KeylessPublicKey(string iss, string uidKey, string uidVal, string aud, byte[] pepper) : this(iss, Keyless.ComputeIdCommitment(uidKey, uidVal, aud, pepper)) { }
-    public KeylessPublicKey(string iss, string idCommitment) : this(iss, Hex.FromHexInput(idCommitment).ToByteArray()) { }
-    public KeylessPublicKey(string iss, byte[] idCommitment) : base(PublicKeyVariant.Keyless)
+    public KeylessPublicKey(string iss, string uidKey, string uidVal, string aud, string pepper)
+        : this(iss, Keyless.ComputeIdCommitment(uidKey, uidVal, aud, pepper)) { }
+
+    public KeylessPublicKey(string iss, string uidKey, string uidVal, string aud, byte[] pepper)
+        : this(iss, Keyless.ComputeIdCommitment(uidKey, uidVal, aud, pepper)) { }
+
+    public KeylessPublicKey(string iss, string idCommitment)
+        : this(iss, Hex.FromHexInput(idCommitment).ToByteArray()) { }
+
+    public KeylessPublicKey(string iss, byte[] idCommitment)
+        : base(PublicKeyVariant.Keyless)
     {
-        if (idCommitment.Length != ID_COMMITMENT_LENGTH) throw new Exceptions.KeyLengthMismatch("KeylessPublicKey", ID_COMMITMENT_LENGTH);
+        if (idCommitment.Length != ID_COMMITMENT_LENGTH)
+            throw new Exceptions.KeyLengthMismatch("KeylessPublicKey", ID_COMMITMENT_LENGTH);
         Iss = iss;
         IdCommitment = idCommitment;
     }
@@ -69,7 +92,8 @@ public class KeylessPublicKey : LegacyAccountPublicKey
         return AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, s.ToBytes());
     }
 
-    public override bool VerifySignature(byte[] message, Signature signature) => throw new NotImplementedException();
+    public override bool VerifySignature(byte[] message, Signature signature) =>
+        throw new NotImplementedException();
 
     public override byte[] ToByteArray() => BcsToBytes();
 
@@ -86,14 +110,15 @@ public class KeylessPublicKey : LegacyAccountPublicKey
         return new KeylessPublicKey(iss, idCommitment);
     }
 
-    public static KeylessPublicKey FromJwt(string jwt, string pepper, string uidKey = "sub") => new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey));
-    public static KeylessPublicKey FromJwt(string jwt, byte[] pepper, string uidKey = "sub") => new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey));
+    public static KeylessPublicKey FromJwt(string jwt, string pepper, string uidKey = "sub") =>
+        new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey));
 
+    public static KeylessPublicKey FromJwt(string jwt, byte[] pepper, string uidKey = "sub") =>
+        new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey));
 }
 
 public class KeylessSignature : LegacySignature
 {
-
     public readonly EphemeralCertificate EphemeralCertificate;
 
     public readonly string JwtHeader;
@@ -106,7 +131,14 @@ public class KeylessSignature : LegacySignature
 
     public override Hex Value => BcsToHex();
 
-    public KeylessSignature(EphemeralCertificate ephemeralCertificate, string jwtHeader, ulong expiryDateSecs, EphemeralPublicKey ephemeralPublicKey, EphemeralSignature ephemeralSignature) : base(SignatureVariant.Keyless)
+    public KeylessSignature(
+        EphemeralCertificate ephemeralCertificate,
+        string jwtHeader,
+        ulong expiryDateSecs,
+        EphemeralPublicKey ephemeralPublicKey,
+        EphemeralSignature ephemeralSignature
+    )
+        : base(SignatureVariant.Keyless)
     {
         EphemeralCertificate = ephemeralCertificate;
         JwtHeader = jwtHeader;
@@ -133,7 +165,13 @@ public class KeylessSignature : LegacySignature
         ulong expiryDateSecs = d.U64();
         EphemeralPublicKey ephemeralPublicKey = EphemeralPublicKey.Deserialize(d);
         EphemeralSignature ephemeralSignature = EphemeralSignature.Deserialize(d);
-        return new KeylessSignature(ephemeralCertificate, jwtHeader, expiryDateSecs, ephemeralPublicKey, ephemeralSignature);
+        return new KeylessSignature(
+            ephemeralCertificate,
+            jwtHeader,
+            expiryDateSecs,
+            ephemeralPublicKey,
+            ephemeralSignature
+        );
     }
 }
 
@@ -167,16 +205,23 @@ public class EphemeralCertificate : Signature
         EphemeralSignatureVariant variant = (EphemeralSignatureVariant)d.Uleb128AsU32();
         return variant switch
         {
-            EphemeralSignatureVariant.ZkProof => new EphemeralCertificate(ZeroKnowledgeSignature.Deserialize(d), EphemeralSignatureVariant.ZkProof),
+            EphemeralSignatureVariant.ZkProof => new EphemeralCertificate(
+                ZeroKnowledgeSignature.Deserialize(d),
+                EphemeralSignatureVariant.ZkProof
+            ),
             _ => throw new ArgumentException("Invalid signature variant"),
         };
     }
-
 }
 
-public class ZeroKnowledgeSignature(ZkProof proof, ulong expHorizonSecs, string? extraField, string? overrideAudVal, EphemeralSignature? trainingWheelSignature) : Signature
+public class ZeroKnowledgeSignature(
+    ZkProof proof,
+    ulong expHorizonSecs,
+    string? extraField,
+    string? overrideAudVal,
+    EphemeralSignature? trainingWheelSignature
+) : Signature
 {
-
     public readonly ZkProof Proof = proof;
 
     public readonly ulong ExpHorizonSecs = expHorizonSecs;
@@ -205,6 +250,12 @@ public class ZeroKnowledgeSignature(ZkProof proof, ulong expHorizonSecs, string?
         string? extraField = d.OptionString();
         string? overrideAudVal = d.OptionString();
         EphemeralSignature? trainingWheelSignature = d.Option(EphemeralSignature.Deserialize);
-        return new ZeroKnowledgeSignature(proof, expHorizonSecs, extraField, overrideAudVal, trainingWheelSignature);
+        return new ZeroKnowledgeSignature(
+            proof,
+            expHorizonSecs,
+            extraField,
+            overrideAudVal,
+            trainingWheelSignature
+        );
     }
 }

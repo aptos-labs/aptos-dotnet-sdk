@@ -11,12 +11,14 @@ public class KeylessAccount : Account
     public static readonly string DOMAIN_SEPARATOR = "APTOS::TransactionAndProof";
 
     private readonly KeylessPublicKey _publicKey;
+
     /// <summary>
     /// Gets the KeylessPublicKey for the account.
     /// </summary>
     public override AccountPublicKey PublicKey => _publicKey;
 
     private readonly AccountAddress _address;
+
     /// <summary>
     /// Gets the address of the account.
     /// </summary>
@@ -38,9 +40,17 @@ public class KeylessAccount : Account
 
     public readonly string Jwt;
 
-    public KeylessAccount(string jwt, EphemeralKeyPair ekp, ZeroKnowledgeSignature proof, byte[] pepper, string uidKey = "sub", AccountAddress? address = null)
+    public KeylessAccount(
+        string jwt,
+        EphemeralKeyPair ekp,
+        ZeroKnowledgeSignature proof,
+        byte[] pepper,
+        string uidKey = "sub",
+        AccountAddress? address = null
+    )
     {
-        if (pepper.Length != PEPPER_LENGTH) throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
+        if (pepper.Length != PEPPER_LENGTH)
+            throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
 
         _publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
         _address = address ?? _publicKey.AuthKey().DerivedAddress();
@@ -58,7 +68,8 @@ public class KeylessAccount : Account
 
     public bool VerifySignature(byte[] message, KeylessSignature signature)
     {
-        if (EphemeralKeyPair.IsExpired()) return false;
+        if (EphemeralKeyPair.IsExpired())
+            return false;
         return EphemeralKeyPair.PublicKey.VerifySignature(message, signature.EphemeralSignature);
     }
 
@@ -73,10 +84,14 @@ public class KeylessAccount : Account
 
     public override Signature Sign(byte[] message)
     {
-        if (EphemeralKeyPair.IsExpired()) throw new Exception("Ephemeral keypair has expired");
+        if (EphemeralKeyPair.IsExpired())
+            throw new Exception("Ephemeral keypair has expired");
         var token = new JsonWebToken(Jwt);
         return new KeylessSignature(
-            ephemeralCertificate: new EphemeralCertificate(Proof, EphemeralSignatureVariant.ZkProof),
+            ephemeralCertificate: new EphemeralCertificate(
+                Proof,
+                EphemeralSignatureVariant.ZkProof
+            ),
             jwtHeader: Base64UrlEncoder.Decode(token.EncodedHeader),
             expiryDateSecs: EphemeralKeyPair.ExpiryTimestamp,
             ephemeralPublicKey: EphemeralKeyPair.PublicKey,
@@ -84,9 +99,19 @@ public class KeylessAccount : Account
         );
     }
 
-    public override AccountAuthenticator SignWithAuthenticator(byte[] message) => new AccountAuthenticatorSingleKey(new AnyPublicKey(_publicKey), new AnySignature(Sign(message)));
+    public override AccountAuthenticator SignWithAuthenticator(byte[] message) =>
+        new AccountAuthenticatorSingleKey(
+            new AnyPublicKey(_publicKey),
+            new AnySignature(Sign(message))
+        );
 
-    public override AccountAuthenticator SignTransactionWithAuthenticator(AnyRawTransaction transaction) => new AccountAuthenticatorSingleKey(new AnyPublicKey(_publicKey), new AnySignature(SignTransaction(transaction)));
+    public override AccountAuthenticator SignTransactionWithAuthenticator(
+        AnyRawTransaction transaction
+    ) =>
+        new AccountAuthenticatorSingleKey(
+            new AnyPublicKey(_publicKey),
+            new AnySignature(SignTransaction(transaction))
+        );
 
     public void Serialize(Serializer s)
     {

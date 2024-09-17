@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Aptos.Exceptions
 {
-
     public class ApiException : BaseException
     {
         private const int SERIALIZED_PAYLOAD_TRIM_TO_MAX_LENGTH = 400;
@@ -18,7 +17,8 @@ namespace Aptos.Exceptions
 
         public readonly AptosRequest Request;
 
-        public ApiException(ApiType type, AptosRequest request, AptosResponse<JObject> response) : base(DeriveErrorMessage(type, request, response))
+        public ApiException(ApiType type, AptosRequest request, AptosResponse<JObject> response)
+            : base(DeriveErrorMessage(type, request, response))
         {
             Url = request.Url;
             Status = response.Status;
@@ -27,13 +27,19 @@ namespace Aptos.Exceptions
             Request = request;
         }
 
-
-        private static string DeriveErrorMessage(ApiType type, AptosRequest request, AptosResponse<JObject> response)
+        private static string DeriveErrorMessage(
+            ApiType type,
+            AptosRequest request,
+            AptosResponse<JObject> response
+        )
         {
-            string? traceId = response.Headers.TryGetValue("traceparent", out string? value) ? value?.Split('-')[1] : null;
+            string? traceId = response.Headers.TryGetValue("traceparent", out string? value)
+                ? value?.Split('-')[1]
+                : null;
             string? traceIdString = traceId != null ? $"(trace_id:{traceId}) " : "";
 
-            var errorPrelude = $"Request to [{type}]: {request.Method} {response.Url ?? request.Url} {traceIdString}failed with";
+            var errorPrelude =
+                $"Request to [{type}]: {request.Method} {response.Url ?? request.Url} {traceIdString}failed with";
 
             // TODO: Add more specific error messages
 

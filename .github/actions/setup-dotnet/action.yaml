@@ -16,6 +16,11 @@ runs:
         working-directory: ./
         shell: bash
 
+      - name: Restore Tools
+        run: dotnet tool restore
+        working-directory: ./
+        shell: bash
+
       - name: Build Project
         run: dotnet build --configuration Release --no-restore
         working-directory: ./

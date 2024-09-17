@@ -10,8 +10,9 @@ public class BlockClient(AptosClient client)
     /// <returns>The ledger information of the blockchain.</returns>
     public async Task<LedgerInfo> GetLedgerInfo()
     {
-        AptosResponse<LedgerInfo> response = await _client.GetFullNode<LedgerInfo>(new(originMethod: "getLedgerInfo"));
+        AptosResponse<LedgerInfo> response = await _client.GetFullNode<LedgerInfo>(
+            new(originMethod: "getLedgerInfo")
+        );
         return response.Data;
     }
-
 }

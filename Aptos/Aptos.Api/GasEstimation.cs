@@ -2,9 +2,12 @@ namespace Aptos;
 
 using Newtonsoft.Json;
 
-public class GasEstimation(ulong gasEstimate, ulong? deprioritizedGasEstimate, ulong? prioritizedGasEstimate)
+public class GasEstimation(
+    ulong gasEstimate,
+    ulong? deprioritizedGasEstimate,
+    ulong? prioritizedGasEstimate
+)
 {
-
     [JsonProperty("gas_estimate")]
     public ulong GasEstimate = gasEstimate;
 

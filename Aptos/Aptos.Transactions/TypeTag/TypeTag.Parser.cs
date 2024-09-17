@@ -5,8 +5,6 @@ namespace Aptos;
 
 partial class TypeTag
 {
-
-
     public class TypeTagState(int savedExpectedTypes, string savedStr, List<TypeTag> savedTypes)
     {
         public int SavedExpectedTypes = savedExpectedTypes;
@@ -70,9 +68,17 @@ partial class TypeTag
                 bool hasPopped = saved.TryPop(out TypeTagState? savedPop);
 
                 // If there's nothing left, there were too many '>'
-                if (!hasPopped || savedPop == null) throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.UnexpectedTypeArgumentClose);
+                if (!hasPopped || savedPop == null)
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.UnexpectedTypeArgumentClose
+                    );
                 // If the expected types don't match the number of commas, then we also fail
-                if (expectedTypes != curTypes.Count) throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.TypeArgumentCountMismatch);
+                if (expectedTypes != curTypes.Count)
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.TypeArgumentCountMismatch
+                    );
 
                 // Add in the new created type, shifting the current types to the inner types
                 innerTypes = curTypes;
@@ -85,9 +91,17 @@ partial class TypeTag
                 // Commas means we need to start parsing a new tag, push the previous one to the curTypes
 
                 // No top level commas (not in a type <> are allowed)
-                if (saved.Count == 0) throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.UnexpectedComma);
+                if (saved.Count == 0)
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.UnexpectedComma
+                    );
                 // If there was no actual value before the comma, then it's missing a type argument
-                if (currentStr.Length == 0) throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.MissingTypeArgument);
+                if (currentStr.Length == 0)
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.MissingTypeArgument
+                    );
 
                 // Process characters before as a type
                 TypeTag newType = ParseType(currentStr, innerTypes, allowGenerics);
@@ -118,7 +132,11 @@ partial class TypeTag
                 // The enxt space MUST be a comma, or a closing > if there was something parsed before
                 // e.g. `u8 u8` is invalid but `u8, u8` is valid
                 char nextChar = typeStr[cur];
-                if (cur < typeStr.Length && parsedTypeTag && nextChar != ',' && nextChar != '>') throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.UnexpectedWhitespaceCharacter);
+                if (cur < typeStr.Length && parsedTypeTag && nextChar != ',' && nextChar != '>')
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.UnexpectedWhitespaceCharacter
+                    );
 
                 continue;
             }
@@ -131,7 +149,11 @@ partial class TypeTag
         }
 
         // This prevents a missing '>' on type arguments
-        if (saved.Count > 0) throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.MissingTypeArgumentClose);
+        if (saved.Count > 0)
+            throw new TypeTagParserException(
+                typeStr,
+                TypeTagParserExceptionReason.MissingTypeArgumentClose
+            );
 
         // This prevents `u8, u8` as an input
         switch (curTypes.Count)
@@ -139,10 +161,17 @@ partial class TypeTag
             case 0:
                 return ParseType(currentStr, innerTypes, allowGenerics);
             case 1:
-                if (currentStr != "") throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.UnexpectedComma);
+                if (currentStr != "")
+                    throw new TypeTagParserException(
+                        typeStr,
+                        TypeTagParserExceptionReason.UnexpectedComma
+                    );
                 return curTypes[0];
             default:
-                throw new TypeTagParserException(typeStr, TypeTagParserExceptionReason.UnexpectedWhitespaceCharacter);
+                throw new TypeTagParserException(
+                    typeStr,
+                    TypeTagParserExceptionReason.UnexpectedWhitespaceCharacter
+                );
         }
     }
 
@@ -158,7 +187,11 @@ partial class TypeTag
         string trimmedStr = str.Trim();
         if (IsPrimitive(trimmedStr))
         {
-            if (types.Count > 0) throw new TypeTagParserException(str, TypeTagParserExceptionReason.UnexpectedPrimitiveTypeArguments);
+            if (types.Count > 0)
+                throw new TypeTagParserException(
+                    str,
+                    TypeTagParserExceptionReason.UnexpectedPrimitiveTypeArguments
+                );
         }
 
         switch (str.ToLower())
@@ -182,7 +215,11 @@ partial class TypeTag
             case "u256":
                 return new TypeTagU256();
             case "vector":
-                if (types.Count != 1) throw new TypeTagParserException(str, TypeTagParserExceptionReason.UnexpectedVectorTypeArgumentCount);
+                if (types.Count != 1)
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.UnexpectedVectorTypeArgumentCount
+                    );
                 return new TypeTagVector(types[0]);
             default:
                 // Reference will have to handle the inner type
@@ -195,17 +232,29 @@ partial class TypeTag
                 // Generics are always expected to be T0 or T1
                 if (GenericTypeRegex().IsMatch(trimmedStr))
                 {
-                    if (!allowGenerics) throw new TypeTagParserException(str, TypeTagParserExceptionReason.UnexpectedGenericType);
+                    if (!allowGenerics)
+                        throw new TypeTagParserException(
+                            str,
+                            TypeTagParserExceptionReason.UnexpectedGenericType
+                        );
                     return new TypeTagGeneric(uint.Parse(trimmedStr.Split("T")[1]));
                 }
 
                 // If the value doesn't contain a colon, then we'll assume it isn't trying to be a struct
-                if (!trimmedStr.Contains(':')) throw new TypeTagParserException(str, TypeTagParserExceptionReason.InvalidTypeTag);
+                if (!trimmedStr.Contains(':'))
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.InvalidTypeTag
+                    );
 
                 // Parse for a struct tag
 
                 string[] structParts = trimmedStr.Split("::");
-                if (structParts.Length != 3) throw new TypeTagParserException(str, TypeTagParserExceptionReason.UnexpectedStructFormat);
+                if (structParts.Length != 3)
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.UnexpectedStructFormat
+                    );
 
                 // Validate struct address
                 AccountAddress? address;
@@ -213,13 +262,29 @@ partial class TypeTag
                 {
                     address = AccountAddress.FromString(structParts[0]);
                 }
-                catch { throw new TypeTagParserException(str, TypeTagParserExceptionReason.InvalidAddress); }
+                catch
+                {
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.InvalidAddress
+                    );
+                }
 
                 // Validate identifier characters
-                if (!ValidIdentifierRegex().IsMatch(structParts[1])) throw new TypeTagParserException(str, TypeTagParserExceptionReason.InvalidModuleNameCharacter);
-                if (!ValidIdentifierRegex().IsMatch(structParts[2])) throw new TypeTagParserException(str, TypeTagParserExceptionReason.InvalidStructNameCharacter);
+                if (!ValidIdentifierRegex().IsMatch(structParts[1]))
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.InvalidModuleNameCharacter
+                    );
+                if (!ValidIdentifierRegex().IsMatch(structParts[2]))
+                    throw new TypeTagParserException(
+                        str,
+                        TypeTagParserExceptionReason.InvalidStructNameCharacter
+                    );
 
-                return new TypeTagStruct(new StructTag(address, structParts[1], structParts[2], types));
+                return new TypeTagStruct(
+                    new StructTag(address, structParts[1], structParts[2], types)
+                );
         }
     }
 
@@ -239,20 +304,20 @@ partial class TypeTag
         return i;
     }
 
-    private static bool IsPrimitive(string str) => str.ToLower() switch
-    {
-        "bool" => true,
-        "u8" => true,
-        "u16" => true,
-        "u32" => true,
-        "u64" => true,
-        "u128" => true,
-        "u256" => true,
-        "address" => true,
-        "signer" => true,
-        _ => false,
-    };
-
+    private static bool IsPrimitive(string str) =>
+        str.ToLower() switch
+        {
+            "bool" => true,
+            "u8" => true,
+            "u16" => true,
+            "u32" => true,
+            "u64" => true,
+            "u128" => true,
+            "u256" => true,
+            "address" => true,
+            "signer" => true,
+            _ => false,
+        };
 
     /// <summary>
     /// Tells if the string is a valid Move identifier. It can only be alphanumeric and '_'.

@@ -10,16 +10,18 @@ public abstract class AccountPublicKey : PublicKey
     public abstract AuthenticationKey AuthKey();
 }
 
-
 [JsonConverter(typeof(StringEnumConverter))]
 public enum PublicKeyVariant : uint
 {
     [EnumMember(Value = "ed25519")]
     Ed25519,
+
     [EnumMember(Value = "secp256k1_ecdsa")]
     Secp256k1Ecdsa,
+
     [EnumMember(Value = "secp256r1_ecdsa")]
     Secp256r1Ecdsa,
+
     [EnumMember(Value = "keyless")]
     Keyless,
 }
@@ -40,18 +42,24 @@ public abstract class LegacyPublicKey(PublicKeyVariant type) : PublicKey, ILegac
     public PublicKeyVariant Type => _type;
 
     public abstract Hex Value { get; }
-
 }
 
 public class LegacyPublicKeyConverter : JsonConverter<ILegacyPublicKey>
 {
-    public override ILegacyPublicKey? ReadJson(JsonReader reader, Type objectType, ILegacyPublicKey? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override ILegacyPublicKey? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        ILegacyPublicKey? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
         AnyValue? anyValue = JsonConvert.DeserializeObject<AnyValue>(jsonObject.ToString());
-        if (anyValue == null) throw new Exception("Invalid public key shape");
+        if (anyValue == null)
+            throw new Exception("Invalid public key shape");
 
         Deserializer deserializer = new(anyValue.Value);
         deserializer.Uleb128AsU32();
@@ -65,9 +73,14 @@ public class LegacyPublicKeyConverter : JsonConverter<ILegacyPublicKey>
         };
     }
 
-    public override void WriteJson(JsonWriter writer, ILegacyPublicKey? value, JsonSerializer serializer)
+    public override void WriteJson(
+        JsonWriter writer,
+        ILegacyPublicKey? value,
+        JsonSerializer serializer
+    )
     {
-        if (value == null) writer.WriteNull();
+        if (value == null)
+            writer.WriteNull();
         else
         {
             writer.WriteStartObject();
@@ -82,11 +95,12 @@ public class LegacyPublicKeyConverter : JsonConverter<ILegacyPublicKey>
 
 public abstract class UnifiedAccountPublicKey : AccountPublicKey { }
 
-public abstract class LegacyAccountPublicKey(PublicKeyVariant type) : AccountPublicKey, ILegacyPublicKey
+public abstract class LegacyAccountPublicKey(PublicKeyVariant type)
+    : AccountPublicKey,
+        ILegacyPublicKey
 {
     private readonly PublicKeyVariant _type = type;
     public PublicKeyVariant Type => _type;
 
     public abstract Hex Value { get; }
-
 }

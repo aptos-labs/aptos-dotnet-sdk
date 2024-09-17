@@ -10,14 +10,51 @@ using Org.BouncyCastle.Security;
 
 public static class Ed25519
 {
-    public static readonly byte[] L = [0xed, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58, 0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10];
+    public static readonly byte[] L =
+    [
+        0xed,
+        0xd3,
+        0xf5,
+        0x5c,
+        0x1a,
+        0x63,
+        0x12,
+        0x58,
+        0xd6,
+        0x9c,
+        0xf7,
+        0xa2,
+        0xde,
+        0xf9,
+        0xde,
+        0x14,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x10,
+    ];
+
     public static bool IsCanonicalEd25519Signature(Signature signature)
     {
         byte[] s = signature.ToByteArray().Skip(32).ToArray();
         for (int i = L.Length - 1; i >= 0; i -= 1)
         {
-            if (s[i] < L[i]) return true;
-            if (s[i] > L[i]) return false;
+            if (s[i] < L[i])
+                return true;
+            if (s[i] > L[i])
+                return false;
         }
 
         // As this stage S == L which implies a non-canonical S.
@@ -33,20 +70,26 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
 
     public override Hex Value => _key;
 
-    public Ed25519PublicKey(string publicKey) : this(Hex.FromHexInput(publicKey).ToByteArray()) { }
-    public Ed25519PublicKey(byte[] publicKey) : base(PublicKeyVariant.Ed25519)
+    public Ed25519PublicKey(string publicKey)
+        : this(Hex.FromHexInput(publicKey).ToByteArray()) { }
+
+    public Ed25519PublicKey(byte[] publicKey)
+        : base(PublicKeyVariant.Ed25519)
     {
-        if (publicKey.Length != LENGTH) throw new KeyLengthMismatch("Ed25519PublicKey", LENGTH);
+        if (publicKey.Length != LENGTH)
+            throw new KeyLengthMismatch("Ed25519PublicKey", LENGTH);
         _key = new(publicKey);
     }
 
     public override byte[] ToByteArray() => _key.ToByteArray();
 
-    public override AuthenticationKey AuthKey() => AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.Ed25519, _key.ToByteArray());
+    public override AuthenticationKey AuthKey() =>
+        AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.Ed25519, _key.ToByteArray());
 
     public override bool VerifySignature(byte[] message, Signature signature)
     {
-        if (!Ed25519.IsCanonicalEd25519Signature(signature)) return false;
+        if (!Ed25519.IsCanonicalEd25519Signature(signature))
+            return false;
 
         byte[] signatureBytes = signature.ToByteArray();
         byte[] publicKeyBytes = ToByteArray();
@@ -60,7 +103,6 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
     public override void Serialize(Serializer s) => s.Bytes(_key.ToByteArray());
 
     public static Ed25519PublicKey Deserialize(Deserializer d) => new(d.Bytes());
-
 }
 
 public class Ed25519PrivateKey : PrivateKey
@@ -72,16 +114,23 @@ public class Ed25519PrivateKey : PrivateKey
 
     private readonly Hex _key;
 
-    public Ed25519PrivateKey(string privateKey) : this(Hex.FromHexInput(privateKey).ToByteArray()) { }
+    public Ed25519PrivateKey(string privateKey)
+        : this(Hex.FromHexInput(privateKey).ToByteArray()) { }
+
     public Ed25519PrivateKey(byte[] privateKey)
     {
-        if (privateKey.Length != LENGTH) throw new KeyLengthMismatch("Ed25519PrivateKey", LENGTH);
+        if (privateKey.Length != LENGTH)
+            throw new KeyLengthMismatch("Ed25519PrivateKey", LENGTH);
         _key = new(privateKey);
     }
 
-    public override PublicKey PublicKey() => new Ed25519PublicKey(new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0).GeneratePublicKey().GetEncoded());
+    public override PublicKey PublicKey() =>
+        new Ed25519PublicKey(
+            new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0).GeneratePublicKey().GetEncoded()
+        );
 
     public override Signature Sign(string message) => Sign(SigningMessage.Convert(message));
+
     public override Signature Sign(byte[] message)
     {
         Ed25519Signer signer = new();
@@ -104,8 +153,12 @@ public class Ed25519PrivateKey : PrivateKey
 
     public static Ed25519PrivateKey FromDerivationPath(string path, string mnemonic)
     {
-        if (!HdKey.IsValidHardenedPath(path)) throw new InvalidDerivationPath(path);
-        HdKey.DerivedKeys derivedKeys = HdKey.DeriveKey(SLIP_0010_SEED, HdKey.MnemonicToSeed(mnemonic));
+        if (!HdKey.IsValidHardenedPath(path))
+            throw new InvalidDerivationPath(path);
+        HdKey.DerivedKeys derivedKeys = HdKey.DeriveKey(
+            SLIP_0010_SEED,
+            HdKey.MnemonicToSeed(mnemonic)
+        );
 
         IEnumerable<uint> segments = HdKey.SplitPath(path).Select(uint.Parse);
 
@@ -123,17 +176,20 @@ public class Ed25519PrivateKey : PrivateKey
 
 public class Ed25519Signature : LegacySignature
 {
-
     static readonly int LENGTH = 64;
 
     private readonly Hex _value;
 
     public override Hex Value => _value;
 
-    public Ed25519Signature(string signature) : this(Hex.FromHexInput(signature).ToByteArray()) { }
-    public Ed25519Signature(byte[] signature) : base(SignatureVariant.Ed25519)
+    public Ed25519Signature(string signature)
+        : this(Hex.FromHexInput(signature).ToByteArray()) { }
+
+    public Ed25519Signature(byte[] signature)
+        : base(SignatureVariant.Ed25519)
     {
-        if (signature.Length != LENGTH) throw new KeyLengthMismatch("Ed25519Signature", LENGTH);
+        if (signature.Length != LENGTH)
+            throw new KeyLengthMismatch("Ed25519Signature", LENGTH);
         _value = new(signature);
     }
 
@@ -142,5 +198,4 @@ public class Ed25519Signature : LegacySignature
     public override void Serialize(Serializer s) => s.Bytes(_value.ToByteArray());
 
     public static Ed25519Signature Deserialize(Deserializer d) => new(d.Bytes());
-
 }

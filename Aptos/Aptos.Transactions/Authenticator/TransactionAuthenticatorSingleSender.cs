@@ -1,6 +1,7 @@
 namespace Aptos;
 
-public class TransactionAuthenticatorSingleSender(AccountAuthenticator sender) : TransactionAuthenticator
+public class TransactionAuthenticatorSingleSender(AccountAuthenticator sender)
+    : TransactionAuthenticator
 {
     public readonly AccountAuthenticator Sender = sender;
 

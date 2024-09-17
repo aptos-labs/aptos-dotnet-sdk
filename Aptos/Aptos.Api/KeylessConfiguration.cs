@@ -2,9 +2,17 @@ namespace Aptos;
 
 using Newtonsoft.Json;
 
-public class KeylessConfiguration(ushort maxCommitedEpkBytes, ulong maxExpHorizonSecs, ushort maxExtraFieldBytes, ushort maxIssValBytes, uint maxJwtHeaderB64Bytes, ushort maxSignaturesPerTxn, List<string> overrideAudVals, ResourceOption trainingWheelsPubkey)
+public class KeylessConfiguration(
+    ushort maxCommitedEpkBytes,
+    ulong maxExpHorizonSecs,
+    ushort maxExtraFieldBytes,
+    ushort maxIssValBytes,
+    uint maxJwtHeaderB64Bytes,
+    ushort maxSignaturesPerTxn,
+    List<string> overrideAudVals,
+    ResourceOption trainingWheelsPubkey
+)
 {
-
     [JsonProperty("max_committed_epk_bytes")]
     public readonly ushort MaxCommitedEpkBytes = maxCommitedEpkBytes;
 
@@ -28,5 +36,4 @@ public class KeylessConfiguration(ushort maxCommitedEpkBytes, ulong maxExpHorizo
 
     [JsonProperty("training_wheels_pubkey")]
     public readonly ResourceOption TrainingWheelsPubkey = trainingWheelsPubkey;
-
 }

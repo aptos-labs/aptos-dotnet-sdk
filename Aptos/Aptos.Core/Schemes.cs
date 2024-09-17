@@ -4,7 +4,6 @@ using Newtonsoft.Json.Converters;
 
 namespace Aptos.Schemes
 {
-
     public enum AuthenticationKeyScheme
     {
         Ed25519 = 0,
@@ -15,7 +14,7 @@ namespace Aptos.Schemes
         DeriveObjectAddressFromObject = 252,
         DeriveObjectAddressFromGuid = 253,
         DeriveObjectAddressFromSeed = 254,
-        DeriveResourceAccountAddress = 255
+        DeriveResourceAccountAddress = 255,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -23,10 +22,13 @@ namespace Aptos.Schemes
     {
         [EnumMember(Value = "ed25519_signature")]
         Ed25519 = AuthenticationKeyScheme.Ed25519,
+
         [EnumMember(Value = "multi_ed25519_signature")]
         MultiEd25519 = AuthenticationKeyScheme.MultiEd25519,
+
         [EnumMember(Value = "single_key_signature")]
         SingleKey = AuthenticationKeyScheme.SingleKey,
+
         [EnumMember(Value = "multi_key_signature")]
         MultiKey = AuthenticationKeyScheme.MultiKey,
     }
@@ -37,7 +39,6 @@ namespace Aptos.Schemes
         DeriveObjectAddressFromObject = AuthenticationKeyScheme.DeriveObjectAddressFromObject,
         DeriveObjectAddressFromGuid = AuthenticationKeyScheme.DeriveObjectAddressFromGuid,
         DeriveObjectAddressFromSeed = AuthenticationKeyScheme.DeriveObjectAddressFromSeed,
-        DeriveResourceAccountAddress = AuthenticationKeyScheme.DeriveResourceAccountAddress
+        DeriveResourceAccountAddress = AuthenticationKeyScheme.DeriveResourceAccountAddress,
     }
-
 }

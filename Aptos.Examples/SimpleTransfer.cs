@@ -4,7 +4,6 @@ namespace Aptos.Examples;
 
 public class SimpleTransferExample
 {
-
     public static async Task Run()
     {
         Console.WriteLine("=== Addresses ===\n");
@@ -35,11 +34,12 @@ public class SimpleTransferExample
 
         Console.WriteLine("Waiting for transaction...");
         var committedTxn = await aptos.Transaction.WaitForTransaction(pendingTxn.Hash.ToString());
-        Console.WriteLine($"Transaction {committedTxn.Hash} is {(committedTxn.Success ? "success" : "failure")}");
+        Console.WriteLine(
+            $"Transaction {committedTxn.Hash} is {(committedTxn.Success ? "success" : "failure")}"
+        );
 
         Console.WriteLine("\n=== Account Balance ===\n");
         var balance = await aptos.Account.GetCoinBalance(account.Address, "0xa");
         Console.WriteLine($"Account {account.Address} has {balance?.Amount ?? 0} coin balances");
     }
-
 }

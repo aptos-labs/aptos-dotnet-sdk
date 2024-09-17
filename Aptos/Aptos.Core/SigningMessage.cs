@@ -9,7 +9,11 @@ public static class SigningMessage
 
     public const string RAW_TRANSACTION_WITH_DATA_SALT = "APTOS::RawTransactionWithData";
 
-    public static byte[] Convert(string message) => Hex.IsValid(message) ? Hex.FromHexInput(message).ToByteArray() : Encoding.ASCII.GetBytes(message);
+    public static byte[] Convert(string message) =>
+        Hex.IsValid(message)
+            ? Hex.FromHexInput(message).ToByteArray()
+            : Encoding.ASCII.GetBytes(message);
+
     public static byte[] Convert(byte[] message) => message;
 
     public static byte[] Generate(byte[] message, string domainSeparator)
@@ -18,7 +22,9 @@ public static class SigningMessage
 
         if (!domainSeparator.StartsWith("APTOS::"))
         {
-            throw new ArgumentException($"Domain separator needs to start with 'APTOS::'.  Provided - {domainSeparator}");
+            throw new ArgumentException(
+                $"Domain separator needs to start with 'APTOS::'.  Provided - {domainSeparator}"
+            );
         }
 
         byte[] domainSeparatorBytes = Encoding.UTF8.GetBytes(domainSeparator);
@@ -36,23 +42,26 @@ public static class SigningMessage
         return mergedArray;
     }
 
-
     public static byte[] GenerateForTransaction(AnyRawTransaction transaction)
     {
         if (transaction.FeePayerAddress != null)
         {
-            FeePayerRawTransaction rawTxnWithData = new(transaction.RawTransaction, transaction.SecondarySignerAddresses ?? [], transaction.FeePayerAddress);
+            FeePayerRawTransaction rawTxnWithData =
+                new(
+                    transaction.RawTransaction,
+                    transaction.SecondarySignerAddresses ?? [],
+                    transaction.FeePayerAddress
+                );
             return Generate(rawTxnWithData.BcsToBytes(), RAW_TRANSACTION_WITH_DATA_SALT);
         }
 
         if (transaction.SecondarySignerAddresses != null)
         {
-            MultiAgentRawTransaction rawTxnWithData = new(transaction.RawTransaction, transaction.SecondarySignerAddresses!);
+            MultiAgentRawTransaction rawTxnWithData =
+                new(transaction.RawTransaction, transaction.SecondarySignerAddresses!);
             return Generate(rawTxnWithData.BcsToBytes(), RAW_TRANSACTION_WITH_DATA_SALT);
         }
 
         return Generate(transaction.RawTransaction.BcsToBytes(), RAW_TRANSACTION_SALT);
-
     }
-
 }

@@ -4,5 +4,6 @@ using StrawberryShake.Serialization;
 
 public class BigIntSerializer : ScalarSerializer<long>
 {
-    public BigIntSerializer() : base("bigint") { }
+    public BigIntSerializer()
+        : base("bigint") { }
 }

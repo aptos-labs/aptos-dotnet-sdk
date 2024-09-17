@@ -3,7 +3,17 @@ namespace Aptos;
 using Newtonsoft.Json;
 
 [Serializable]
-public class LedgerInfo(byte chainId, ulong epoch, ulong ledgerVersion, ulong oldestLedgerVersion, ulong ledgerTimestamp, string nodeRole, ulong oldestBlockHeight, ulong blockHeight, string gitHash)
+public class LedgerInfo(
+    byte chainId,
+    ulong epoch,
+    ulong ledgerVersion,
+    ulong oldestLedgerVersion,
+    ulong ledgerTimestamp,
+    string nodeRole,
+    ulong oldestBlockHeight,
+    ulong blockHeight,
+    string gitHash
+)
 {
     [JsonProperty("chain_id")]
     public byte ChainId = chainId;

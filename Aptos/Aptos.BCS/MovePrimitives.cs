@@ -15,7 +15,6 @@ public class Bool(bool value) : TransactionArgument
     }
 
     public static Bool Deserialize(Deserializer d) => new(d.Bool());
-
 }
 
 public class U8(byte value) : TransactionArgument

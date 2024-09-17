@@ -14,7 +14,9 @@ public class Deserializer
 
     private readonly int _length;
 
-    public Deserializer(string data) : this(Hex.FromHexString(data).ToByteArray()) { }
+    public Deserializer(string data)
+        : this(Hex.FromHexString(data).ToByteArray()) { }
+
     public Deserializer(byte[] data)
     {
         _input = new MemoryStream(data);
@@ -25,11 +27,14 @@ public class Deserializer
 
     public byte[] Read(int length)
     {
-        if (length == 0) return [];
+        if (length == 0)
+            return [];
         byte[] value = new byte[length];
         int totalRead = _input.Read(value, 0, length);
         if (totalRead == 0 || totalRead < length)
-            throw new ArgumentException("Unexpected end of input. Requested: " + length + ", found: " + totalRead);
+            throw new ArgumentException(
+                "Unexpected end of input. Requested: " + length + ", found: " + totalRead
+            );
         return value;
     }
 
@@ -38,7 +43,8 @@ public class Deserializer
     public bool Bool()
     {
         byte value = Read(1)[0];
-        if (value != 0 && value != 1) throw new ArgumentException("Invalid bool value");
+        if (value != 0 && value != 1)
+            throw new ArgumentException("Invalid bool value");
         return value == 1;
     }
 
@@ -79,7 +85,8 @@ public class Deserializer
         {
             byte b = Read(1)[0];
             value |= (BigInteger)(b & 0x7F) << shift;
-            if ((b & 0x80) == 0) break;
+            if ((b & 0x80) == 0)
+                break;
             shift += 7;
         }
 
@@ -92,9 +99,11 @@ public class Deserializer
     }
 
     public string String() => Encoding.UTF8.GetString(Bytes());
+
     public string? OptionString() => Bool() ? String() : null;
 
-    public T? Option<T>(Func<Deserializer, T> deserializeFunc) where T : class => Bool() ? deserializeFunc(this) : null;
+    public T? Option<T>(Func<Deserializer, T> deserializeFunc)
+        where T : class => Bool() ? deserializeFunc(this) : null;
 
     public byte[] Bytes()
     {
@@ -108,8 +117,8 @@ public class Deserializer
     {
         uint length = Uleb128AsU32();
         List<T> result = new((int)length);
-        for (uint i = 0; i < length; i++) result.Add(deserializeFunc(this));
+        for (uint i = 0; i < length; i++)
+            result.Add(deserializeFunc(this));
         return result;
     }
-
 }

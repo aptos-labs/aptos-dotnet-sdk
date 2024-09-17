@@ -2,12 +2,12 @@ using System.Collections.Concurrent;
 
 namespace Aptos.Core
 {
-
     static class Memoize
     {
-        // The global cache Dictionary shared across all functions. 
+        // The global cache Dictionary shared across all functions.
         // Must ensure that the cache keys are unique across all functions.
-        private static readonly ConcurrentDictionary<string, (object value, long timestamp)> cache = new();
+        private static readonly ConcurrentDictionary<string, (object value, long timestamp)> cache =
+            new();
 
         /// <summary>
         /// A memoize higher-order function to cache async function response.
@@ -25,7 +25,10 @@ namespace Aptos.Core
                 if (cache.TryGetValue(key, out var cacheEntry))
                 {
                     var (value, timestamp) = cacheEntry;
-                    if (ttlMs == null || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - timestamp <= ttlMs.Value)
+                    if (
+                        ttlMs == null
+                        || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - timestamp <= ttlMs.Value
+                    )
                     {
                         return (T)value;
                     }
@@ -35,7 +38,8 @@ namespace Aptos.Core
                 var result = await func();
 
                 // Cache the result with a timestamp if it's not null
-                if (result != null) cache[key] = (result, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                if (result != null)
+                    cache[key] = (result, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
                 return result;
             };
@@ -57,7 +61,10 @@ namespace Aptos.Core
                 if (cache.TryGetValue(key, out var cacheEntry))
                 {
                     var (value, timestamp) = cacheEntry;
-                    if (ttlMs == null || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - timestamp <= ttlMs.Value)
+                    if (
+                        ttlMs == null
+                        || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - timestamp <= ttlMs.Value
+                    )
                     {
                         return (T)value;
                     }
@@ -67,7 +74,8 @@ namespace Aptos.Core
                 var result = func();
 
                 // Cache the result with a timestamp
-                if (result != null) cache[key] = (result, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                if (result != null)
+                    cache[key] = (result, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
                 return result;
             };

@@ -9,7 +9,7 @@ public abstract class Account
 {
     /// <summary>
     /// Gets the public key of the account.
-    /// </summary> 
+    /// </summary>
     public abstract AccountPublicKey PublicKey { get; }
 
     /// <summary>
@@ -40,7 +40,8 @@ public abstract class Account
     public abstract Signature SignTransaction(AnyRawTransaction transaction);
 
     /// <inheritdoc cref="SignWithAuthenticator(byte[])"/>
-    public AccountAuthenticator SignWithAuthenticator(string message) => SignWithAuthenticator(SigningMessage.Convert(message));
+    public AccountAuthenticator SignWithAuthenticator(string message) =>
+        SignWithAuthenticator(SigningMessage.Convert(message));
 
     /// <summary>
     /// Signs a message and returns an authenticator for the account.
@@ -54,7 +55,9 @@ public abstract class Account
     /// </summary>
     /// <param name="transaction">The transaction to sign.</param>
     /// <returns>The authenticator containing the signature.</returns>
-    public abstract AccountAuthenticator SignTransactionWithAuthenticator(AnyRawTransaction transaction);
+    public abstract AccountAuthenticator SignTransactionWithAuthenticator(
+        AnyRawTransaction transaction
+    );
 
     /// <summary>
     /// Generates a new Ed25519 account.

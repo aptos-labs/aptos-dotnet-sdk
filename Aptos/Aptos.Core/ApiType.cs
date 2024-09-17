@@ -6,5 +6,5 @@ public enum ApiType
     Indexer,
     Faucet,
     Prover,
-    Pepper
+    Pepper,
 }

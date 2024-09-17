@@ -1,8 +1,10 @@
 namespace Aptos;
 
-public class SignedTransaction(RawTransaction rawTransaction, TransactionAuthenticator authenticator) : Serializable
+public class SignedTransaction(
+    RawTransaction rawTransaction,
+    TransactionAuthenticator authenticator
+) : Serializable
 {
-
     public readonly RawTransaction RawTransaction = rawTransaction;
 
     public readonly TransactionAuthenticator Authenticator = authenticator;
@@ -13,5 +15,6 @@ public class SignedTransaction(RawTransaction rawTransaction, TransactionAuthent
         Authenticator.Serialize(s);
     }
 
-    public static SignedTransaction Deserialize(Deserializer d) => new(RawTransaction.Deserialize(d), TransactionAuthenticator.Deserialize(d));
+    public static SignedTransaction Deserialize(Deserializer d) =>
+        new(RawTransaction.Deserialize(d), TransactionAuthenticator.Deserialize(d));
 }

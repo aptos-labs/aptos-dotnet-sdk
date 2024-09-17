@@ -8,7 +8,15 @@ namespace Aptos;
 /// <param name="indexerUrl">The endpoint for the indexer.</param>
 /// <param name="faucetUrl">The endpoint for the faucet.</param>
 /// <param name="chainId">The chain ID for the network. If -1, the chain ID is automatically retrieved from the full node.</param>
-public class NetworkConfig(string name, string nodeUrl, string indexerUrl, string? faucetUrl = null, string? proverUrl = null, string? pepperUrl = null, int chainId = -1)
+public class NetworkConfig(
+    string name,
+    string nodeUrl,
+    string indexerUrl,
+    string? faucetUrl = null,
+    string? proverUrl = null,
+    string? pepperUrl = null,
+    int chainId = -1
+)
 {
     public readonly string Name = name;
     public readonly int ChainId = chainId;

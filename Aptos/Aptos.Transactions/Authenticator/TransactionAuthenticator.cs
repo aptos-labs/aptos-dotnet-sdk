@@ -9,7 +9,6 @@ public enum TransactionAuthenticatorVariant : uint
     SingleSender = 4,
 }
 
-
 public abstract class TransactionAuthenticator : Serializable
 {
     public static TransactionAuthenticator Deserialize(Deserializer d)
@@ -17,9 +16,13 @@ public abstract class TransactionAuthenticator : Serializable
         TransactionAuthenticatorVariant variant = (TransactionAuthenticatorVariant)d.Uleb128AsU32();
         return variant switch
         {
-            TransactionAuthenticatorVariant.Ed25519 => TransactionAuthenticatorEd25519.Deserialize(d),
-            TransactionAuthenticatorVariant.FeePayer => TransactionAuthenticatorFeePayer.Deserialize(d),
-            TransactionAuthenticatorVariant.SingleSender => TransactionAuthenticatorSingleSender.Deserialize(d),
+            TransactionAuthenticatorVariant.Ed25519 => TransactionAuthenticatorEd25519.Deserialize(
+                d
+            ),
+            TransactionAuthenticatorVariant.FeePayer =>
+                TransactionAuthenticatorFeePayer.Deserialize(d),
+            TransactionAuthenticatorVariant.SingleSender =>
+                TransactionAuthenticatorSingleSender.Deserialize(d),
             _ => throw new ArgumentException("Invalid variant"),
         };
     }

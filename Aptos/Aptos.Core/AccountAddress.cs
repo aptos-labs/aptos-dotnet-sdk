@@ -9,8 +9,17 @@ using Org.BouncyCastle.Security;
 
 public partial class AccountAddress
 {
-    public static AccountAddress CreateSeedAddress(AccountAddress creatorAddress, string seed, DeriveScheme scheme) => CreateSeedAddress(creatorAddress, Encoding.UTF8.GetBytes(seed), scheme);
-    public static AccountAddress CreateSeedAddress(AccountAddress creatorAddress, byte[] seed, DeriveScheme scheme)
+    public static AccountAddress CreateSeedAddress(
+        AccountAddress creatorAddress,
+        string seed,
+        DeriveScheme scheme
+    ) => CreateSeedAddress(creatorAddress, Encoding.UTF8.GetBytes(seed), scheme);
+
+    public static AccountAddress CreateSeedAddress(
+        AccountAddress creatorAddress,
+        byte[] seed,
+        DeriveScheme scheme
+    )
     {
         var creatorBytes = creatorAddress.BcsToBytes();
 
@@ -22,13 +31,21 @@ public partial class AccountAddress
         return new AccountAddress(DigestUtilities.CalculateDigest("SHA3-256", bytes));
     }
 
+    public static AccountAddress CreateObjectAddress(AccountAddress creatorAddress, string seed) =>
+        CreateObjectAddress(creatorAddress, Encoding.UTF8.GetBytes(seed));
 
-    public static AccountAddress CreateObjectAddress(AccountAddress creatorAddress, string seed) => CreateObjectAddress(creatorAddress, Encoding.UTF8.GetBytes(seed));
-    public static AccountAddress CreateObjectAddress(AccountAddress creatorAddress, byte[] seed) => CreateSeedAddress(creatorAddress, seed, DeriveScheme.DeriveObjectAddressFromObject);
+    public static AccountAddress CreateObjectAddress(AccountAddress creatorAddress, byte[] seed) =>
+        CreateSeedAddress(creatorAddress, seed, DeriveScheme.DeriveObjectAddressFromObject);
 
-    public static AccountAddress CreateResourceAddress(AccountAddress creatorAddress, string seed) => CreateResourceAddress(creatorAddress, Encoding.UTF8.GetBytes(seed));
-    public static AccountAddress CreateResourceAddress(AccountAddress creatorAddress, byte[] seed) => CreateSeedAddress(creatorAddress, seed, DeriveScheme.DeriveResourceAccountAddress);
+    public static AccountAddress CreateResourceAddress(
+        AccountAddress creatorAddress,
+        string seed
+    ) => CreateResourceAddress(creatorAddress, Encoding.UTF8.GetBytes(seed));
 
+    public static AccountAddress CreateResourceAddress(
+        AccountAddress creatorAddress,
+        byte[] seed
+    ) => CreateSeedAddress(creatorAddress, seed, DeriveScheme.DeriveResourceAccountAddress);
 }
 
 [JsonConverter(typeof(AccountAddressConverter))]
@@ -44,12 +61,15 @@ public partial class AccountAddress : TransactionArgument
 
     public AccountAddress(byte[] data)
     {
-        if (!data.Length.Equals(LENGTH)) throw new AccountAddressParsingException($"AccountAddress data should be exactly {LENGTH} bytes long but got {data.Length} bytes", AccountAddressInvalidReason.IncorrectNumberOfBytes);
+        if (!data.Length.Equals(LENGTH))
+            throw new AccountAddressParsingException(
+                $"AccountAddress data should be exactly {LENGTH} bytes long but got {data.Length} bytes",
+                AccountAddressInvalidReason.IncorrectNumberOfBytes
+            );
         Data = data;
     }
 
     public bool IsSpecial() => Data.Take(Data.Length - 1).All(b => b == 0) && Data[^1] < 16;
-
 
     public string ToStringWithoutPrefix()
     {
@@ -79,11 +99,20 @@ public partial class AccountAddress : TransactionArgument
     {
         string parsedInput = str;
 
-        if (parsedInput.StartsWith("0x")) parsedInput = parsedInput[2..];
+        if (parsedInput.StartsWith("0x"))
+            parsedInput = parsedInput[2..];
 
-        if (parsedInput.Length == 0) throw new AccountAddressParsingException("Hex string is too short, must be 1 to 64 chars long, excluding the leading 0x.", AccountAddressInvalidReason.TooShort);
+        if (parsedInput.Length == 0)
+            throw new AccountAddressParsingException(
+                "Hex string is too short, must be 1 to 64 chars long, excluding the leading 0x.",
+                AccountAddressInvalidReason.TooShort
+            );
 
-        if (parsedInput.Length > 64) throw new AccountAddressParsingException("Hex string is too long, must be 1 to 64 chars long, excluding the leading 0x.", AccountAddressInvalidReason.TooLong);
+        if (parsedInput.Length > 64)
+            throw new AccountAddressParsingException(
+                "Hex string is too long, must be 1 to 64 chars long, excluding the leading 0x.",
+                AccountAddressInvalidReason.TooLong
+            );
 
         byte[] addressBytes;
         try
@@ -92,7 +121,10 @@ public partial class AccountAddress : TransactionArgument
         }
         catch
         {
-            throw new AccountAddressParsingException("Hex string contains invalid hex characters.", AccountAddressInvalidReason.InvalidHexChars);
+            throw new AccountAddressParsingException(
+                "Hex string contains invalid hex characters.",
+                AccountAddressInvalidReason.InvalidHexChars
+            );
         }
 
         return new AccountAddress(addressBytes);
@@ -100,7 +132,11 @@ public partial class AccountAddress : TransactionArgument
 
     public static AccountAddress FromStringStrict(string str)
     {
-        if (!str.StartsWith("0x")) throw new AccountAddressParsingException("Hex string must start with 0x", AccountAddressInvalidReason.LeadingZeroXRequired);
+        if (!str.StartsWith("0x"))
+            throw new AccountAddressParsingException(
+                "Hex string must start with 0x",
+                AccountAddressInvalidReason.LeadingZeroXRequired
+            );
 
         AccountAddress address = FromString(str);
 
@@ -108,11 +144,17 @@ public partial class AccountAddress : TransactionArgument
         {
             if (!address.IsSpecial())
             {
-                throw new AccountAddressParsingException($"The given hex string {str} is not a special address, it must be represented as 0x + 64 chars.", AccountAddressInvalidReason.LongFormRequiredUnlessSpecial);
+                throw new AccountAddressParsingException(
+                    $"The given hex string {str} is not a special address, it must be represented as 0x + 64 chars.",
+                    AccountAddressInvalidReason.LongFormRequiredUnlessSpecial
+                );
             }
             else if (str.Length != 3)
             {
-                throw new AccountAddressParsingException($"The given hex string {str} is a special address not in LONG form, it must be 0x0 to 0xf without padding zeroes.", AccountAddressInvalidReason.InvalidPaddingZeroes);
+                throw new AccountAddressParsingException(
+                    $"The given hex string {str} is a special address not in LONG form, it must be 0x0 to 0xf without padding zeroes.",
+                    AccountAddressInvalidReason.InvalidPaddingZeroes
+                );
             }
         }
 
@@ -120,13 +162,19 @@ public partial class AccountAddress : TransactionArgument
     }
 
     public static AccountAddress From(string str) => FromString(str);
+
     public static AccountAddress From(byte[] bytes) => new(bytes);
+
     public static AccountAddress From(Hex hex) => new(hex.ToByteArray());
+
     public static AccountAddress From(AccountAddress address) => address;
 
     public static AccountAddress FromStrict(string str) => FromStringStrict(str);
+
     public static AccountAddress FromStrict(byte[] bytes) => new(bytes);
+
     public static AccountAddress FromStrict(Hex hex) => new(hex.ToByteArray());
+
     public static AccountAddress FromStrict(AccountAddress address) => address;
 
     public static bool IsValid(string str, bool? strict)
@@ -151,9 +199,12 @@ public partial class AccountAddress : TransactionArgument
 
     public override bool Equals(object? obj)
     {
-        if (obj is AccountAddress address) return Data.SequenceEqual(address.Data);
-        if (obj is byte[] bytes) return Data.SequenceEqual(bytes);
-        if (obj is string str) return FromStringStrict(str).Data.SequenceEqual(Data);
+        if (obj is AccountAddress address)
+            return Data.SequenceEqual(address.Data);
+        if (obj is byte[] bytes)
+            return Data.SequenceEqual(bytes);
+        if (obj is string str)
+            return FromStringStrict(str).Data.SequenceEqual(Data);
         return base.Equals(obj);
     }
 
@@ -162,13 +213,21 @@ public partial class AccountAddress : TransactionArgument
 
 public class AccountAddressConverter : JsonConverter<AccountAddress>
 {
-
-    public override AccountAddress? ReadJson(JsonReader reader, Type objectType, AccountAddress? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override AccountAddress? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        AccountAddress? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         string? value = (string?)reader.Value;
         return value != null ? AccountAddress.FromString(value) : null;
     }
 
-    public override void WriteJson(JsonWriter writer, AccountAddress? value, JsonSerializer serializer) => writer.WriteValue(value?.ToString());
-
+    public override void WriteJson(
+        JsonWriter writer,
+        AccountAddress? value,
+        JsonSerializer serializer
+    ) => writer.WriteValue(value?.ToString());
 }

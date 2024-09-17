@@ -2,9 +2,14 @@ namespace Aptos;
 
 using Newtonsoft.Json;
 
-public class Groth16VerificationKey(G1Bytes alphaG1, G2Bytes betaG2, G2Bytes deltaG2, G1Bytes[] gammaAbcG1, G2Bytes gammaG2)
+public class Groth16VerificationKey(
+    G1Bytes alphaG1,
+    G2Bytes betaG2,
+    G2Bytes deltaG2,
+    G1Bytes[] gammaAbcG1,
+    G2Bytes gammaG2
+)
 {
-
     [JsonProperty("alpha_g1")]
     public readonly G1Bytes AlphaG1 = alphaG1;
 

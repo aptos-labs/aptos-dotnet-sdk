@@ -1,4 +1,3 @@
-
 namespace Aptos;
 
 using System.Buffers.Binary;
@@ -21,13 +20,15 @@ public static class HdKey
 
     public const string APTOS_BIP44_REGEX = @"^m\/44'\/637'\/[0-9]+'\/[0-9]+\/[0-9]+$";
 
-    public static bool IsValidHardenedPath(string path) => Regex.IsMatch(path, APTOS_HARDENED_REGEX);
+    public static bool IsValidHardenedPath(string path) =>
+        Regex.IsMatch(path, APTOS_HARDENED_REGEX);
 
     public static bool IsValidBip44Path(string path) => Regex.IsMatch(path, APTOS_BIP44_REGEX);
 
     public static string RemoveApostrophes(string val) => val.Replace("'", "");
 
-    public static string[] SplitPath(string path) => path.Split("/").Skip(1).Select(s => RemoveApostrophes(s)).ToArray();
+    public static string[] SplitPath(string path) =>
+        path.Split("/").Skip(1).Select(s => RemoveApostrophes(s)).ToArray();
 
     public static DerivedKeys DeriveKey(byte[] hashSeed, byte[] data)
     {
@@ -69,10 +70,13 @@ public static class HdKey
     public static byte[] MnemonicToSeed(string mnemonic)
     {
         // Normalize the mnemonic
-        string normalizedMnemonic = string.Join(" ",
-            mnemonic.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => word.ToLowerInvariant()));
+        string normalizedMnemonic = string.Join(
+            " ",
+            mnemonic
+                .Trim()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => word.ToLowerInvariant())
+        );
         return new Mnemonic(normalizedMnemonic).DeriveSeed();
     }
-
 }

@@ -8,7 +8,6 @@ public enum AccountAuthenticatorVariant : uint
     MultiKey = 3,
 }
 
-
 public abstract class AccountAuthenticator : Serializable
 {
     public static AccountAuthenticator Deserialize(Deserializer d)

@@ -2,23 +2,25 @@ namespace Aptos;
 
 public class MoveVector<T>(List<T> values) : TransactionArgument
 {
-
     public readonly List<T> Values = values;
 
     public override void SerializeForScriptFunction(Serializer s)
     {
-        if (typeof(T) != typeof(U8)) throw new ArgumentException("ScriptFunctionArgument only supports U8 vectors");
+        if (typeof(T) != typeof(U8))
+            throw new ArgumentException("ScriptFunctionArgument only supports U8 vectors");
         s.U32AsUleb128((uint)Values.Count);
         s.Serialize(this);
     }
 
-    public override void Serialize(Serializer s) => s.Vector(Values.Cast<TransactionArgument>().ToList());
+    public override void Serialize(Serializer s) =>
+        s.Vector(Values.Cast<TransactionArgument>().ToList());
 
     public static MoveVector<T> Deserialize(Deserializer d, Func<Deserializer, T> deserializeFunc)
     {
         uint length = d.Uleb128AsU32();
         List<T> values = [];
-        for (uint i = 0; i < length; i++) values.Add(deserializeFunc(d));
+        for (uint i = 0; i < length; i++)
+            values.Add(deserializeFunc(d));
         return new(values);
     }
 }
@@ -39,10 +41,10 @@ public class MoveString(string value) : TransactionArgument
     }
 
     public static MoveString Deserialize(Deserializer d) => new(d.String());
-
 }
 
-public class MoveOption<T> : TransactionArgument where T : class
+public class MoveOption<T> : TransactionArgument
+    where T : class
 {
     public readonly T? Value;
 
@@ -54,8 +56,10 @@ public class MoveOption<T> : TransactionArgument where T : class
     public override void Serialize(Serializer s)
     {
         MoveVector<T> vec;
-        if (Value != null) vec = new([Value]);
-        else vec = new([]);
+        if (Value != null)
+            vec = new([Value]);
+        else
+            vec = new([]);
         vec.Serialize(s);
     }
 
@@ -71,5 +75,6 @@ public class MoveOption<T> : TransactionArgument where T : class
     /// </summary>
     /// <param name="s"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public override void SerializeForScriptFunction(Serializer s) => throw new NotImplementedException();
+    public override void SerializeForScriptFunction(Serializer s) =>
+        throw new NotImplementedException();
 }

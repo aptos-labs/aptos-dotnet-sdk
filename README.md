@@ -67,4 +67,9 @@ var committedTransaction = await client.Transaction.WaitForTransaction(pendingTr
 
 ## Features
 
+- Binary Canonical Serialization (BCS) encoding and decoding
+- Ed25519, SingleKey, MultiKey, and Keyless signer support
+- Utilities for transaction building, signing, and submission
+- Abstractions over the Aptos Fullnode and Indexer APIs
+
 [github-license]: https://img.shields.io/github/license/aptos-labs/aptos-ts-sdk

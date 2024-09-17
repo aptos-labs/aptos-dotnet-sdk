@@ -21,6 +21,9 @@ jobs:
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
 
+      - name: Check Formatting
+        uses: ./.github/actions/check-formatting
+
       - name: Run Tests
         run: dotnet test --no-restore --verbosity normal
         working-directory: ./Aptos.Tests

@@ -2,11 +2,12 @@ namespace Aptos.Examples;
 
 public class RunExample
 {
-    private static readonly Dictionary<string, Func<Task>> exampleMap = new()
+    private static readonly Dictionary<string, Func<Task>> exampleMap =
+        new()
         {
             { "1", KeylessTransferExample.Run },
             { "2", SimpleTransferExample.Run },
-            { "3", PlaygroundExample.Run }
+            { "3", PlaygroundExample.Run },
         };
 
     public static async Task Main()
@@ -39,7 +40,9 @@ public class RunExample
                 // Run the selected example using arrow keys and enter
                 if (exampleMap.TryGetValue(keys[selectedIndex], out var selectedExample))
                 {
-                    Console.WriteLine($"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n");
+                    Console.WriteLine(
+                        $"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n"
+                    );
                     await selectedExample();
                 }
                 break;
@@ -50,7 +53,9 @@ public class RunExample
                 string input = keyInfo.KeyChar.ToString();
                 if (exampleMap.TryGetValue(input, out var selectedExample))
                 {
-                    Console.WriteLine($"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n");
+                    Console.WriteLine(
+                        $"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n"
+                    );
                     await selectedExample();
                     break;
                 }
@@ -61,7 +66,8 @@ public class RunExample
             }
             else
             {
-                errorMessage = $"Invalid input '{keyInfo.KeyChar}'. Use arrow keys or type a valid number.";
+                errorMessage =
+                    $"Invalid input '{keyInfo.KeyChar}'. Use arrow keys or type a valid number.";
             }
         }
     }
@@ -71,18 +77,24 @@ public class RunExample
         Console.Clear();
         DisplayAsciiArt();
 
-        Console.WriteLine("Use arrow keys to navigate and press Enter or type a number to choose an example:");
+        Console.WriteLine(
+            "Use arrow keys to navigate and press Enter or type a number to choose an example:"
+        );
         for (int i = 0; i < keys.Length; i++)
         {
             if (i == selectedIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow; // Highlight the selected option
-                Console.WriteLine($"> {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example");
+                Console.WriteLine(
+                    $"> {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example"
+                );
                 Console.ResetColor();
             }
             else
             {
-                Console.WriteLine($"  {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example");
+                Console.WriteLine(
+                    $"  {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example"
+                );
             }
         }
 
@@ -102,7 +114,9 @@ public class RunExample
         string yellow = "\u001b[33m";
         string reset = "\u001b[0m";
 
-        Console.WriteLine(cyan + @"
+        Console.WriteLine(
+            cyan
+                + @"
     _______  _______  _______  _______  _______ 
     |   _   ||       ||       ||       ||       |
     |  |_|  ||    _  ||_     _||   _   ||  _____|
@@ -110,9 +124,13 @@ public class RunExample
     |       ||    ___|  |   |  |  |_|  ||_____  |
     |   _   ||   |      |   |  |       | _____| |
     |__| |__||___|      |___|  |_______||_______|
-              " + reset + yellow + @"
+              "
+                + reset
+                + yellow
+                + @"
               EXAMPLES RUNNER
-            " + reset);
+            "
+                + reset
+        );
     }
-
 }

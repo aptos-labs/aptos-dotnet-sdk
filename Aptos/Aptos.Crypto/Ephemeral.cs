@@ -4,12 +4,12 @@ using Aptos.Exceptions;
 
 public class EphemeralPublicKey : LegacyPublicKey
 {
-
     public readonly LegacyAccountPublicKey PublicKey;
 
     public override Hex Value => PublicKey.BcsToHex();
 
-    public EphemeralPublicKey(LegacyAccountPublicKey publicKey) : base(publicKey.Type)
+    public EphemeralPublicKey(LegacyAccountPublicKey publicKey)
+        : base(publicKey.Type)
     {
         PublicKey = publicKey;
         switch (publicKey.Type)
@@ -21,7 +21,8 @@ public class EphemeralPublicKey : LegacyPublicKey
         }
     }
 
-    public override bool VerifySignature(byte[] message, Signature signature) => PublicKey.VerifySignature(message, signature);
+    public override bool VerifySignature(byte[] message, Signature signature) =>
+        PublicKey.VerifySignature(message, signature);
 
     public override byte[] ToByteArray() => PublicKey.BcsToBytes();
 

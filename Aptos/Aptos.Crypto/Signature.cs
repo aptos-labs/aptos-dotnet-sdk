@@ -20,8 +20,10 @@ public enum SignatureVariant
 {
     [EnumMember(Value = "ed25519")]
     Ed25519 = 0,
+
     [EnumMember(Value = "secp256k1_ecdsa")]
     Secp256k1Ecdsa = 1,
+
     [EnumMember(Value = "keyless")]
     Keyless = 3,
 }
@@ -29,7 +31,7 @@ public enum SignatureVariant
 /// <summary>
 /// Signature for results of signing transactions/messages using a authentication scheme (e.g. Ed25519, Keyless, etc.)
 /// </summary>
-/// <param name="type"> 
+/// <param name="type">
 /// The type of the signature (e.g. Ed25519, Keyless, etc.)
 /// </param>
 [JsonConverter(typeof(LegacySignatureConverter))]
@@ -40,20 +42,26 @@ public abstract class LegacySignature(SignatureVariant type) : Signature
 
     [JsonProperty("value")]
     public abstract Hex Value { get; }
-
 }
 
 public abstract class UnifiedSignature : Signature { }
 
 public class LegacySignatureConverter : JsonConverter<LegacySignature>
 {
-    public override LegacySignature? ReadJson(JsonReader reader, Type objectType, LegacySignature? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override LegacySignature? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        LegacySignature? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
         AnyValue? anyValue = JsonConvert.DeserializeObject<AnyValue>(jsonObject.ToString());
-        if (anyValue == null) throw new Exception("Invalid LegacySignature shape");
+        if (anyValue == null)
+            throw new Exception("Invalid LegacySignature shape");
 
         return type switch
         {
@@ -64,9 +72,14 @@ public class LegacySignatureConverter : JsonConverter<LegacySignature>
         };
     }
 
-    public override void WriteJson(JsonWriter writer, LegacySignature? value, JsonSerializer serializer)
+    public override void WriteJson(
+        JsonWriter writer,
+        LegacySignature? value,
+        JsonSerializer serializer
+    )
     {
-        if (value == null) writer.WriteNull();
+        if (value == null)
+            writer.WriteNull();
         else
         {
             writer.WriteStartObject();

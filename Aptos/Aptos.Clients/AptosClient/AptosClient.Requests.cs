@@ -6,18 +6,26 @@ using Newtonsoft.Json.Linq;
 
 public abstract class BaseAptosRequest
 {
-    abstract public string? Path { get; set; }
+    public abstract string? Path { get; set; }
 
-    abstract public dynamic? Body { get; set; }
+    public abstract dynamic? Body { get; set; }
 
-    abstract public string? ContentType { get; set; }
+    public abstract string? ContentType { get; set; }
 
-    abstract public Dictionary<string, string>? QueryParams { get; set; }
+    public abstract Dictionary<string, string>? QueryParams { get; set; }
 
-    abstract public string? OriginMethod { get; set; }
+    public abstract string? OriginMethod { get; set; }
 }
 
-public class AptosRequest(string url, HttpMethod method, string? path = null, dynamic? body = null, string? contentType = null, Dictionary<string, string>? queryParams = null, string? originMethod = null) : BaseAptosRequest
+public class AptosRequest(
+    string url,
+    HttpMethod method,
+    string? path = null,
+    dynamic? body = null,
+    string? contentType = null,
+    Dictionary<string, string>? queryParams = null,
+    string? originMethod = null
+) : BaseAptosRequest
 {
     public string Url { get; set; } = url;
     public override string? Path { get; set; } = path;
@@ -27,12 +35,33 @@ public class AptosRequest(string url, HttpMethod method, string? path = null, dy
     public override string? OriginMethod { get; set; } = originMethod;
     public HttpMethod Method { get; set; } = method;
 
-    public AptosRequest(string url, PostAptosRequest postAptosRequest) : this(url, HttpMethod.Post, postAptosRequest) { }
-    public AptosRequest(string url, GetAptosRequest getAptosRequest) : this(url, HttpMethod.Get, getAptosRequest) { }
-    public AptosRequest(string url, HttpMethod method, BaseAptosRequest request) : this(url, method, request.Path, (object?)request.Body, request.ContentType, request.QueryParams, request.OriginMethod) { }
+    public AptosRequest(string url, PostAptosRequest postAptosRequest)
+        : this(url, HttpMethod.Post, postAptosRequest) { }
+
+    public AptosRequest(string url, GetAptosRequest getAptosRequest)
+        : this(url, HttpMethod.Get, getAptosRequest) { }
+
+    public AptosRequest(string url, HttpMethod method, BaseAptosRequest request)
+        : this(
+            url,
+            method,
+            request.Path,
+            (object?)request.Body,
+            request.ContentType,
+            request.QueryParams,
+            request.OriginMethod
+        ) { }
 }
 
-public class AptosResponse<Res>(int status, string statusText, Res data, string url, Dictionary<string, string> headers, AptosRequest? request = null) where Res : class
+public class AptosResponse<Res>(
+    int status,
+    string statusText,
+    Res data,
+    string url,
+    Dictionary<string, string> headers,
+    AptosRequest? request = null
+)
+    where Res : class
 {
     public readonly int Status = status;
 
@@ -49,26 +78,46 @@ public class AptosResponse<Res>(int status, string statusText, Res data, string 
 
 public partial class AptosClient
 {
-
-    public async Task<AptosResponse<Res>> Request<Res>(ApiType type, AptosRequest request) where Res : class
+    public async Task<AptosResponse<Res>> Request<Res>(ApiType type, AptosRequest request)
+        where Res : class
     {
         AptosRequest aptosRequest = request;
 
         aptosRequest.Url = request.Path != null ? $"{request.Url}/{request.Path}" : request.Url;
 
-        ClientRequest clientRequest = new(aptosRequest.Url, aptosRequest.Method, aptosRequest.Body, aptosRequest.ContentType, aptosRequest.QueryParams);
+        ClientRequest clientRequest =
+            new(
+                aptosRequest.Url,
+                aptosRequest.Method,
+                aptosRequest.Body,
+                aptosRequest.ContentType,
+                aptosRequest.QueryParams
+            );
 
         // Add default headers
         clientRequest.Headers ??= [];
-        clientRequest.Headers.Add("x-aptos-client", $"aptos-dotnet-sdk/{Assembly.GetExecutingAssembly().GetName().Version}");
-        if (request.OriginMethod != null) clientRequest.Headers.Add("x-aptos-dotnet-sdk-origin-method", request.OriginMethod);
+        clientRequest.Headers.Add(
+            "x-aptos-client",
+            $"aptos-dotnet-sdk/{Assembly.GetExecutingAssembly().GetName().Version}"
+        );
+        if (request.OriginMethod != null)
+            clientRequest.Headers.Add("x-aptos-dotnet-sdk-origin-method", request.OriginMethod);
 
         ClientResponse<Res> clientResponse = await ClientRequest<Res>(clientRequest);
 
-        AptosResponse<JObject> errorResponse = new(clientResponse.Status, clientResponse.StatusText, clientResponse.Error ?? [], aptosRequest.Url, clientResponse.Headers ?? [], aptosRequest);
+        AptosResponse<JObject> errorResponse =
+            new(
+                clientResponse.Status,
+                clientResponse.StatusText,
+                clientResponse.Error ?? [],
+                aptosRequest.Url,
+                clientResponse.Headers ?? [],
+                aptosRequest
+            );
 
         // Handle case for `401 Unauthorized` responses (e.g. provided API key is invalid)
-        if (clientResponse.Status == 401) throw new ApiException(type, request, errorResponse);
+        if (clientResponse.Status == 401)
+            throw new ApiException(type, request, errorResponse);
 
         if (type == ApiType.Indexer)
         {
@@ -83,12 +132,21 @@ public partial class AptosClient
         }
 
         // Handle non-200 responses
-        if (clientResponse.Status < 200 || clientResponse.Status >= 300) throw new ApiException(type, request, errorResponse);
+        if (clientResponse.Status < 200 || clientResponse.Status >= 300)
+            throw new ApiException(type, request, errorResponse);
 
-        return new(clientResponse.Status, clientResponse.StatusText, clientResponse.Data!, aptosRequest.Url, clientResponse.Headers ?? [], aptosRequest);
+        return new(
+            clientResponse.Status,
+            clientResponse.StatusText,
+            clientResponse.Data!,
+            aptosRequest.Url,
+            clientResponse.Headers ?? [],
+            aptosRequest
+        );
     }
 
-    private async Task<ClientResponse<Res>> ClientRequest<Res>(ClientRequest request) where Res : class
+    private async Task<ClientResponse<Res>> ClientRequest<Res>(ClientRequest request)
+        where Res : class
     {
         string method = request.Method.Method;
         return method switch
@@ -98,5 +156,4 @@ public partial class AptosClient
             _ => throw new NotImplementedException(),
         };
     }
-
 }

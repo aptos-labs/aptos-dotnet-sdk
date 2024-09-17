@@ -3,7 +3,8 @@ namespace Aptos.Poseidon
     public static partial class Constants
     {
         public static (List<string> C, List<List<string>> M) C1 = (
-            C: [
+            C:
+            [
                 "CcRunsaOm9T+H6q6KUy6OKcaoXdTTN0bbH3A29Cr16c=",
                 "DANWUwiW7sQql+2TfzE1z8UUKzrkBbg0PB2D/6YEy4E=",
                 "Hiih2TVpitEULlEYK7VM9KAOpaq9Ymi9MX6pd8wVSjA=",
@@ -131,17 +132,18 @@ namespace Aptos.Poseidon
                 "E798XQ0sQ3akiwoDVXzfkVuBcYQJ5cEzQkxpV2UA/jc=",
                 "B2IKbfsLbOwwFq3z01M8JAJLlTR4VreXGbwLp0OmLCw=",
                 "FXTH7wxDVF82qMoIvb3YsHXSlZ4vMitzFnXePhmCtNA=",
-                "Jp5LW3oushr9VnlwpxfO7FvUGEVxwlT9wG4Dp/+DePA="
+                "Jp5LW3oushr9VnlwpxfO7FvUGEVxwlT9wG4Dp/+DePA=",
             ],
-            M: [
+            M:
+            [
                 [
-                "Bm9vhdb2ioXsEDRTUaI6Oq8H84r4yVKnvOynC9KvetU=",
-                "K51LQRDJrpl3guFQmx0P2yCnwCu9i+pzBUYrn4Elseg="
+                    "Bm9vhdb2ioXsEDRTUaI6Oq8H84r4yVKnvOynC9KvetU=",
+                    "K51LQRDJrpl3guFQmx0P2yCnwCu9i+pzBUYrn4Elseg=",
                 ],
                 [
-                "DMV827CFB9Yr9npEk8wmL7bAnVVwE//x9XP0MSIfj/k=",
-                "EnTmSaMu01WjGm7WlyThra3oV+hutcOhIbzRR5QyA8g="
-                ]
+                    "DMV827CFB9Yr9npEk8wmL7bAnVVwE//x9XP0MSIfj/k=",
+                    "EnTmSaMu01WjGm7WlyThra3oV+hutcOhIbzRR5QyA8g=",
+                ],
             ]
         );
     }

@@ -14,5 +14,6 @@ public class EntryFunctionBytes : Serializable, IEntryFunctionArgument
         s.Serialize(this);
     }
 
-    public static EntryFunctionBytes Deserialize(Deserializer d, int length) => new(FixedBytes.Deserialize(d, length).Value);
+    public static EntryFunctionBytes Deserialize(Deserializer d, int length) =>
+        new(FixedBytes.Deserialize(d, length).Value);
 }

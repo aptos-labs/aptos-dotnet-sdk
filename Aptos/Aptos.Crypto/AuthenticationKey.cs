@@ -1,7 +1,7 @@
 namespace Aptos;
 
-using Aptos.Schemes;
 using Aptos.Exceptions;
+using Aptos.Schemes;
 using Org.BouncyCastle.Security;
 
 public class AuthenticationKey : Serializable
@@ -12,7 +12,8 @@ public class AuthenticationKey : Serializable
 
     public AuthenticationKey(byte[] data)
     {
-        if (data.Length != LENGTH) throw new KeyLengthMismatch("AuthenticationKey", LENGTH);
+        if (data.Length != LENGTH)
+            throw new KeyLengthMismatch("AuthenticationKey", LENGTH);
         Data = Hex.FromHexInput(data);
     }
 
@@ -26,7 +27,11 @@ public class AuthenticationKey : Serializable
 
     public static AuthenticationKey Deserialize(Deserializer d) => new(d.FixedBytes(LENGTH));
 
-    public static AuthenticationKey FromSchemeAndBytes(AuthenticationKeyScheme scheme, string bytes) => FromSchemeAndBytes(scheme, Hex.FromHexString(bytes).ToByteArray());
+    public static AuthenticationKey FromSchemeAndBytes(
+        AuthenticationKeyScheme scheme,
+        string bytes
+    ) => FromSchemeAndBytes(scheme, Hex.FromHexString(bytes).ToByteArray());
+
     public static AuthenticationKey FromSchemeAndBytes(AuthenticationKeyScheme scheme, byte[] bytes)
     {
         // Create a new array combining input bytes and the scheme byte
@@ -37,5 +42,4 @@ public class AuthenticationKey : Serializable
         // Return new AuthenticationKey with the hash
         return new AuthenticationKey(DigestUtilities.CalculateDigest("SHA3-256", hashInput));
     }
-
 }

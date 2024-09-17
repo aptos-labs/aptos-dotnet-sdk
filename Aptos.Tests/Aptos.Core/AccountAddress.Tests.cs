@@ -20,11 +20,11 @@ public sealed class AccountAddressFeatureTests : Feature
     [When(@"I parse the account address")]
     public void WhenIParseTheAccountAddress() => WhenIConvertTheTypeToAType("", "string");
 
-
     [When(@"I convert the (.*) to a (.*)")]
     public void WhenIConvertTheTypeToAType(string _, string outputType)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         try
         {
@@ -44,7 +44,8 @@ public sealed class AccountAddressFeatureTests : Feature
     [Then(@"the result should be (.*) (.*)")]
     public void ThenTheResultShouldBeTypeValue(string type, string value)
     {
-        if (_output == null) throw new ArgumentException("No output value");
+        if (_output == null)
+            throw new ArgumentException("No output value");
 
         switch (type)
         {
@@ -62,5 +63,4 @@ public sealed class AccountAddressFeatureTests : Feature
     {
         Assert.NotNull(_exception);
     }
-
 }

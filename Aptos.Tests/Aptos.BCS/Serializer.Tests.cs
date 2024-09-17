@@ -26,7 +26,8 @@ public sealed class SerializerFeatureTests : Feature
     [When(@"I serialize as (.*) with length (.*)")]
     public void WhenISerializedAsTypeWithLength(string type, string _)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         Serializer serializer = new();
         switch (type)
@@ -39,13 +40,15 @@ public sealed class SerializerFeatureTests : Feature
                 break;
         }
 
-        if (_output == null) _output = serializer.ToBytes();
+        if (_output == null)
+            _output = serializer.ToBytes();
     }
 
     [When(@"I serialize as sequence of (.*)")]
     public void WhenISerializeAsSequenceOfType(string type)
     {
-        if (_inputSequence == null) throw new ArgumentException("No input sequence");
+        if (_inputSequence == null)
+            throw new ArgumentException("No input sequence");
 
         Serializer serializer = new();
         switch (type)
@@ -54,41 +57,70 @@ public sealed class SerializerFeatureTests : Feature
                 serializer.Vector(_inputSequence.Select(AccountAddress.From).ToArray());
                 break;
             case "string":
-                serializer.Vector(_inputSequence.Select(s => s.Replace("\"", "")).ToArray(), serializer.String);
+                serializer.Vector(
+                    _inputSequence.Select(s => s.Replace("\"", "")).ToArray(),
+                    serializer.String
+                );
                 break;
             case "bool":
-                serializer.Vector(_inputSequence.Select(bool.Parse).ToArray(), serializer.Serialize);
+                serializer.Vector(
+                    _inputSequence.Select(bool.Parse).ToArray(),
+                    serializer.Serialize
+                );
                 break;
             case "u8":
-                serializer.Vector(_inputSequence.Select(byte.Parse).ToArray(), serializer.Serialize);
+                serializer.Vector(
+                    _inputSequence.Select(byte.Parse).ToArray(),
+                    serializer.Serialize
+                );
                 break;
             case "u16":
-                serializer.Vector(_inputSequence.Select(ushort.Parse).ToArray(), serializer.Serialize);
+                serializer.Vector(
+                    _inputSequence.Select(ushort.Parse).ToArray(),
+                    serializer.Serialize
+                );
                 break;
             case "u32":
-                serializer.Vector(_inputSequence.Select(uint.Parse).ToArray(), serializer.Serialize);
+                serializer.Vector(
+                    _inputSequence.Select(uint.Parse).ToArray(),
+                    serializer.Serialize
+                );
                 break;
             case "u64":
-                serializer.Vector(_inputSequence.Select(ulong.Parse).ToArray(), serializer.Serialize);
+                serializer.Vector(
+                    _inputSequence.Select(ulong.Parse).ToArray(),
+                    serializer.Serialize
+                );
                 break;
             case "u128":
-                serializer.Vector(_inputSequence.Select(BigInteger.Parse).ToArray(), serializer.U128);
+                serializer.Vector(
+                    _inputSequence.Select(BigInteger.Parse).ToArray(),
+                    serializer.U128
+                );
                 break;
             case "u256":
-                serializer.Vector(_inputSequence.Select(BigInteger.Parse).ToArray(), serializer.U256);
+                serializer.Vector(
+                    _inputSequence.Select(BigInteger.Parse).ToArray(),
+                    serializer.U256
+                );
                 break;
             case "uleb128":
-                serializer.Vector(_inputSequence.Select(uint.Parse).ToArray(), serializer.U32AsUleb128);
+                serializer.Vector(
+                    _inputSequence.Select(uint.Parse).ToArray(),
+                    serializer.U32AsUleb128
+                );
                 break;
         }
 
-        if (_output == null) _output = serializer.ToBytes();
+        if (_output == null)
+            _output = serializer.ToBytes();
     }
 
     [When(@"I serialize as (.*)")]
     public void WhenISerializeAsType(string type)
     {
-        if (_inputValue == null) throw new ArgumentException("No input value");
+        if (_inputValue == null)
+            throw new ArgumentException("No input value");
 
         Serializer serializer = new();
         switch (type)
@@ -128,14 +160,15 @@ public sealed class SerializerFeatureTests : Feature
                 break;
         }
 
-        if (_output == null) _output = serializer.ToBytes();
+        if (_output == null)
+        {
+            _output = serializer.ToBytes();
+        }
     }
-
 
     [Then(@"the result should be bytes (.*)")]
     public void ThenTheResultShouldBeBytesValue(string value)
     {
         Assert.Equal(Hex.FromHexString(value).ToByteArray(), _output);
     }
-
 }

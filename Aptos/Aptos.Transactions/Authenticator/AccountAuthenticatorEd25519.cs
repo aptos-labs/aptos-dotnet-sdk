@@ -1,6 +1,7 @@
 namespace Aptos;
 
-public class AccountAuthenticatorEd25519(Ed25519PublicKey publicKey, Ed25519Signature signature) : AccountAuthenticator
+public class AccountAuthenticatorEd25519(Ed25519PublicKey publicKey, Ed25519Signature signature)
+    : AccountAuthenticator
 {
     public readonly Ed25519PublicKey PublicKey = publicKey;
 

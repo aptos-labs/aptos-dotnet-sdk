@@ -3,7 +3,12 @@ namespace Aptos;
 using Newtonsoft.Json;
 
 [Serializable]
-public class BlockEndInfo(bool blockGasLimitReached, bool blockOutputLimitReached, ulong blockEffectiveBlockGasUnits, ulong blockApproxOutputSize)
+public class BlockEndInfo(
+    bool blockGasLimitReached,
+    bool blockOutputLimitReached,
+    ulong blockEffectiveBlockGasUnits,
+    ulong blockApproxOutputSize
+)
 {
     [JsonProperty("block_gas_limit_reached")]
     public bool BlockGasLimitReached = blockGasLimitReached;

@@ -1,0 +1,21 @@
+root = true
+
+#### All C# files ####
+
+[*.cs]
+
+#### Naming Conventions ####
+
+# Use camelCase with '_' prefix for private fields
+dotnet_naming_style.underscore_prefix_style.capitalization = camel_case
+dotnet_naming_style.underscore_prefix_style.required_prefix = _
+
+#### C# Coding Conventions ####
+
+# Expression-bodied members
+csharp_style_expression_bodied_methods = when_possible:warning
+csharp_style_expression_bodied_constructors = when_possible:warning
+csharp_style_expression_bodied_operators = when_possible:warning
+csharp_style_expression_bodied_properties = when_possible:warning
+csharp_style_expression_bodied_indexers = when_possible:warning
+csharp_style_expression_bodied_accessors = when_possible:warning

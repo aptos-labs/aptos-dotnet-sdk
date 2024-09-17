@@ -5,7 +5,6 @@ using System.Numerics;
 
 internal static class Utilities
 {
-
     public static object UnstringifyBigInts(object o)
     {
         if (o is IEnumerable enumerable && (o is not string))
@@ -21,7 +20,9 @@ internal static class Utilities
         {
             (List<BigInteger> C, List<List<BigInteger>> M) res = (
                 tuple.Item1.Select(UnstringifyBigInts).Cast<BigInteger>().ToList(),
-                tuple.Item2.Select((e) => e.Select(UnstringifyBigInts).Cast<BigInteger>().ToList()).ToList()
+                tuple
+                    .Item2.Select((e) => e.Select(UnstringifyBigInts).Cast<BigInteger>().ToList())
+                    .ToList()
             );
             return res;
         }
@@ -35,5 +36,4 @@ internal static class Utilities
         }
         return o;
     }
-
 }

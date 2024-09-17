@@ -4,7 +4,7 @@ namespace Aptos.Exceptions
     {
         TooShort,
         InvalidLength,
-        InvalidCharacters
+        InvalidCharacters,
     }
 
     public class HexException(string message, HexInvalidReason reason) : BaseException(message)
@@ -20,14 +20,14 @@ namespace Aptos.Exceptions
         TooLong,
         LeadingZeroXRequired,
         LongFormRequiredUnlessSpecial,
-        InvalidPaddingZeroes
+        InvalidPaddingZeroes,
     }
 
-    public class AccountAddressParsingException(string message, AccountAddressInvalidReason reason) : BaseException(message)
+    public class AccountAddressParsingException(string message, AccountAddressInvalidReason reason)
+        : BaseException(message)
     {
         public AccountAddressInvalidReason Reason { get; } = reason;
     }
 
     public class UnexpectedResponseException(string message) : BaseException(message) { }
-
 }

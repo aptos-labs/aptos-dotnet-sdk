@@ -11,7 +11,8 @@ public class Hex(byte[] data)
 
     public byte[] ToByteArray() => _data;
 
-    public string ToStringWithoutPrefix() => BitConverter.ToString(_data).Replace("-", string.Empty).ToLower();
+    public string ToStringWithoutPrefix() =>
+        BitConverter.ToString(_data).Replace("-", string.Empty).ToLower();
 
     public override string ToString() => $"0x{ToStringWithoutPrefix()}";
 
@@ -41,7 +42,6 @@ public class Hex(byte[] data)
 
     public override int GetHashCode() => _data.GetHashCode();
 
-
     public static Hex FromHexString(string str)
     {
         string input = str;
@@ -58,7 +58,10 @@ public class Hex(byte[] data)
 
         if (input.Length % 2 != 0)
         {
-            throw new HexException("Hex string must be an even number of hex characters.", HexInvalidReason.InvalidLength);
+            throw new HexException(
+                "Hex string must be an even number of hex characters.",
+                HexInvalidReason.InvalidLength
+            );
         }
 
         try
@@ -67,7 +70,10 @@ public class Hex(byte[] data)
         }
         catch
         {
-            throw new HexException("Hex string contains invalid hex characters.", HexInvalidReason.InvalidCharacters);
+            throw new HexException(
+                "Hex string contains invalid hex characters.",
+                HexInvalidReason.InvalidCharacters
+            );
         }
     }
 
@@ -87,16 +93,22 @@ public class Hex(byte[] data)
             return false;
         }
     }
-
 }
 
 public class HexConverter : JsonConverter<Hex>
 {
-    public override Hex? ReadJson(JsonReader reader, Type objectType, Hex? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override Hex? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        Hex? existingValue,
+        bool hasExistingValue,
+        JsonSerializer serializer
+    )
     {
         string? value = (string?)reader.Value;
         return value != null ? Hex.FromHexString(value) : null;
     }
 
-    public override void WriteJson(JsonWriter writer, Hex? value, JsonSerializer serializer) => writer.WriteValue(value?.ToString());
+    public override void WriteJson(JsonWriter writer, Hex? value, JsonSerializer serializer) =>
+        writer.WriteValue(value?.ToString());
 }

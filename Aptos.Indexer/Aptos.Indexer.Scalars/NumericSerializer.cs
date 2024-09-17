@@ -4,5 +4,6 @@ using StrawberryShake.Serialization;
 
 public class NumericSerializer : ScalarSerializer<decimal>
 {
-    public NumericSerializer() : base("numeric") { }
+    public NumericSerializer()
+        : base("numeric") { }
 }

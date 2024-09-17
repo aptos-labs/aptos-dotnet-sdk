@@ -1,6 +1,9 @@
 namespace Aptos;
 
-public class SimpleTransaction(RawTransaction rawTransaction, AccountAddress? feePayerAddress = null) : AnyRawTransaction(rawTransaction, feePayerAddress)
+public class SimpleTransaction(
+    RawTransaction rawTransaction,
+    AccountAddress? feePayerAddress = null
+) : AnyRawTransaction(rawTransaction, feePayerAddress)
 {
     public override void Serialize(Serializer s)
     {
@@ -21,6 +24,9 @@ public class SimpleTransaction(RawTransaction rawTransaction, AccountAddress? fe
     {
         RawTransaction rawTransaction = RawTransaction.Deserialize(d);
         bool hasFeePayer = d.Bool();
-        return new SimpleTransaction(rawTransaction, hasFeePayer ? AccountAddress.Deserialize(d) : null);
+        return new SimpleTransaction(
+            rawTransaction,
+            hasFeePayer ? AccountAddress.Deserialize(d) : null
+        );
     }
 }

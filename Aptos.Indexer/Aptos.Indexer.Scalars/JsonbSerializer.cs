@@ -5,5 +5,6 @@ using StrawberryShake.Serialization;
 
 public class JsonbSerializer : ScalarSerializer<JsonElement>
 {
-    public JsonbSerializer() : base("jsonb") { }
+    public JsonbSerializer()
+        : base("jsonb") { }
 }

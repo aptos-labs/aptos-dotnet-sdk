@@ -1,6 +1,10 @@
 namespace Aptos;
 
-public class MultiAgentTransaction(RawTransaction rawTransaction, List<AccountAddress> secondarySignerAddresses, AccountAddress? feePayerAddress = null) : AnyRawTransaction(rawTransaction, feePayerAddress, secondarySignerAddresses)
+public class MultiAgentTransaction(
+    RawTransaction rawTransaction,
+    List<AccountAddress> secondarySignerAddresses,
+    AccountAddress? feePayerAddress = null
+) : AnyRawTransaction(rawTransaction, feePayerAddress, secondarySignerAddresses)
 {
     public new List<AccountAddress> SecondarySignerAddresses { get; } = secondarySignerAddresses;
 
@@ -26,6 +30,10 @@ public class MultiAgentTransaction(RawTransaction rawTransaction, List<AccountAd
         RawTransaction rawTransaction = RawTransaction.Deserialize(d);
         List<AccountAddress> secondarySignerAddresses = d.Vector(AccountAddress.Deserialize);
         bool hasFeePayer = d.Bool();
-        return new MultiAgentTransaction(rawTransaction, secondarySignerAddresses, hasFeePayer ? AccountAddress.Deserialize(d) : null);
+        return new MultiAgentTransaction(
+            rawTransaction,
+            secondarySignerAddresses,
+            hasFeePayer ? AccountAddress.Deserialize(d) : null
+        );
     }
 }

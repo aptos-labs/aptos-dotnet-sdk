@@ -1,3 +1,6 @@
 {
-  "dotnet.defaultSolution": "Aptos.sln"
+  "dotnet.defaultSolution": "Aptos.sln",
+  "[csharp]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  }
 }

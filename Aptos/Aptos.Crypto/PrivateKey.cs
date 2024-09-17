@@ -11,5 +11,4 @@ public abstract class PrivateKey : Serializable
     public abstract byte[] ToByteArray();
 
     public override string ToString() => Hex.FromHexInput(ToByteArray()).ToString();
-
 }

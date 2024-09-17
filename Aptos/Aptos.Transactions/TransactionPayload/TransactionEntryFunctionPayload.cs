@@ -10,5 +10,6 @@ public class TransactionEntryFunctionPayload(EntryFunction function) : Transacti
         Function.Serialize(s);
     }
 
-    public static new TransactionEntryFunctionPayload Deserialize(Deserializer d) => new(EntryFunction.Deserialize(d));
+    public static new TransactionEntryFunctionPayload Deserialize(Deserializer d) =>
+        new(EntryFunction.Deserialize(d));
 }
