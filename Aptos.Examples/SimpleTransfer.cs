@@ -8,8 +8,8 @@ public class SimpleTransferExample
     public static async Task Run()
     {
         Console.WriteLine("=== Addresses ===\n");
-        var aptos = new AptosClient(new AptosConfig(Networks.Testnet));
-        var account = Ed25519Account.Generate();
+        var aptos = new AptosClient(new AptosConfig(Networks.Devnet));
+        var account = Account.Generate();
         Console.WriteLine($"Alice: {account.Address}");
 
         Console.WriteLine("\n=== Funding accounts ===\n");

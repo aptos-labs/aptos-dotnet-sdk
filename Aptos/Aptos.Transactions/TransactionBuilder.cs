@@ -17,12 +17,12 @@ public static class TransactionBuilder
             return new AccountAuthenticatorEd25519(ed25519PublicKey, invalidSignature);
         }
 
-        if (publicKey is AnyPublicKey anyPublicKey)
+        if (publicKey is KeylessPublicKey keylessPublicKey)
         {
-            return new AccountAuthenticatorSingleKey(anyPublicKey, new AnySignature(invalidSignature));
+            return new AccountAuthenticatorSingleKey(keylessPublicKey, Keyless.GetSimulationSignature());
         }
 
-        throw new InvalidPublicKey(publicKey, "Authenticator for simulation cannot be derived for this PublicKey.");
+        return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
     }
 
     #endregion
@@ -42,7 +42,7 @@ public static class TransactionBuilder
                 (data.Transaction.FeePayerAddress, data.FeePayerAuthenticator)
             );
         }
-        else if (data.Transaction.SecondarySignerAddresses != null || data.SenderAuthenticator is AccountAuthenticatorMultiKey)
+        else if (data.Transaction.SecondarySignerAddresses != null)
         {
             // Make sure that there are enough additional authenticators for the secondary signers addresses
             if (data.Transaction.SecondarySignerAddresses?.Count > 0 && data.AdditionalSignersAuthenticators == null) throw new ArgumentException("AdditionalSignersAuthenticators is required for transactions that have secondary signer addresses");
@@ -59,6 +59,10 @@ public static class TransactionBuilder
         else if (data.SenderAuthenticator is AccountAuthenticatorSingleKey singleKeyAuthenticator)
         {
             transactionAuthenticator = new TransactionAuthenticatorSingleSender(singleKeyAuthenticator);
+        }
+        else if (data.SenderAuthenticator is AccountAuthenticatorMultiKey multiKeyAuthenticator)
+        {
+            transactionAuthenticator = new TransactionAuthenticatorSingleSender(multiKeyAuthenticator);
         }
 
         if (transactionAuthenticator == null) throw new ArgumentException("Invalid authentication scheme");

@@ -5,16 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-/// <summary>
-/// Base signatures for anything signed (not specific to signing transactions/messages). This may include all signatures needed for ZK proofs, Certificates, etc.
-/// </summary>
-public abstract class Signature : Serializable
-{
-    public abstract byte[] ToByteArray();
-
-    public override string ToString() => Hex.FromHexInput(ToByteArray()).ToString();
-}
-
 [JsonConverter(typeof(StringEnumConverter))]
 public enum SignatureVariant
 {
@@ -24,16 +14,17 @@ public enum SignatureVariant
     Secp256k1Ecdsa = 1,
     [EnumMember(Value = "keyless")]
     Keyless = 3,
+    // Unified Signatures variants (these do not exist on the blockchain)
+    [EnumMember(Value = "multikey")]
+    MultiKey = 99,
 }
 
+
 /// <summary>
-/// Signature for results of signing transactions/messages using a authentication scheme (e.g. Ed25519, Keyless, etc.)
+/// Base signatures for anything signed (not specific to signing transactions/messages). This may include all signatures needed for ZK proofs, Certificates, etc.
 /// </summary>
-/// <param name="type"> 
-/// The type of the signature (e.g. Ed25519, Keyless, etc.)
-/// </param>
-[JsonConverter(typeof(LegacySignatureConverter))]
-public abstract class LegacySignature(SignatureVariant type) : Signature
+[JsonConverter(typeof(SignatureConverter))]
+public abstract class Signature(SignatureVariant type) : Serializable
 {
     [JsonProperty("type")]
     public SignatureVariant Type = type;
@@ -41,19 +32,34 @@ public abstract class LegacySignature(SignatureVariant type) : Signature
     [JsonProperty("value")]
     public abstract Hex Value { get; }
 
+    public abstract byte[] ToByteArray();
+
+    public override string ToString() => Hex.FromHexInput(ToByteArray()).ToString();
+
+    public static Signature Deserialize(Deserializer d)
+    {
+        SignatureVariant variant = (SignatureVariant)d.Uleb128AsU32();
+        return variant switch
+        {
+            SignatureVariant.Ed25519 => Ed25519Signature.Deserialize(d),
+            SignatureVariant.Secp256k1Ecdsa => Secp256k1Signature.Deserialize(d),
+            SignatureVariant.Keyless => KeylessSignature.Deserialize(d),
+            SignatureVariant.MultiKey => MultiKeySignature.Deserialize(d),
+            _ => throw new ArgumentException("Invalid signature variant"),
+        };
+    }
 }
 
-public abstract class UnifiedSignature : Signature { }
 
-public class LegacySignatureConverter : JsonConverter<LegacySignature>
+public class SignatureConverter : JsonConverter<Signature>
 {
-    public override LegacySignature? ReadJson(JsonReader reader, Type objectType, LegacySignature? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override Signature? ReadJson(JsonReader reader, Type objectType, Signature? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
         AnyValue? anyValue = JsonConvert.DeserializeObject<AnyValue>(jsonObject.ToString());
-        if (anyValue == null) throw new Exception("Invalid LegacySignature shape");
+        if (anyValue == null) throw new Exception("Invalid Signature shape");
 
         return type switch
         {
@@ -64,7 +70,7 @@ public class LegacySignatureConverter : JsonConverter<LegacySignature>
         };
     }
 
-    public override void WriteJson(JsonWriter writer, LegacySignature? value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, Signature? value, JsonSerializer serializer)
     {
         if (value == null) writer.WriteNull();
         else

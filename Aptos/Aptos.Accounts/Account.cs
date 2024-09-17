@@ -10,7 +10,7 @@ public abstract class Account
     /// <summary>
     /// Gets the public key of the account.
     /// </summary> 
-    public abstract AccountPublicKey PublicKey { get; }
+    public abstract PublicKey PublicKey { get; }
 
     /// <summary>
     /// Gets the address of the account.
@@ -21,6 +21,12 @@ public abstract class Account
     /// Gets the signing scheme used by the account.
     /// </summary>
     public abstract SigningScheme SigningScheme { get; }
+
+    /// <summary>
+    /// Gets the authentication key for the account.
+    /// </summary>
+    /// <returns>The authentication key for the account.</returns>
+    public abstract AuthenticationKey AuthKey();
 
     /// <inheritdoc cref="Sign(byte[])"/>
     public Signature Sign(string message) => Sign(SigningMessage.Convert(message));

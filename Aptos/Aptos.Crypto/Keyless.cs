@@ -2,7 +2,6 @@ namespace Aptos;
 
 using System.Numerics;
 using Aptos.Poseidon;
-using Aptos.Schemes;
 using Microsoft.IdentityModel.JsonWebTokens;
 
 public static class Keyless
@@ -39,9 +38,23 @@ public static class Keyless
         return BytesHash.BigIntegerToBytesLE(Hash.PoseidonHash(fields), KeylessPublicKey.ID_COMMITMENT_LENGTH);
     }
 
+    public static KeylessSignature GetSimulationSignature() => new(
+        ephemeralCertificate: new EphemeralCertificate(new ZeroKnowledgeSignature(
+            proof: new ZkProof(
+                new Groth16Zkp(new byte[32], new byte[64], new byte[32]), ZkpVariant.Groth16),
+                expHorizonSecs: 0
+            ),
+            variant: EphemeralSignatureVariant.ZkProof
+        ),
+        jwtHeader: "{}",
+        expiryDateSecs: 0,
+        ephemeralPublicKey: new EphemeralPublicKey(new Ed25519PublicKey(new byte[32])),
+        ephemeralSignature: new EphemeralSignature(new Ed25519Signature(new byte[64]))
+    );
+
 }
 
-public class KeylessPublicKey : LegacyAccountPublicKey
+public class KeylessPublicKey : PublicKey
 {
     public static readonly int ID_COMMITMENT_LENGTH = 32;
 
@@ -61,14 +74,6 @@ public class KeylessPublicKey : LegacyAccountPublicKey
         IdCommitment = idCommitment;
     }
 
-    public override AuthenticationKey AuthKey()
-    {
-        Serializer s = new();
-        s.U32AsUleb128((uint)Type);
-        s.FixedBytes(BcsToBytes());
-        return AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, s.ToBytes());
-    }
-
     public override bool VerifySignature(byte[] message, Signature signature) => throw new NotImplementedException();
 
     public override byte[] ToByteArray() => BcsToBytes();
@@ -79,7 +84,7 @@ public class KeylessPublicKey : LegacyAccountPublicKey
         s.Bytes(IdCommitment);
     }
 
-    public static KeylessPublicKey Deserialize(Deserializer d)
+    public static new KeylessPublicKey Deserialize(Deserializer d)
     {
         string iss = d.String();
         byte[] idCommitment = d.Bytes();
@@ -91,7 +96,7 @@ public class KeylessPublicKey : LegacyAccountPublicKey
 
 }
 
-public class KeylessSignature : LegacySignature
+public class KeylessSignature : Signature
 {
 
     public readonly EphemeralCertificate EphemeralCertificate;
@@ -126,7 +131,7 @@ public class KeylessSignature : LegacySignature
         EphemeralSignature.Serialize(s);
     }
 
-    public static KeylessSignature Deserialize(Deserializer d)
+    public static new KeylessSignature Deserialize(Deserializer d)
     {
         EphemeralCertificate ephemeralCertificate = EphemeralCertificate.Deserialize(d);
         string jwtHeader = d.String();
@@ -135,76 +140,6 @@ public class KeylessSignature : LegacySignature
         EphemeralSignature ephemeralSignature = EphemeralSignature.Deserialize(d);
         return new KeylessSignature(ephemeralCertificate, jwtHeader, expiryDateSecs, ephemeralPublicKey, ephemeralSignature);
     }
-}
 
-public enum EphemeralSignatureVariant : uint
-{
-    ZkProof = 0,
-}
 
-public class EphemeralCertificate : Signature
-{
-    public readonly Signature Signature;
-
-    public readonly EphemeralSignatureVariant Variant;
-
-    public EphemeralCertificate(Signature signature, EphemeralSignatureVariant variant)
-    {
-        Signature = signature;
-        Variant = variant;
-    }
-
-    public override byte[] ToByteArray() => Signature.ToByteArray();
-
-    public override void Serialize(Serializer s)
-    {
-        s.U32AsUleb128((uint)Variant);
-        Signature.Serialize(s);
-    }
-
-    public static EphemeralCertificate Deserialize(Deserializer d)
-    {
-        EphemeralSignatureVariant variant = (EphemeralSignatureVariant)d.Uleb128AsU32();
-        return variant switch
-        {
-            EphemeralSignatureVariant.ZkProof => new EphemeralCertificate(ZeroKnowledgeSignature.Deserialize(d), EphemeralSignatureVariant.ZkProof),
-            _ => throw new ArgumentException("Invalid signature variant"),
-        };
-    }
-
-}
-
-public class ZeroKnowledgeSignature(ZkProof proof, ulong expHorizonSecs, string? extraField, string? overrideAudVal, EphemeralSignature? trainingWheelSignature) : Signature
-{
-
-    public readonly ZkProof Proof = proof;
-
-    public readonly ulong ExpHorizonSecs = expHorizonSecs;
-
-    public readonly string? ExtraField = extraField;
-
-    public readonly string? OverrideAudVal = overrideAudVal;
-
-    public readonly EphemeralSignature? TrainingWheelSignature = trainingWheelSignature;
-
-    public override byte[] ToByteArray() => BcsToBytes();
-
-    public override void Serialize(Serializer s)
-    {
-        Proof.Serialize(s);
-        s.U64(ExpHorizonSecs);
-        s.OptionString(ExtraField);
-        s.OptionString(OverrideAudVal);
-        s.Option(TrainingWheelSignature);
-    }
-
-    public static ZeroKnowledgeSignature Deserialize(Deserializer d)
-    {
-        ZkProof proof = ZkProof.Deserialize(d);
-        ulong expHorizonSecs = d.U64();
-        string? extraField = d.OptionString();
-        string? overrideAudVal = d.OptionString();
-        EphemeralSignature? trainingWheelSignature = d.Option(EphemeralSignature.Deserialize);
-        return new ZeroKnowledgeSignature(proof, expHorizonSecs, extraField, overrideAudVal, trainingWheelSignature);
-    }
 }

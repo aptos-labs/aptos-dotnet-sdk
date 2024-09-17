@@ -15,12 +15,12 @@ public class MultiKeyAccount : Account
     /// <summary>
     /// Gets the MultiKeyPublicKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override PublicKey PublicKey => _publicKey;
 
     /// <summary>
     /// Gets the address of the account.
     /// </summary>
-    public override AccountAddress Address => PublicKey.AuthKey().DerivedAddress();
+    public override AccountAddress Address => AuthKey().DerivedAddress();
 
     /// <summary>
     /// The signers used to sign messages. These signers should correspond to public keys in the
@@ -42,6 +42,8 @@ public class MultiKeyAccount : Account
     /// </summary>
     public override SigningScheme SigningScheme => SigningScheme.MultiKey;
 
+    public override AuthenticationKey AuthKey() => AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.MultiKey, _publicKey.BcsToBytes());
+
     /// <summary>
     /// Initializes a new instance of the MultiKeyAccount class with a MultiKey and a list of signers.
     /// 
@@ -62,7 +64,7 @@ public class MultiKeyAccount : Account
             bitPositions.Add(multiKey.GetIndex(signer.PublicKey));
         }
 
-        if (signers.Any(s => s.PublicKey is UnifiedAccountPublicKey)) throw new ArgumentException("MultiKeyAccount cannot be used with unified account public keys (e.g. AnyPublicKey or MultiKeyPublicKey)");
+        if (signers.Any(s => !PublicKey.IsSigningKey(s.PublicKey))) throw new ArgumentException("MultiKeyAccount cannot be used with non-signing public keys (e.g. MultiKeyPublicKey)");
         if (multiKey.SignaturesRequired > signers.Count) throw new ArgumentException($"Signatures required must be less than or equal to the number of signers");
 
         // Zip signers and bit positions and sort signers by bit positions in order

@@ -1,7 +1,6 @@
 namespace Aptos;
 
 using Aptos.Exceptions;
-using Aptos.Schemes;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -25,7 +24,7 @@ public static class Ed25519
     }
 }
 
-public class Ed25519PublicKey : LegacyAccountPublicKey
+public class Ed25519PublicKey : PublicKey
 {
     static readonly int LENGTH = 32;
 
@@ -42,8 +41,6 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
 
     public override byte[] ToByteArray() => _key.ToByteArray();
 
-    public override AuthenticationKey AuthKey() => AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.Ed25519, _key.ToByteArray());
-
     public override bool VerifySignature(byte[] message, Signature signature)
     {
         if (!Ed25519.IsCanonicalEd25519Signature(signature)) return false;
@@ -59,7 +56,7 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
 
     public override void Serialize(Serializer s) => s.Bytes(_key.ToByteArray());
 
-    public static Ed25519PublicKey Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Ed25519PublicKey Deserialize(Deserializer d) => new(d.Bytes());
 
 }
 
@@ -121,7 +118,7 @@ public class Ed25519PrivateKey : PrivateKey
     public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
-public class Ed25519Signature : LegacySignature
+public class Ed25519Signature : Signature
 {
 
     static readonly int LENGTH = 64;
@@ -141,6 +138,6 @@ public class Ed25519Signature : LegacySignature
 
     public override void Serialize(Serializer s) => s.Bytes(_value.ToByteArray());
 
-    public static Ed25519Signature Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Ed25519Signature Deserialize(Deserializer d) => new(d.Bytes());
 
 }

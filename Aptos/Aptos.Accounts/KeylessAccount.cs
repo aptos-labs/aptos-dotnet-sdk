@@ -14,7 +14,7 @@ public class KeylessAccount : Account
     /// <summary>
     /// Gets the KeylessPublicKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override PublicKey PublicKey => _publicKey;
 
     private readonly AccountAddress _address;
     /// <summary>
@@ -23,6 +23,14 @@ public class KeylessAccount : Account
     public override AccountAddress Address => _address;
 
     public override SigningScheme SigningScheme => SigningScheme.SingleKey;
+
+    public override AuthenticationKey AuthKey()
+    {
+        Serializer s = new();
+        s.U32AsUleb128((uint)_publicKey.Type);
+        s.FixedBytes(_publicKey.BcsToBytes());
+        return AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, s.ToBytes());
+    }
 
     public readonly EphemeralKeyPair EphemeralKeyPair;
 
@@ -43,7 +51,7 @@ public class KeylessAccount : Account
         if (pepper.Length != PEPPER_LENGTH) throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
 
         _publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
-        _address = address ?? _publicKey.AuthKey().DerivedAddress();
+        _address = address ?? AuthKey().DerivedAddress();
         EphemeralKeyPair = ekp;
         Proof = proof;
         Pepper = pepper;
@@ -84,9 +92,9 @@ public class KeylessAccount : Account
         );
     }
 
-    public override AccountAuthenticator SignWithAuthenticator(byte[] message) => new AccountAuthenticatorSingleKey(new AnyPublicKey(_publicKey), new AnySignature(Sign(message)));
+    public override AccountAuthenticator SignWithAuthenticator(byte[] message) => new AccountAuthenticatorSingleKey(_publicKey, Sign(message));
 
-    public override AccountAuthenticator SignTransactionWithAuthenticator(AnyRawTransaction transaction) => new AccountAuthenticatorSingleKey(new AnyPublicKey(_publicKey), new AnySignature(SignTransaction(transaction)));
+    public override AccountAuthenticator SignTransactionWithAuthenticator(AnyRawTransaction transaction) => new AccountAuthenticatorSingleKey(_publicKey, SignTransaction(transaction));
 
     public void Serialize(Serializer s)
     {

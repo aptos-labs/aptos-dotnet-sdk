@@ -1,6 +1,7 @@
 namespace Aptos;
 
 using Aptos.Core;
+using Aptos.Schemes;
 using Newtonsoft.Json;
 
 public class KeylessClient(AptosClient client)
@@ -14,7 +15,14 @@ public class KeylessClient(AptosClient client)
 
         // Derive the keyless account from the JWT and EphemeralKeyPair
         var publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
-        var address = await _client.Account.LookupOriginalAccountAddress(publicKey.AuthKey().DerivedAddress().ToString());
+
+        // Derive the address from the public key
+        Serializer s = new();
+        s.U32AsUleb128((uint)publicKey.Type);
+        s.FixedBytes(publicKey.BcsToBytes());
+        var address = await _client.Account.LookupOriginalAccountAddress(AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.SingleKey, s.ToBytes())
+            .DerivedAddress()
+            .ToString());
 
         // Create and return the keyless account
         return new KeylessAccount(jwt, ekp, proof, pepper, uidKey, address);

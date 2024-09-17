@@ -27,6 +27,8 @@ public class AuthenticationKey : Serializable
     public static AuthenticationKey Deserialize(Deserializer d) => new(d.FixedBytes(LENGTH));
 
     public static AuthenticationKey FromSchemeAndBytes(AuthenticationKeyScheme scheme, string bytes) => FromSchemeAndBytes(scheme, Hex.FromHexString(bytes).ToByteArray());
+    public static AuthenticationKey FromSchemeAndBytes(SigningScheme scheme, string bytes) => FromSchemeAndBytes(scheme, Hex.FromHexString(bytes).ToByteArray());
+    public static AuthenticationKey FromSchemeAndBytes(SigningScheme scheme, byte[] bytes) => FromSchemeAndBytes((AuthenticationKeyScheme)scheme, bytes);
     public static AuthenticationKey FromSchemeAndBytes(AuthenticationKeyScheme scheme, byte[] bytes)
     {
         // Create a new array combining input bytes and the scheme byte

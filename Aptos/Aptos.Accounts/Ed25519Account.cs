@@ -17,7 +17,7 @@ public class Ed25519Account : Account
     /// <summary>
     /// Gets the Ed25519PublicKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override PublicKey PublicKey => _publicKey;
 
     private readonly AccountAddress _address;
     /// <summary>
@@ -29,6 +29,13 @@ public class Ed25519Account : Account
     /// The Ed25519 account uses a Ed25519 signing scheme.
     /// </summary>
     public override SigningScheme SigningScheme => SigningScheme.Ed25519;
+
+    /// <summary
+    /// Gets the authentication key for the account.
+    /// </summary>
+    /// <returns>The authentication key for the account.</returns>
+    public override AuthenticationKey AuthKey() => AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.Ed25519, _publicKey.ToByteArray());
+
 
     /// <inheritdoc cref="Ed25519Account(Ed25519PrivateKey, AccountAddress?)"/>
     public Ed25519Account(Ed25519PrivateKey privateKey) : this(privateKey, (AccountAddress?)null) { }
@@ -47,7 +54,7 @@ public class Ed25519Account : Account
     public Ed25519Account(Ed25519PrivateKey privateKey, AccountAddress? address = null)
     {
         _publicKey = (Ed25519PublicKey)privateKey.PublicKey();
-        _address = address ?? PublicKey.AuthKey().DerivedAddress();
+        _address = address ?? AuthKey().DerivedAddress();
         PrivateKey = privateKey;
     }
 

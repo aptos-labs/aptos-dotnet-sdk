@@ -20,7 +20,7 @@ public static class Secp256k1
     public static readonly BigInteger HALF_CURVE_ORDER = CustomNamedCurves.GetByName("secp256k1").Curve.Order.ShiftRight(1);
 }
 
-public class Secp256k1PublicKey : LegacyPublicKey
+public class Secp256k1PublicKey : PublicKey
 {
     static readonly int LENGTH = 65;
 
@@ -57,7 +57,7 @@ public class Secp256k1PublicKey : LegacyPublicKey
         return signer.VerifySignature(hash, r, s);
     }
 
-    public static Secp256k1PublicKey Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Secp256k1PublicKey Deserialize(Deserializer d) => new(d.Bytes());
 
 }
 
@@ -144,7 +144,7 @@ public class Secp256k1PrivateKey : PrivateKey
     public static Secp256k1PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
-public class Secp256k1Signature : LegacySignature
+public class Secp256k1Signature : Signature
 {
     static readonly int LENGTH = 64;
 
@@ -163,5 +163,5 @@ public class Secp256k1Signature : LegacySignature
 
     public override void Serialize(Serializer s) => s.Bytes(_value.ToByteArray());
 
-    public static Secp256k1Signature Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Secp256k1Signature Deserialize(Deserializer d) => new(d.Bytes());
 }
