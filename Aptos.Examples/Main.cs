@@ -7,7 +7,9 @@ public class RunExample
         {
             { "1", KeylessTransferExample.Run },
             { "2", SimpleTransferExample.Run },
-            { "3", PlaygroundExample.Run },
+            { "3", SimpleTransferSingleKeyExample.Run },
+            { "4", SimpleTransferMultiKeyExample.Run },
+            { "5", PlaygroundExample.Run },
         };
 
     public static async Task Main()
