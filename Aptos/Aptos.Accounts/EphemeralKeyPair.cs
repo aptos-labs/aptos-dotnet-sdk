@@ -35,17 +35,26 @@ public class EphemeralKeyPair : Serializable
     public readonly ulong ExpiryTimestamp;
 
     /// <summary>
-    /// The value passed to the IdP when the user logs in. 
+    /// The value passed to the IdP when the user logs in.
     /// </summary>
     public readonly string Nonce;
 
-    public EphemeralKeyPair(PrivateKey privateKey, ulong? expiryTimestamp = null, byte[]? blinder = null)
+    public EphemeralKeyPair(
+        PrivateKey privateKey,
+        ulong? expiryTimestamp = null,
+        byte[]? blinder = null
+    )
     {
         _privateKey = privateKey;
         PublicKey = new EphemeralPublicKey(privateKey.PublicKey());
 
         // By default, the expiry timestamp is 14 days from now.
-        ExpiryTimestamp = expiryTimestamp ?? (ulong)Utilities.FloorToWholeHour(DateTime.Now.ToUnixTimestamp() + DEFAULT_EXPIRY_DURATION);
+        ExpiryTimestamp =
+            expiryTimestamp
+            ?? (ulong)
+                Utilities.FloorToWholeHour(
+                    DateTime.Now.ToUnixTimestamp() + DEFAULT_EXPIRY_DURATION
+                );
         Blinder = blinder ?? GenerateBlinder();
 
         // Compute nonce
@@ -59,7 +68,8 @@ public class EphemeralKeyPair : Serializable
 
     public EphemeralSignature Sign(byte[] data)
     {
-        if (IsExpired()) throw new Exception("EphemeralKeyPair is expired");
+        if (IsExpired())
+            throw new Exception("EphemeralKeyPair is expired");
         var signature = _privateKey.Sign(data);
         return new EphemeralSignature(signature);
     }
@@ -71,7 +81,6 @@ public class EphemeralKeyPair : Serializable
         s.U64(ExpiryTimestamp);
         s.Bytes(Blinder);
     }
-
 
     public static EphemeralKeyPair Deserialize(Deserializer d)
     {
@@ -98,5 +107,4 @@ public class EphemeralKeyPair : Serializable
         RandomNumberGenerator.Create().GetBytes(blinder);
         return blinder;
     }
-
 }
