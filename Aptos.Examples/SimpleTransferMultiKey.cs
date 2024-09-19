@@ -9,7 +9,7 @@ public class SimpleTransferMultiKeyExample
         Console.WriteLine("=== Addresses ===\n");
         var aptos = new AptosClient(new AptosConfig(Networks.Devnet));
         var aliceSigner = Account.Generate();
-        var bobSigner = Account.Generate();
+        var bobSigner = SingleKeyAccount.Generate();
         var account = new MultiKeyAccount(
             new([aliceSigner.PublicKey, bobSigner.PublicKey], 1),
             [aliceSigner]

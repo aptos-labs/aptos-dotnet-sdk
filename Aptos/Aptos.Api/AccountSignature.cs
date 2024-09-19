@@ -65,38 +65,36 @@ public class AccountEd25519Signature(Hex publicKey, Hex signature)
     public Hex Signature = signature;
 }
 
-public class AccountSingleKeySignature(ILegacyPublicKey publicKey, LegacySignature signature)
+public class AccountSingleKeySignature(PublicKey publicKey, PublicKeySignature signature)
     : AccountSignature(SigningScheme.SingleKey)
 {
     [JsonProperty("public_key")]
-    public ILegacyPublicKey PublicKey = publicKey;
+    public PublicKey PublicKey = publicKey;
 
     [JsonProperty("signature")]
-    public LegacySignature Signature = signature;
+    public PublicKeySignature Signature = signature;
 }
 
 public class AccountMultiKeySignature(
-    List<ILegacyPublicKey> publicKeys,
-    List<LegacySignature> signatures,
+    List<PublicKey> publicKeys,
+    List<AccountMultiKeySignature.IndexedAccountSignature> signatures,
     byte signaturesRequired
 ) : AccountSignature(SigningScheme.MultiKey)
 {
-    public class IndexedAccountSignature(byte index, LegacySignature signature)
+    public class IndexedAccountSignature(byte index, PublicKeySignature signature)
     {
         [JsonProperty("index")]
         public byte Index = index;
 
         [JsonProperty("signature")]
-        public LegacySignature Signature = signature;
+        public PublicKeySignature Signature = signature;
     }
 
     [JsonProperty("public_keys")]
-    public List<ILegacyPublicKey> PublicKeys = publicKeys;
+    public List<PublicKey> PublicKeys = publicKeys;
 
     [JsonProperty("signatures")]
-    public List<IndexedAccountSignature> Signatures = signatures
-        .Select((sig, i) => new IndexedAccountSignature((byte)i, sig))
-        .ToList();
+    public List<IndexedAccountSignature> Signatures = signatures;
 
     [JsonProperty("signatures_required")]
     public byte SignaturesRequired = signaturesRequired;

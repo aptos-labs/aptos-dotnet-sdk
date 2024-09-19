@@ -10,17 +10,17 @@ using Aptos.Schemes;
 /// </summary>
 public class MultiKeyAccount : Account
 {
-    private readonly MultiKey _publicKey;
+    private readonly MultiKey _verifyingKey;
 
     /// <summary>
     /// Gets the MultiKeyPublicKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override IVerifyingKey VerifyingKey => _verifyingKey;
 
     /// <summary>
     /// Gets the address of the account.
     /// </summary>
-    public override AccountAddress Address => PublicKey.AuthKey().DerivedAddress();
+    public override AccountAddress Address => _verifyingKey.AuthKey().DerivedAddress();
 
     /// <summary>
     /// The signers used to sign messages. These signers should correspond to public keys in the
@@ -52,20 +52,29 @@ public class MultiKeyAccount : Account
     /// <exception cref="ArgumentException">If the signers do not correspond to public keys in the MultiKeyAccount's public key.</exception>
     public MultiKeyAccount(MultiKey multiKey, List<Account> signers)
     {
-        _publicKey = multiKey;
+        _verifyingKey = multiKey;
 
         // Get the index of each respective signer in the bitmpa
         List<int> bitPositions = [];
         for (int i = 0; i < signers.Count; i++)
         {
             var signer = signers[i];
-            bitPositions.Add(multiKey.GetIndex(signer.PublicKey));
+            if (signer.VerifyingKey is SingleKey singleKey)
+            {
+                bitPositions.Add(multiKey.GetIndex(singleKey.PublicKey));
+            }
+            else if (signer.VerifyingKey is Ed25519PublicKey ed25519PublicKey)
+            {
+                bitPositions.Add(multiKey.GetIndex(ed25519PublicKey));
+            }
+            else
+            {
+                throw new ArgumentException(
+                    "MultiKeyAccount cannot be used with unified verifying keys (e.g. MultiKeyPublicKey)"
+                );
+            }
         }
 
-        if (signers.Any(s => s.PublicKey is UnifiedAccountPublicKey))
-            throw new ArgumentException(
-                "MultiKeyAccount cannot be used with unified account public keys (e.g. AnyPublicKey or MultiKeyPublicKey)"
-            );
         if (multiKey.SignaturesRequired > signers.Count)
             throw new ArgumentException(
                 $"Signatures required must be less than or equal to the number of signers"
@@ -101,7 +110,7 @@ public class MultiKeyAccount : Account
         for (int i = 0; i < signature.Signatures.Count; i++)
         {
             Signature singleSignature = signature.Signatures[i];
-            PublicKey singlePublicKey = _publicKey.PublicKeys[SignerIndicies[i]];
+            PublicKey singlePublicKey = _verifyingKey.PublicKeys[SignerIndicies[i]];
             if (!singlePublicKey.VerifySignature(message, singleSignature))
                 return false;
         }
@@ -116,18 +125,15 @@ public class MultiKeyAccount : Account
     /// <returns>The signed message.</returns>
     public override Signature Sign(byte[] message) =>
         new MultiKeySignature(
-            Signers.Select(s => s.Sign(message)).ToList(),
-            MultiKey.CreateBitmap(SignerIndicies)
-        );
-
-    /// <summary>
-    /// Signs a transaction using the signer.
-    /// </summary>
-    /// <param name="transaction">The transaction to sign.</param>
-    /// <returns>The transaction signature.</returns>
-    public override Signature SignTransaction(AnyRawTransaction transaction) =>
-        new MultiKeySignature(
-            Signers.Select(s => s.SignTransaction(transaction)).ToList(),
+            Signers
+                .Select(s =>
+                    s.Sign(message) is PublicKeySignature publicKeySignature
+                        ? publicKeySignature
+                        : throw new Exception(
+                            "MultiKeyAccount cannot be used with unified accounts (e.g. MultiKeyAccount)"
+                        )
+                )
+                .ToList(),
             MultiKey.CreateBitmap(SignerIndicies)
         );
 
@@ -137,18 +143,5 @@ public class MultiKeyAccount : Account
     /// <param name="message">The message to sign as a byte array.</param>
     /// <returns>The authenticator containing the signature.</returns>
     public override AccountAuthenticator SignWithAuthenticator(byte[] message) =>
-        new AccountAuthenticatorMultiKey(_publicKey, (MultiKeySignature)Sign(message));
-
-    /// <summary>
-    /// Signs a message and returns an authenticator with the signature.
-    /// </summary>
-    /// <param name="message">The message to sign as a byte array.</param>
-    /// <returns>The authenticator containing the signature.</returns>
-    public override AccountAuthenticator SignTransactionWithAuthenticator(
-        AnyRawTransaction transaction
-    ) =>
-        new AccountAuthenticatorMultiKey(
-            _publicKey,
-            (MultiKeySignature)SignTransaction(transaction)
-        );
+        new AccountAuthenticatorMultiKey(_verifyingKey, (MultiKeySignature)Sign(message));
 }

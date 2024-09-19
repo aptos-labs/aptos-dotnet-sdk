@@ -35,33 +35,17 @@ public class EphemeralKeyPair : Serializable
     public readonly ulong ExpiryTimestamp;
 
     /// <summary>
-    /// The value passed to the IdP when the user logs in.
+    /// The value passed to the IdP when the user logs in. 
     /// </summary>
     public readonly string Nonce;
 
-    public EphemeralKeyPair(
-        PrivateKey privateKey,
-        ulong? expiryTimestamp = null,
-        byte[]? blinder = null
-    )
+    public EphemeralKeyPair(PrivateKey privateKey, ulong? expiryTimestamp = null, byte[]? blinder = null)
     {
         _privateKey = privateKey;
-        if (privateKey.PublicKey() is LegacyAccountPublicKey publicKey)
-        {
-            PublicKey = new EphemeralPublicKey(publicKey);
-        }
-        else
-            throw new ArgumentException(
-                "Invalid PrivateKey passed to EphemeralKeyPair. Expected LegacyAccountPublicKey."
-            );
+        PublicKey = new EphemeralPublicKey(privateKey.PublicKey());
 
         // By default, the expiry timestamp is 14 days from now.
-        ExpiryTimestamp =
-            expiryTimestamp
-            ?? (ulong)
-                Utilities.FloorToWholeHour(
-                    DateTime.Now.ToUnixTimestamp() + DEFAULT_EXPIRY_DURATION
-                );
+        ExpiryTimestamp = expiryTimestamp ?? (ulong)Utilities.FloorToWholeHour(DateTime.Now.ToUnixTimestamp() + DEFAULT_EXPIRY_DURATION);
         Blinder = blinder ?? GenerateBlinder();
 
         // Compute nonce
@@ -75,16 +59,9 @@ public class EphemeralKeyPair : Serializable
 
     public EphemeralSignature Sign(byte[] data)
     {
-        if (IsExpired())
-            throw new Exception("EphemeralKeyPair is expired");
+        if (IsExpired()) throw new Exception("EphemeralKeyPair is expired");
         var signature = _privateKey.Sign(data);
-        if (signature is LegacySignature legacySignature)
-        {
-            return new EphemeralSignature(legacySignature);
-        }
-        throw new ArgumentException(
-            "Invalid PrivateKey passed to EphemeralKeyPair. Expecting a legacy private key."
-        );
+        return new EphemeralSignature(signature);
     }
 
     public override void Serialize(Serializer s)
@@ -94,6 +71,7 @@ public class EphemeralKeyPair : Serializable
         s.U64(ExpiryTimestamp);
         s.Bytes(Blinder);
     }
+
 
     public static EphemeralKeyPair Deserialize(Deserializer d)
     {
@@ -120,4 +98,5 @@ public class EphemeralKeyPair : Serializable
         RandomNumberGenerator.Create().GetBytes(blinder);
         return blinder;
     }
+
 }

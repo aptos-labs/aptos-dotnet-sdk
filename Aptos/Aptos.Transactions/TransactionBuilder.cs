@@ -16,18 +16,7 @@ public static class TransactionBuilder
             return new AccountAuthenticatorEd25519(ed25519PublicKey, invalidSignature);
         }
 
-        if (publicKey is AnyPublicKey anyPublicKey)
-        {
-            return new AccountAuthenticatorSingleKey(
-                anyPublicKey,
-                new AnySignature(invalidSignature)
-            );
-        }
-
-        throw new InvalidPublicKey(
-            publicKey,
-            "Authenticator for simulation cannot be derived for this PublicKey."
-        );
+        return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
     }
 
     #endregion
@@ -50,10 +39,7 @@ public static class TransactionBuilder
                 (data.Transaction.FeePayerAddress, data.FeePayerAuthenticator)
             );
         }
-        else if (
-            data.Transaction.SecondarySignerAddresses != null
-            || data.SenderAuthenticator is AccountAuthenticatorMultiKey
-        )
+        else if (data.Transaction.SecondarySignerAddresses != null)
         {
             // Make sure that there are enough additional authenticators for the secondary signers addresses
             if (
@@ -80,6 +66,12 @@ public static class TransactionBuilder
         {
             transactionAuthenticator = new TransactionAuthenticatorSingleSender(
                 singleKeyAuthenticator
+            );
+        }
+        else if (data.SenderAuthenticator is AccountAuthenticatorMultiKey multiKeyAuthenticator)
+        {
+            transactionAuthenticator = new TransactionAuthenticatorSingleSender(
+                multiKeyAuthenticator
             );
         }
 

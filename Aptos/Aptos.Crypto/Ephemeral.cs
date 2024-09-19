@@ -2,13 +2,13 @@ namespace Aptos;
 
 using Aptos.Exceptions;
 
-public class EphemeralPublicKey : LegacyPublicKey
+public class EphemeralPublicKey : PublicKey
 {
-    public readonly LegacyAccountPublicKey PublicKey;
+    public readonly PublicKey PublicKey;
 
     public override Hex Value => PublicKey.BcsToHex();
 
-    public EphemeralPublicKey(LegacyAccountPublicKey publicKey)
+    public EphemeralPublicKey(PublicKey publicKey)
         : base(publicKey.Type)
     {
         PublicKey = publicKey;
@@ -34,7 +34,7 @@ public class EphemeralPublicKey : LegacyPublicKey
         PublicKey.Serialize(s);
     }
 
-    public static EphemeralPublicKey Deserialize(Deserializer d)
+    public static new EphemeralPublicKey Deserialize(Deserializer d)
     {
         PublicKeyVariant variant = (PublicKeyVariant)d.Uleb128AsU32();
         return variant switch
@@ -45,18 +45,19 @@ public class EphemeralPublicKey : LegacyPublicKey
     }
 }
 
-public class EphemeralSignature : Signature
+public class EphemeralSignature : PublicKeySignature
 {
-    public readonly Signature Signature;
+    public readonly PublicKeySignature Signature;
 
-    public readonly SignatureVariant Type;
+    public override Hex Value => Signature.Value;
 
-    public EphemeralSignature(LegacySignature signature)
+    public EphemeralSignature(PublicKeySignature signature)
+        : base(signature.Type)
     {
         Signature = signature;
         switch (signature.Type)
         {
-            case SignatureVariant.Ed25519:
+            case PublicKeySignatureVariant.Ed25519:
                 break;
             default:
                 throw new EphemeralSignatureVariantUnsupported(signature.Type);
@@ -71,13 +72,107 @@ public class EphemeralSignature : Signature
         Signature.Serialize(s);
     }
 
-    public static EphemeralSignature Deserialize(Deserializer d)
+    public static new EphemeralSignature Deserialize(Deserializer d)
     {
-        SignatureVariant variant = (SignatureVariant)d.Uleb128AsU32();
+        PublicKeySignatureVariant variant = (PublicKeySignatureVariant)d.Uleb128AsU32();
         return variant switch
         {
-            SignatureVariant.Ed25519 => new EphemeralSignature(Ed25519Signature.Deserialize(d)),
+            PublicKeySignatureVariant.Ed25519 => new EphemeralSignature(
+                Ed25519Signature.Deserialize(d)
+            ),
             _ => throw new EphemeralSignatureVariantUnsupported(variant),
         };
+    }
+}
+
+public enum EphemeralSignatureVariant : uint
+{
+    ZkProof = 0,
+}
+
+public abstract class CertificateSignature : Serializable
+{
+    public abstract byte[] ToByteArray();
+
+    public override string ToString() => Hex.FromHexInput(ToByteArray()).ToString();
+}
+
+public class EphemeralCertificate : Serializable
+{
+    public readonly CertificateSignature Signature;
+
+    public readonly EphemeralSignatureVariant Variant;
+
+    public EphemeralCertificate(CertificateSignature signature, EphemeralSignatureVariant variant)
+    {
+        Signature = signature;
+        Variant = variant;
+    }
+
+    public byte[] ToByteArray() => Signature.ToByteArray();
+
+    public override void Serialize(Serializer s)
+    {
+        s.U32AsUleb128((uint)Variant);
+        Signature.Serialize(s);
+    }
+
+    public static EphemeralCertificate Deserialize(Deserializer d)
+    {
+        EphemeralSignatureVariant variant = (EphemeralSignatureVariant)d.Uleb128AsU32();
+        return variant switch
+        {
+            EphemeralSignatureVariant.ZkProof => new EphemeralCertificate(
+                ZeroKnowledgeSignature.Deserialize(d),
+                EphemeralSignatureVariant.ZkProof
+            ),
+            _ => throw new ArgumentException("Invalid signature variant"),
+        };
+    }
+}
+
+public class ZeroKnowledgeSignature(
+    ZkProof proof,
+    ulong expHorizonSecs,
+    string? extraField = null,
+    string? overrideAudVal = null,
+    EphemeralSignature? trainingWheelSignature = null
+) : CertificateSignature
+{
+    public readonly ZkProof Proof = proof;
+
+    public readonly ulong ExpHorizonSecs = expHorizonSecs;
+
+    public readonly string? ExtraField = extraField;
+
+    public readonly string? OverrideAudVal = overrideAudVal;
+
+    public readonly EphemeralSignature? TrainingWheelSignature = trainingWheelSignature;
+
+    public override byte[] ToByteArray() => BcsToBytes();
+
+    public override void Serialize(Serializer s)
+    {
+        Proof.Serialize(s);
+        s.U64(ExpHorizonSecs);
+        s.OptionString(ExtraField);
+        s.OptionString(OverrideAudVal);
+        s.Option(TrainingWheelSignature);
+    }
+
+    public static ZeroKnowledgeSignature Deserialize(Deserializer d)
+    {
+        ZkProof proof = ZkProof.Deserialize(d);
+        ulong expHorizonSecs = d.U64();
+        string? extraField = d.OptionString();
+        string? overrideAudVal = d.OptionString();
+        EphemeralSignature? trainingWheelSignature = d.Option(EphemeralSignature.Deserialize);
+        return new ZeroKnowledgeSignature(
+            proof,
+            expHorizonSecs,
+            extraField,
+            overrideAudVal,
+            trainingWheelSignature
+        );
     }
 }

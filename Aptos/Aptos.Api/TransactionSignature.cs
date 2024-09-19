@@ -92,6 +92,21 @@ public class TransactionSignatureConverter : JsonConverter<TransactionSignature>
                         );
                     }
                 }
+                else if (jsonObject.ContainsKey("public_keys"))
+                {
+                    var publicKeys = jsonObject["public_keys"]?.ToString();
+                    var signatures = jsonObject["signatures"]?.ToString();
+                    var signaturesRequired = jsonObject["signatures_required"]?.ToString();
+
+                    // AccountSignature_MultiKeySignature
+                    if (publicKeys != null && signatures != null && signaturesRequired != null)
+                    {
+                        jsonObject["type"] = "multi_key_signature";
+                        signature = JsonConvert.DeserializeObject<AccountMultiKeySignature>(
+                            jsonObject.ToString()
+                        );
+                    }
+                }
 
                 if (signature == null)
                     throw new Exception("Invalid account signature");
