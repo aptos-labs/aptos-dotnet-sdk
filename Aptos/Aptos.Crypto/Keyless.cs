@@ -53,6 +53,24 @@ public static class Keyless
             KeylessPublicKey.ID_COMMITMENT_LENGTH
         );
     }
+
+    public static KeylessSignature GetSimulationSignature() =>
+        new(
+            ephemeralCertificate: new EphemeralCertificate(
+                new ZeroKnowledgeSignature(
+                    proof: new ZkProof(
+                        new Groth16Zkp(new byte[32], new byte[64], new byte[32]),
+                        ZkpVariant.Groth16
+                    ),
+                    expHorizonSecs: 0
+                ),
+                variant: EphemeralSignatureVariant.ZkProof
+            ),
+            jwtHeader: "{}",
+            expiryDateSecs: 0,
+            ephemeralPublicKey: new EphemeralPublicKey(new Ed25519PublicKey(new byte[32])),
+            ephemeralSignature: new EphemeralSignature(new Ed25519Signature(new byte[64]))
+        );
 }
 
 public class KeylessPublicKey : PublicKey

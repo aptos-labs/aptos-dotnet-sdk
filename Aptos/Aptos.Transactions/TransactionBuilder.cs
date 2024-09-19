@@ -16,6 +16,14 @@ public static class TransactionBuilder
             return new AccountAuthenticatorEd25519(ed25519PublicKey, invalidSignature);
         }
 
+        if (publicKey is KeylessPublicKey keylessPublicKey)
+        {
+            return new AccountAuthenticatorSingleKey(
+                keylessPublicKey,
+                Keyless.GetSimulationSignature()
+            );
+        }
+
         return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
     }
 

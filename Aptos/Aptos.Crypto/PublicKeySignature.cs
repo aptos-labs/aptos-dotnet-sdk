@@ -19,8 +19,7 @@ public enum PublicKeySignatureVariant
 }
 
 /// <summary>
-/// Base signatures for anything signed (not specific to signing transactions/messages). This may include all 
-/// signatures needed for ZK proofs, Certificates, etc.
+/// Cryptographic signatures typically using a private key to sign a message or transaction.
 /// </summary>
 [JsonConverter(typeof(PublicKeySignatureConverter))]
 public abstract class PublicKeySignature(PublicKeySignatureVariant type) : Signature
