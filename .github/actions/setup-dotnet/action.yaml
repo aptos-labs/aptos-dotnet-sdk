@@ -1,6 +1,11 @@
 name: "Setup .NET"
 description: |
   Installs .NET and restores dependencies.
+inputs:
+  build:
+    description: "Whether to build the project after restoring dependencies"
+    required: false
+    default: 'true'
 
 runs:
   using: composite
@@ -22,6 +27,7 @@ runs:
         shell: bash
 
       - name: Build Project
+        if: ${{ inputs.build == 'true' }}
         run: dotnet build --configuration Release --no-restore
         working-directory: ./
         shell: bash
