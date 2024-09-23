@@ -102,7 +102,11 @@ public class KeylessPublicKey : PublicKey
     }
 
     public override bool VerifySignature(byte[] message, Signature signature) =>
-        throw new NotImplementedException();
+        signature is KeylessSignature keylessSignature
+        && keylessSignature.EphemeralPublicKey.VerifySignature(
+            message,
+            keylessSignature.EphemeralSignature.Signature
+        );
 
     public override byte[] ToByteArray() => BcsToBytes();
 
