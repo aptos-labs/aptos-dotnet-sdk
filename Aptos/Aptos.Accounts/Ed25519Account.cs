@@ -12,12 +12,17 @@ public class Ed25519Account : Account
     /// </summary>
     public readonly Ed25519PrivateKey PrivateKey;
 
-    private readonly Ed25519PublicKey _publicKey;
+    private readonly Ed25519PublicKey _verifyingKey;
 
     /// <summary>
     /// Gets the Ed25519PublicKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override IVerifyingKey VerifyingKey => _verifyingKey;
+
+    /// <summary>
+    /// Gets the Ed25519PublicKey for the account.
+    /// </summary>
+    public PublicKey PublicKey => _verifyingKey;
 
     private readonly AccountAddress _address;
 
@@ -50,8 +55,8 @@ public class Ed25519Account : Account
     /// <param name="address">The account address.</param>
     public Ed25519Account(Ed25519PrivateKey privateKey, AccountAddress? address = null)
     {
-        _publicKey = (Ed25519PublicKey)privateKey.PublicKey();
-        _address = address ?? PublicKey.AuthKey().DerivedAddress();
+        _verifyingKey = (Ed25519PublicKey)privateKey.PublicKey();
+        _address = address ?? _verifyingKey.AuthKey().DerivedAddress();
         PrivateKey = privateKey;
     }
 
@@ -62,15 +67,7 @@ public class Ed25519Account : Account
     /// <param name="signature">The signed message to verify.</param>
     /// <returns>True if the signature is valid; otherwise, false.</returns>
     public bool VerifySignature(byte[] message, Ed25519Signature signature) =>
-        PublicKey.VerifySignature(message, signature);
-
-    /// <summary>
-    /// Signs a transaction using the account's private key.
-    /// </summary>
-    /// <param name="transaction">The transaction to sign.</param>
-    /// <returns>The transaction signature.</returns>
-    public override Signature SignTransaction(AnyRawTransaction transaction) =>
-        Sign(SigningMessage.GenerateForTransaction(transaction));
+        _verifyingKey.VerifySignature(message, signature);
 
     /// <summary>
     /// Signs a message with the using the account's private key.
@@ -85,17 +82,7 @@ public class Ed25519Account : Account
     /// <param name="message">The message to sign as a byte array.</param>
     /// <returns>The authenticator containing the signature.</returns>
     public override AccountAuthenticator SignWithAuthenticator(byte[] message) =>
-        new AccountAuthenticatorEd25519(_publicKey, (Ed25519Signature)PrivateKey.Sign(message));
-
-    /// <summary>
-    /// Signs a transaction and returns an authenticator with the signature.
-    /// </summary>
-    /// <param name="transaction">The transaction to sign.</param>
-    /// <returns>The authenticator containing the signature.</returns>
-    public override AccountAuthenticator SignTransactionWithAuthenticator(
-        AnyRawTransaction transaction
-    ) =>
-        new AccountAuthenticatorEd25519(_publicKey, (Ed25519Signature)SignTransaction(transaction));
+        new AccountAuthenticatorEd25519(_verifyingKey, (Ed25519Signature)Sign(message));
 
     /// <summary>
     /// Generates a new Ed25519 account.

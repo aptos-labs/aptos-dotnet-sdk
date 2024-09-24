@@ -20,8 +20,9 @@ public class KeylessClient(AptosClient client)
 
         // Derive the keyless account from the JWT and EphemeralKeyPair
         var publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
+
         var address = await _client.Account.LookupOriginalAccountAddress(
-            publicKey.AuthKey().DerivedAddress().ToString()
+            new SingleKey(publicKey).AuthKey().DerivedAddress().ToString()
         );
 
         // Create and return the keyless account

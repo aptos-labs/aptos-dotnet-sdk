@@ -16,7 +16,7 @@ public class TransactionClient(AptosClient client)
     /// <param name="transaction">The transaction to sign.</param>
     /// <returns>The authenticator with the signed transaction and public key.</returns>
     public AccountAuthenticator SignTransaction(Account signer, AnyRawTransaction transaction) =>
-        signer.SignTransactionWithAuthenticator(transaction);
+        signer.SignWithAuthenticator(transaction);
 
     /// <summary>
     /// Submits a transaction to the blockchain.

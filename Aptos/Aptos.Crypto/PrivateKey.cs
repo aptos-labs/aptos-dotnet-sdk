@@ -2,9 +2,9 @@ namespace Aptos;
 
 public abstract class PrivateKey : Serializable
 {
-    public abstract Signature Sign(byte[] message);
+    public virtual PublicKeySignature Sign(string message) => Sign(SigningMessage.Convert(message));
 
-    public abstract Signature Sign(string message);
+    public abstract PublicKeySignature Sign(byte[] message);
 
     public abstract PublicKey PublicKey();
 

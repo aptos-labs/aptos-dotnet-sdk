@@ -62,7 +62,7 @@ public static class Ed25519
     }
 }
 
-public class Ed25519PublicKey : LegacyAccountPublicKey
+public class Ed25519PublicKey : PublicKey, IVerifyingKey
 {
     static readonly int LENGTH = 32;
 
@@ -83,7 +83,7 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
 
     public override byte[] ToByteArray() => _key.ToByteArray();
 
-    public override AuthenticationKey AuthKey() =>
+    public AuthenticationKey AuthKey() =>
         AuthenticationKey.FromSchemeAndBytes(AuthenticationKeyScheme.Ed25519, _key.ToByteArray());
 
     public override bool VerifySignature(byte[] message, Signature signature)
@@ -102,7 +102,7 @@ public class Ed25519PublicKey : LegacyAccountPublicKey
 
     public override void Serialize(Serializer s) => s.Bytes(_key.ToByteArray());
 
-    public static Ed25519PublicKey Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Ed25519PublicKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
 public class Ed25519PrivateKey : PrivateKey
@@ -129,9 +129,7 @@ public class Ed25519PrivateKey : PrivateKey
             new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0).GeneratePublicKey().GetEncoded()
         );
 
-    public override Signature Sign(string message) => Sign(SigningMessage.Convert(message));
-
-    public override Signature Sign(byte[] message)
+    public override PublicKeySignature Sign(byte[] message)
     {
         Ed25519Signer signer = new();
         signer.Init(true, new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0));
@@ -174,7 +172,7 @@ public class Ed25519PrivateKey : PrivateKey
     public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
-public class Ed25519Signature : LegacySignature
+public class Ed25519Signature : PublicKeySignature
 {
     static readonly int LENGTH = 64;
 
@@ -186,7 +184,7 @@ public class Ed25519Signature : LegacySignature
         : this(Hex.FromHexInput(signature).ToByteArray()) { }
 
     public Ed25519Signature(byte[] signature)
-        : base(SignatureVariant.Ed25519)
+        : base(PublicKeySignatureVariant.Ed25519)
     {
         if (signature.Length != LENGTH)
             throw new KeyLengthMismatch("Ed25519Signature", LENGTH);
@@ -197,5 +195,5 @@ public class Ed25519Signature : LegacySignature
 
     public override void Serialize(Serializer s) => s.Bytes(_value.ToByteArray());
 
-    public static Ed25519Signature Deserialize(Deserializer d) => new(d.Bytes());
+    public static new Ed25519Signature Deserialize(Deserializer d) => new(d.Bytes());
 }

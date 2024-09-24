@@ -10,12 +10,12 @@ public class KeylessAccount : Account
 
     public static readonly string DOMAIN_SEPARATOR = "APTOS::TransactionAndProof";
 
-    private readonly KeylessPublicKey _publicKey;
+    private readonly SingleKey _verifyingKey;
 
     /// <summary>
-    /// Gets the KeylessPublicKey for the account.
+    /// Gets the KeylessPublicKey inside a SingleKey for the account.
     /// </summary>
-    public override AccountPublicKey PublicKey => _publicKey;
+    public override IVerifyingKey VerifyingKey => _verifyingKey;
 
     private readonly AccountAddress _address;
 
@@ -52,8 +52,8 @@ public class KeylessAccount : Account
         if (pepper.Length != PEPPER_LENGTH)
             throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
 
-        _publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
-        _address = address ?? _publicKey.AuthKey().DerivedAddress();
+        _verifyingKey = new SingleKey(KeylessPublicKey.FromJwt(jwt, pepper, uidKey));
+        _address = address ?? _verifyingKey.AuthKey().DerivedAddress();
         EphemeralKeyPair = ekp;
         Proof = proof;
         Pepper = pepper;
@@ -73,7 +73,7 @@ public class KeylessAccount : Account
         return EphemeralKeyPair.PublicKey.VerifySignature(message, signature.EphemeralSignature);
     }
 
-    public override Signature SignTransaction(AnyRawTransaction transaction)
+    public override Signature Sign(AnyRawTransaction transaction)
     {
         RawTransaction rawTxn = transaction.RawTransaction;
         Serializer s = new();
@@ -101,16 +101,15 @@ public class KeylessAccount : Account
 
     public override AccountAuthenticator SignWithAuthenticator(byte[] message) =>
         new AccountAuthenticatorSingleKey(
-            new AnyPublicKey(_publicKey),
-            new AnySignature(Sign(message))
+            _verifyingKey.PublicKey,
+            (PublicKeySignature)Sign(message)
         );
 
-    public override AccountAuthenticator SignTransactionWithAuthenticator(
-        AnyRawTransaction transaction
-    ) =>
+    public override AccountAuthenticator SignWithAuthenticator(AnyRawTransaction transaction) =>
         new AccountAuthenticatorSingleKey(
-            new AnyPublicKey(_publicKey),
-            new AnySignature(SignTransaction(transaction))
+            _verifyingKey.PublicKey,
+            // Have to declare explictly because the virtual method signs without proof
+            (PublicKeySignature)Sign(transaction)
         );
 
     public void Serialize(Serializer s)

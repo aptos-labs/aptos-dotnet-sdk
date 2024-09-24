@@ -1,6 +1,6 @@
 namespace Aptos.Exceptions
 {
-    public class EphemeralSignatureVariantUnsupported(SignatureVariant variant)
+    public class EphemeralSignatureVariantUnsupported(PublicKeySignatureVariant variant)
         : BaseException($"Ephemeral signature variant {variant} is not supported") { }
 
     public class EphemeralKeyVariantUnsupported(PublicKeyVariant variant)

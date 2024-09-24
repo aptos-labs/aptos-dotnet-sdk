@@ -1,13 +1,15 @@
-namespace Aptos;
-
 using Aptos.Schemes;
+
+namespace Aptos;
 
 public class SingleKeyAccount : Account
 {
     public readonly PrivateKey PrivateKey;
 
-    private readonly AnyPublicKey _publicKey;
-    public override AccountPublicKey PublicKey => _publicKey;
+    private readonly SingleKey _verifyingKey;
+    public override IVerifyingKey VerifyingKey => _verifyingKey;
+
+    public PublicKey PublicKey => _verifyingKey.PublicKey;
 
     private readonly AccountAddress _address;
     public override AccountAddress Address => _address;
@@ -25,32 +27,26 @@ public class SingleKeyAccount : Account
 
     public SingleKeyAccount(PrivateKey privateKey, AccountAddress? address = null)
     {
-        _publicKey = new AnyPublicKey(privateKey.PublicKey());
-        _address = address ?? _publicKey.AuthKey().DerivedAddress();
+        _verifyingKey = new SingleKey(privateKey.PublicKey());
+        _address = address ?? _verifyingKey.AuthKey().DerivedAddress();
         PrivateKey = privateKey;
     }
 
-    public bool VerifySignature(string message, AnySignature signature) =>
-        PublicKey.VerifySignature(message, signature);
+    public bool VerifySignature(string message, Signature signature) =>
+        _verifyingKey.VerifySignature(message, signature);
 
-    public bool VerifySignature(byte[] message, AnySignature signature) =>
-        PublicKey.VerifySignature(message, signature);
+    public bool VerifySignature(byte[] message, Signature signature) =>
+        _verifyingKey.VerifySignature(message, signature);
 
-    public override Signature SignTransaction(AnyRawTransaction transaction) =>
-        Sign(SigningMessage.GenerateForTransaction(transaction));
-
-    public override Signature Sign(byte[] message) => new AnySignature(PrivateKey.Sign(message));
+    public override Signature Sign(byte[] message) => PrivateKey.Sign(message);
 
     public override AccountAuthenticator SignWithAuthenticator(byte[] message) =>
-        new AccountAuthenticatorSingleKey(_publicKey, (AnySignature)Sign(message));
+        new AccountAuthenticatorSingleKey(
+            _verifyingKey.PublicKey,
+            (PublicKeySignature)Sign(message)
+        );
 
-    public override AccountAuthenticator SignTransactionWithAuthenticator(
-        AnyRawTransaction transaction
-    ) => new AccountAuthenticatorSingleKey(_publicKey, (AnySignature)SignTransaction(transaction));
-
-    public static new SingleKeyAccount Generate() => Generate(PublicKeyVariant.Ed25519);
-
-    public static SingleKeyAccount Generate(PublicKeyVariant scheme)
+    public static SingleKeyAccount Generate(PublicKeyVariant scheme = PublicKeyVariant.Ed25519)
     {
         PrivateKey privateKey = scheme switch
         {

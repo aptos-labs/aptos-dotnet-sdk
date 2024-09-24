@@ -46,14 +46,7 @@ public class EphemeralKeyPair : Serializable
     )
     {
         _privateKey = privateKey;
-        if (privateKey.PublicKey() is LegacyAccountPublicKey publicKey)
-        {
-            PublicKey = new EphemeralPublicKey(publicKey);
-        }
-        else
-            throw new ArgumentException(
-                "Invalid PrivateKey passed to EphemeralKeyPair. Expected LegacyAccountPublicKey."
-            );
+        PublicKey = new EphemeralPublicKey(privateKey.PublicKey());
 
         // By default, the expiry timestamp is 14 days from now.
         ExpiryTimestamp =
@@ -78,13 +71,7 @@ public class EphemeralKeyPair : Serializable
         if (IsExpired())
             throw new Exception("EphemeralKeyPair is expired");
         var signature = _privateKey.Sign(data);
-        if (signature is LegacySignature legacySignature)
-        {
-            return new EphemeralSignature(legacySignature);
-        }
-        throw new ArgumentException(
-            "Invalid PrivateKey passed to EphemeralKeyPair. Expecting a legacy private key."
-        );
+        return new EphemeralSignature(signature);
     }
 
     public override void Serialize(Serializer s)
