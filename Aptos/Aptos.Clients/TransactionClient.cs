@@ -19,6 +19,28 @@ public class TransactionClient(AptosClient client)
         signer.SignWithAuthenticator(transaction);
 
     /// <summary>
+    /// Helper method to sign a transaction as a FeePayer with an account. The FeePayerAddress
+    /// will be set to the signer's address.
+    /// </summary>
+    /// <param name="signer">The fee payer account to sign the transaction with.</param>
+    /// <param name="transaction">The transaction to sign.</param>
+    /// <returns>The authenticator with the signed transaction and public key.</returns>
+    /// <exception cref="ArgumentException">If the transaction is not a FeePayer transaction.</exception>
+    public AccountAuthenticator SignAsFeePayer(Account signer, AnyRawTransaction transaction)
+    {
+        if (transaction.FeePayerAddress == null)
+        {
+            throw new ArgumentException(
+                "The transaction is not a FeePayer transaction. When building the transaction, set the 'withFeePayer' flag to true."
+            );
+        }
+
+        transaction.FeePayerAddress = signer.Address;
+
+        return signer.SignWithAuthenticator(transaction);
+    }
+
+    /// <summary>
     /// Submits a transaction to the blockchain.
     /// </summary>
     /// <param name="data">The transaction data to submit.</param>
@@ -269,7 +291,7 @@ public class TransactionClient(AptosClient client)
         if (checkSuccess && !((CommittedTransactionResponse)lastTxn).Success)
         {
             throw new FailedTransactionException(
-                $"Transaction {hash} failed after waiting for {timeoutSecs} seconds",
+                $"Transaction {hash} failed with an error {((CommittedTransactionResponse)lastTxn).VmStatus}",
                 (CommittedTransactionResponse)lastTxn
             );
         }

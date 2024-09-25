@@ -1,5 +1,6 @@
 namespace Aptos;
 
+using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -42,6 +43,8 @@ public abstract class TransactionResponse(TransactionResponseType type, Hex hash
 
 public class TransactionResponseConverter : JsonConverter<TransactionResponse>
 {
+    public override bool CanWrite => false;
+
     static readonly JsonSerializerSettings SpecifiedSubclassConversion =
         new()
         {
@@ -58,6 +61,14 @@ public class TransactionResponseConverter : JsonConverter<TransactionResponse>
     {
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
+
+        // If the type is `null`, it is a transaction simulation.
+        // In this case, we override to "user_transaction".
+        if (type == null)
+        {
+            type = "user_transaction";
+            jsonObject["type"] = "user_transaction";
+        }
 
         return type switch
         {
@@ -100,7 +111,7 @@ public class TransactionResponseConverter : JsonConverter<TransactionResponse>
         JsonWriter writer,
         TransactionResponse? value,
         JsonSerializer serializer
-    ) => serializer.Serialize(writer, value);
+    ) => throw new NotImplementedException();
 }
 
 [Serializable]

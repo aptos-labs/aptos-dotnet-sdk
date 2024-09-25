@@ -8,7 +8,7 @@ public abstract class AnyRawTransaction(
 {
     public RawTransaction RawTransaction { get; } = rawTransaction;
 
-    public AccountAddress? FeePayerAddress { get; } = feePayerAddress;
+    public AccountAddress? FeePayerAddress = feePayerAddress;
 
     public List<AccountAddress>? SecondarySignerAddresses { get; } = secondarySignerAddresses;
 }

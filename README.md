@@ -52,7 +52,7 @@ var account = Account.Generate();
 var transaction = await client.Transaction.Build(
     sender: account,
     data: new GenerateEntryFunctionPayloadData(
-        function: "0x1::coin::transfer",
+        function: "0x1::aptos_account::transfer_coins",
         typeArguments: ["0x1::aptos_coin::AptosCoin"],
         functionArguments: [account.Address, "100000"]
     )
@@ -71,5 +71,17 @@ var committedTransaction = await client.Transaction.WaitForTransaction(pendingTr
 - Ed25519, SingleKey, MultiKey, and Keyless signer support
 - Utilities for transaction building, signing, and submission
 - Abstractions over the Aptos Fullnode and Indexer APIs
+
+## Examples 
+
+Examples can be found in the [`Aptos.Examples`](./Aptos.Examples) project. Run the examples by using the following command:
+
+```bash
+dotnet run --project ./Aptos.Examples --framework net8.0
+```
+
+This will prompt the follow console. You can select an example to run by entering the corresponding number or using the arrow keys to navigate the menu.
+
+![examples-demonstration](./assets/examples_demo.png)
 
 [github-license]: https://img.shields.io/github/license/aptos-labs/aptos-ts-sdk

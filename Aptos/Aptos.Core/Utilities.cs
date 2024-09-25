@@ -9,7 +9,7 @@ namespace Aptos.Core
         /// <summary>
         /// Parses a function string into its module address, module name, and function name.
         /// </summary>
-        /// <param name="function">An function split by "::". E.g. "0x1::coin::transfer"</param>
+        /// <param name="function">An function split by "::". E.g. "0x1::aptos_account::transfer_coins"</param>
         /// <returns>A tuple containing the module address, module name, and function name.</returns>
         /// <exception cref="ArgumentException">If the function string is not in the correct format.</exception>
         public static (

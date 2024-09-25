@@ -1,69 +1,74 @@
+using System.Text.RegularExpressions;
+
 namespace Aptos.Examples;
 
 public class RunExample
 {
-    private static readonly Dictionary<string, Func<Task>> exampleMap =
-        new()
-        {
-            { "1", KeylessTransferExample.Run },
-            { "2", SimpleTransferExample.Run },
-            { "3", SimpleTransferSingleKeyExample.Run },
-            { "4", SimpleTransferMultiKeyExample.Run },
-            { "5", PlaygroundExample.Run },
-        };
+    private static readonly Func<Task>[] exampleArray =
+    {
+        SimpleTransferKeylessExample.Run,
+        SimpleTransferEd25519Example.Run,
+        SimpleTransferSingleKeyExample.Run,
+        SimpleTransferMultiKeyExample.Run,
+        SponsoredTransferEd25519Example.Run,
+        SimulateTransferEd25519Example.Run,
+        AptosNamesExample.Run,
+        PlaygroundExample.Run,
+    };
 
     public static async Task Main()
     {
         DisplayAsciiArt();
         int selectedIndex = 0;
-        string[] keys = new string[exampleMap.Count];
-        exampleMap.Keys.CopyTo(keys, 0);
 
         string errorMessage = string.Empty;
 
         while (true)
         {
-            DisplayMenu(keys, selectedIndex, errorMessage);
+            DisplayMenu(selectedIndex, errorMessage);
 
             ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true);
 
             if (keyInfo.Key == ConsoleKey.UpArrow)
             {
-                selectedIndex = (selectedIndex == 0) ? keys.Length - 1 : selectedIndex - 1;
+                selectedIndex = (selectedIndex == 0) ? exampleArray.Length - 1 : selectedIndex - 1;
                 errorMessage = string.Empty; // Clear error on valid navigation
             }
             else if (keyInfo.Key == ConsoleKey.DownArrow)
             {
-                selectedIndex = (selectedIndex == keys.Length - 1) ? 0 : selectedIndex + 1;
+                selectedIndex = (selectedIndex == exampleArray.Length - 1) ? 0 : selectedIndex + 1;
                 errorMessage = string.Empty; // Clear error on valid navigation
             }
             else if (keyInfo.Key == ConsoleKey.Enter)
             {
                 // Run the selected example using arrow keys and enter
-                if (exampleMap.TryGetValue(keys[selectedIndex], out var selectedExample))
-                {
-                    Console.WriteLine(
-                        $"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n"
-                    );
-                    await selectedExample();
-                }
+                var selectedExample = exampleArray[selectedIndex];
+                Console.WriteLine(
+                    $"\nThe {selectedExample.Method.DeclaringType.Name} example was selected...\n"
+                );
+                await selectedExample();
                 break;
             }
             else if (char.IsDigit(keyInfo.KeyChar))
             {
-                // Check if the typed number is valid
-                string input = keyInfo.KeyChar.ToString();
-                if (exampleMap.TryGetValue(input, out var selectedExample))
+                // Check if the typed number is valid and within the array range
+                if (
+                    int.TryParse(keyInfo.KeyChar.ToString(), out int inputIndex)
+                    && inputIndex > 0
+                    && inputIndex <= exampleArray.Length
+                )
                 {
+                    var selectedExample = exampleArray[inputIndex - 1];
                     Console.WriteLine(
-                        $"\nThe {exampleMap[keys[selectedIndex]].Method.DeclaringType.Name} example was selected...\n"
+                        $"\nThe {selectedExample.Method.DeclaringType.Name} example was selected...\n"
                     );
                     await selectedExample();
                     break;
                 }
                 else
                 {
-                    errorMessage = $"Invalid number '{input}'. Please choose a valid example.";
+                    errorMessage =
+                        $"Invalid number '{keyInfo.KeyChar}'. Please choose a valid example.";
                 }
             }
             else
@@ -74,7 +79,7 @@ public class RunExample
         }
     }
 
-    private static void DisplayMenu(string[] keys, int selectedIndex, string errorMessage)
+    private static void DisplayMenu(int selectedIndex, string errorMessage)
     {
         Console.Clear();
         DisplayAsciiArt();
@@ -82,21 +87,22 @@ public class RunExample
         Console.WriteLine(
             "Use arrow keys to navigate and press Enter or type a number to choose an example:"
         );
-        for (int i = 0; i < keys.Length; i++)
+        for (int i = 0; i < exampleArray.Length; i++)
         {
+            var name = Regex.Replace(
+                exampleArray[i].Method.DeclaringType?.Name,
+                "(?<!^)([A-Z])",
+                " $1"
+            );
             if (i == selectedIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow; // Highlight the selected option
-                Console.WriteLine(
-                    $"> {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example"
-                );
+                Console.WriteLine($"> {i + 1}. {name}");
                 Console.ResetColor();
             }
             else
             {
-                Console.WriteLine(
-                    $"  {keys[i]}. {exampleMap[keys[i]].Method.DeclaringType?.Name} Example"
-                );
+                Console.WriteLine($"  {i + 1}. {name}");
             }
         }
 

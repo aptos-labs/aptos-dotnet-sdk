@@ -15,6 +15,8 @@ public abstract class WriteSetChange(string type, string stateKeyHash)
 
 public class WritesSetChangeConverter : JsonConverter<WriteSetChange>
 {
+    public override bool CanWrite => false;
+
     static readonly JsonSerializerSettings SpecifiedSubclassConversion =
         new() { ContractResolver = new SubclassSpecifiedConcreteClassConverter<WriteSetChange>() };
 
@@ -63,7 +65,7 @@ public class WritesSetChangeConverter : JsonConverter<WriteSetChange>
         JsonWriter writer,
         WriteSetChange? value,
         JsonSerializer serializer
-    ) => serializer.Serialize(writer, value);
+    ) => throw new NotImplementedException();
 }
 
 public class WriteSetChangeDeleteModule(

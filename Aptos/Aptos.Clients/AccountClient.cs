@@ -242,7 +242,7 @@ public class AccountClient(AptosClient client)
     /// Gets the coin balance of the given address and coin type. When providing the types, its important to include both the Fungible Asset address
     /// and the coin type if they both exist for the asset.
     /// <br/>
-    /// The default will be "0x000000000000000000000000000000000000000000000000000000000000000a" and "0x1::aptos_coin::AptosCoin".
+    /// The default will be "0xa" and "0x1::aptos_coin::AptosCoin".
     /// </summary>
     /// <param name="address">The address of the account.</param>
     /// <param name="types">The type of the coin.</param>

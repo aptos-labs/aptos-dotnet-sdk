@@ -33,6 +33,8 @@ public abstract class TransactionSignature(TransactionSignatureVariant type)
 
 public class TransactionSignatureConverter : JsonConverter<TransactionSignature>
 {
+    public override bool CanWrite => false;
+
     static readonly JsonSerializerSettings SpecifiedSubclassConversion =
         new()
         {
@@ -121,7 +123,7 @@ public class TransactionSignatureConverter : JsonConverter<TransactionSignature>
         JsonWriter writer,
         TransactionSignature? value,
         JsonSerializer serializer
-    ) => serializer.Serialize(writer, value);
+    ) => throw new NotImplementedException();
 }
 
 [Serializable]

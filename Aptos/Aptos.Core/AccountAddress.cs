@@ -51,11 +51,11 @@ public partial class AccountAddress
 [JsonConverter(typeof(AccountAddressConverter))]
 public partial class AccountAddress : TransactionArgument
 {
+    public const int LENGTH = 32;
+
+    public const int LONG_LENGTH = 64;
+
     public static AccountAddress ZERO { get; } = new(new byte[LENGTH]);
-
-    public static readonly int LENGTH = 32;
-
-    public static readonly int LONG_LENGTH = 64;
 
     public readonly byte[] Data;
 

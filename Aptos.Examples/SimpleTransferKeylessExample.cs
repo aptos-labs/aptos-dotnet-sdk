@@ -1,6 +1,6 @@
 namespace Aptos.Examples;
 
-public class KeylessTransferExample
+public class SimpleTransferKeylessExample
 {
     public static async Task Run()
     {
@@ -56,7 +56,7 @@ public class KeylessTransferExample
             var txn = await aptos.Transaction.Build(
                 sender: keylessAccount,
                 data: new GenerateEntryFunctionPayloadData(
-                    function: "0x1::coin::transfer",
+                    function: "0x1::aptos_account::transfer_coins",
                     typeArguments: ["0x1::aptos_coin::AptosCoin"],
                     functionArguments: [bob.Address, "100000"]
                 )

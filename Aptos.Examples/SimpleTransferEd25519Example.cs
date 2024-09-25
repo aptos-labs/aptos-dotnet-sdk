@@ -2,7 +2,7 @@
 
 namespace Aptos.Examples;
 
-public class SimpleTransferExample
+public class SimpleTransferEd25519Example
 {
     public static async Task Run()
     {
@@ -20,7 +20,7 @@ public class SimpleTransferExample
         var txn = await aptos.Transaction.Build(
             sender: account.Address,
             data: new GenerateEntryFunctionPayloadData(
-                function: "0x1::coin::transfer",
+                function: "0x1::aptos_account::transfer_coins",
                 typeArguments: ["0x1::aptos_coin::AptosCoin"],
                 functionArguments: [account.Address, "100000"]
             )

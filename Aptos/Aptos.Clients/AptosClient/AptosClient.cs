@@ -29,6 +29,10 @@ public partial class AptosClient
 
     public readonly TableClient Table;
 
+    /// <inheritdoc cref="AptosClient(AptosConfig)"/>
+    public AptosClient(NetworkConfig networkConfig)
+        : this(new AptosConfig(networkConfig)) { }
+
     /// <summary>
     /// Creates an instance of the AptosClient with a given <see cref="AptosConfig"/>.
     /// This client is used to interface with the Aptos blockchain and perform various operations such

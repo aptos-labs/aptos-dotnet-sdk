@@ -12,6 +12,8 @@ public abstract class TransactionPayloadResponse(string type)
 
 public class TransactionPayloadResponseConverter : JsonConverter<TransactionPayloadResponse>
 {
+    public override bool CanWrite => false;
+
     static readonly JsonSerializerSettings SpecifiedSubclassConversion =
         new()
         {
@@ -56,7 +58,7 @@ public class TransactionPayloadResponseConverter : JsonConverter<TransactionPayl
         JsonWriter writer,
         TransactionPayloadResponse? value,
         JsonSerializer serializer
-    ) => serializer.Serialize(writer, value);
+    ) => throw new NotImplementedException();
 }
 
 public class EntryFunctionPayloadResponse(
