@@ -62,14 +62,6 @@ public class TransactionResponseConverter : JsonConverter<TransactionResponse>
         var jsonObject = JObject.Load(reader);
         var type = jsonObject["type"]?.ToString();
 
-        // If the type is `null`, it is a transaction simulation.
-        // In this case, we override to "user_transaction".
-        if (type == null)
-        {
-            type = "user_transaction";
-            jsonObject["type"] = "user_transaction";
-        }
-
         return type switch
         {
             "user_transaction" => JsonConvert.DeserializeObject<UserTransactionResponse>(

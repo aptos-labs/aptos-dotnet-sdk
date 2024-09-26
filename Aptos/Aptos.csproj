@@ -1,11 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\Package.props"></Import>
+
   <PropertyGroup>
     <TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>
-    <PackageVersion>$(DefaultVersion)</PackageVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <AssemblyName>Aptos</AssemblyName>
+    <AssemblyTitle>Aptos</AssemblyTitle>
+    <PackageId>Aptos</PackageId>
+    <Description>Aptos Web3 .NET SDK built by Aptos Labs.</Description>
+    <PackageTags>aptos web3 blockchain unity godot</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\README.md" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
@@ -16,12 +25,6 @@
     <PackageReference Include="NBitcoin" Version="7.0.37" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.2" />
   </ItemGroup>
-
-  <PropertyGroup Label="C#">
-        <LangVersion>latest</LangVersion>
-        <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-        <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aptos.Indexer\Aptos.Indexer.csproj" />

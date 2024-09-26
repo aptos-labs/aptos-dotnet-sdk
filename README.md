@@ -74,7 +74,7 @@ var committedTransaction = await client.Transaction.WaitForTransaction(pendingTr
 
 ## Examples 
 
-Examples can be found in the [`Aptos.Examples`](./Aptos.Examples) project. Run the examples by using the following command:
+Examples can be found in the [`Aptos.Examples`](https://github.com/aptos-labs/aptos-dotnet-sdk/tree/main/Aptos.Examples) project. Run the examples by using the following command:
 
 ```bash
 dotnet run --project ./Aptos.Examples --framework net8.0
@@ -82,6 +82,6 @@ dotnet run --project ./Aptos.Examples --framework net8.0
 
 This will prompt the follow console. You can select an example to run by entering the corresponding number or using the arrow keys to navigate the menu.
 
-![examples-demonstration](./assets/examples_demo.png)
+![examples-demonstration](https://i.imgur.com/YS140Zb.png)
 
 [github-license]: https://img.shields.io/github/license/aptos-labs/aptos-ts-sdk

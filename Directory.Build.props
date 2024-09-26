@@ -10,5 +10,8 @@
         <LangVersion>latest</LangVersion>
         <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     </PropertyGroup>
 </Project>

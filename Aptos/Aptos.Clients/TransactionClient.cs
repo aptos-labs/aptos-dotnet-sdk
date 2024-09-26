@@ -378,7 +378,7 @@ public class TransactionClient(AptosClient client)
     /// </summary>
     /// <param name="data">The transaction data to simulate.</param>
     /// <returns>The simulated transaction responses.</returns>
-    public async Task<List<UserTransactionResponse>> Simulate(SimulateTransactionData data)
+    public async Task<List<PendingTransactionResponse>> Simulate(SimulateTransactionData data)
     {
         var signedTransaction = GenerateSignedTransactionForSimulation(data);
 
@@ -405,7 +405,7 @@ public class TransactionClient(AptosClient client)
             );
         }
 
-        var response = await _client.PostFullNode<List<UserTransactionResponse>>(
+        var response = await _client.PostFullNode<List<PendingTransactionResponse>>(
             new(
                 path: "transactions/simulate",
                 originMethod: "simulateTransaction",

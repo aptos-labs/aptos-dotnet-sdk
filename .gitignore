@@ -5,6 +5,7 @@ node_modules
 [Dd]ebug/
 [Bb]in/
 [Oo]bj/
+artifacts
 
 # General
 .DS_Store

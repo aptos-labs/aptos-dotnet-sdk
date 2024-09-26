@@ -1,0 +1,25 @@
+<!-- https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices#package-metadata-properties -->
+<Project>
+
+    <PropertyGroup>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/aptos-labs/aptos-dotnet-sdk</RepositoryUrl>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>Aptos Labs</Authors>
+        <FileVersion>$(DefaultVersion)</FileVersion>
+        <AssemblyVersion>$(DefaultVersion)</AssemblyVersion>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>http://aptoslabs.dev/</PackageProjectUrl>
+        <PackageIcon>icon.jpg</PackageIcon>
+        <PackageVersion>$(DefaultVersion)-beta.1</PackageVersion>
+        <Copyright>Copyright (c) Aptos Labs 2024</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="..\assets\icon.jpg" PackagePath="\" />
+        <Content Include="..\LICENSE" Pack="True" PackagePath="\" />
+    </ItemGroup>
+
+</Project>
