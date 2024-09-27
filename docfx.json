@@ -1,0 +1,36 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "Aptos",
+          "files": ["**/*.csproj"]
+        }
+      ],
+      "dest": "docs"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["**/*.{md,yml}"],
+        "exclude": ["_site/**"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["assets/**"]
+      }
+    ],
+    "output": "_site",
+    "template": ["default", "modern", "docs-template"],
+    "globalMetadata": {
+      "_appName": "Aptos .NET API Reference",
+      "_appTitle": "Aptos .NET API Reference",
+      "_appLogoPath": "assets/favicon.ico",
+      "_appFaviconPath": "assets/favicon.ico",
+      "_enableSearch": true,
+      "pdf": false
+    }
+  }
+}

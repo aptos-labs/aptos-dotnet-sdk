@@ -130,6 +130,10 @@ public partial class MyClass : Node
 }
 ```
 
+## API Reference
+
+The entire API reference can be found here: [API Reference](https://aptos-labs.github.io/aptos-dotnet-sdk/)
+
 ## Examples 
 
 Examples can be found in the [`Aptos.Examples`](https://github.com/aptos-labs/aptos-dotnet-sdk/tree/main/Aptos.Examples) project. Run the examples by using the following command:

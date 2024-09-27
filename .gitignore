@@ -8,4 +8,8 @@ node_modules
 artifacts
 
 # General
+
+# Documentation
 .DS_Store
+docs
+_site

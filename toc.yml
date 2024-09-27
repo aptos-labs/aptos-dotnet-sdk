@@ -1,0 +1,14 @@
+- name: API Reference
+  href: docs/
+
+- name: Aptos
+  href: docs/Aptos.html
+
+- name: Aptos.Core
+  href: docs/Aptos.Core.html
+
+- name: Aptos.Schemes
+  href: docs/Aptos.Schemes.html
+
+- name: Aptos.Exceptions
+  href: docs/Aptos.Exceptions.html
