@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-        <DefaultVersion>0.0.1</DefaultVersion>
-        <DefaultTargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</DefaultTargetFrameworks>
-        <DefaultTestingFrameworks>net8.0</DefaultTestingFrameworks>
-    </PropertyGroup>
+  <PropertyGroup>
+    <DefaultVersion>0.0.2</DefaultVersion>
+    <DefaultTargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</DefaultTargetFrameworks>
+    <DefaultTestingFrameworks>net8.0</DefaultTestingFrameworks>
+  </PropertyGroup>
 
-    <PropertyGroup Label="C#">
-        <LangVersion>latest</LangVersion>
-        <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-    </PropertyGroup>
+  <PropertyGroup Label="C#">
+    <LangVersion>latest</LangVersion>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
 </Project>

@@ -1,0 +1,29 @@
+name: "Release NuGet Packages"
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Trigger on version tags (e.g., v1.0.0)
+
+jobs:
+  release:
+    name: Pack and Publish Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: ./.github/actions/setup-dotnet
+
+      - name: Run Tests
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: ./Aptos.Tests
+        shell: bash
+
+      - name: Pack Packages
+        run: dotnet pack --configuration Release --no-build --output ./artifacts
+
+      - name: Publish Packages to NuGet
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
