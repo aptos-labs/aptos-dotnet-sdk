@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <DefaultVersion>0.0.2</DefaultVersion>
+    <DefaultVersion>0.0.3</DefaultVersion>
     <DefaultTargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</DefaultTargetFrameworks>
     <DefaultTestingFrameworks>net8.0</DefaultTestingFrameworks>
   </PropertyGroup>

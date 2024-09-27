@@ -15,6 +15,7 @@
         <PackageIcon>icon.jpg</PackageIcon>
         <PackageVersion>$(DefaultVersion)-beta</PackageVersion>
         <Copyright>Copyright (c) Aptos Labs 2024</Copyright>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

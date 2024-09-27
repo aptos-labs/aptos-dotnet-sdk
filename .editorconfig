@@ -19,3 +19,9 @@ csharp_style_expression_bodied_operators = when_possible:warning
 csharp_style_expression_bodied_properties = when_possible:warning
 csharp_style_expression_bodied_indexers = when_possible:warning
 csharp_style_expression_bodied_accessors = when_possible:warning
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent
+
+# CS1570: XML comment has badly formed XML
+dotnet_diagnostic.CS1570.severity = silent

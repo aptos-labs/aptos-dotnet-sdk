@@ -245,7 +245,7 @@ public class AccountClient(AptosClient client)
     /// The default will be "0xa" and "0x1::aptos_coin::AptosCoin".
     /// </summary>
     /// <param name="address">The address of the account.</param>
-    /// <param name="types">The type of the coin.</param>
+    /// <param name="type">The type of the coin.</param>
     /// <param name="offset">The offset of the query.</param>
     /// <param name="limit">The item limit of the query.</param>
     /// <param name="where">The condition to filter the coin balances.</param>

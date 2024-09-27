@@ -7,6 +7,8 @@ namespace Aptos;
 /// <param name="nodeUrl">The endpoint for the full node.</param>
 /// <param name="indexerUrl">The endpoint for the indexer.</param>
 /// <param name="faucetUrl">The endpoint for the faucet.</param>
+/// <param name="proverUrl"></param>
+/// <param name="pepperUrl"></param>
 /// <param name="chainId">The chain ID for the network. If -1, the chain ID is automatically retrieved from the full node.</param>
 public class NetworkConfig(
     string name,
