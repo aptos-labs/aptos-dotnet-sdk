@@ -6,17 +6,75 @@
 
 The Aptos .NET SDK is a library that provides a convenient way to interact with the Aptos blockchain using C# under the .NET framework. The SDK is designed to offer all the necessary tools to build applications that interact with the Aptos blockchain.
 
-## Installation (WIP)
+## Installation
 
-The SDK is pending a release on NuGet. In the meantime, you can clone the repository and build the SDK locally.
+The SDK is published onto [NuGet](https://www.nuget.org/packages/Aptos/) where you can install it using the following command:
 
-### Unity
+```bash
+dotnet add package Aptos
+```
 
-(WIP)
+### Unity (WIP)
+
+> We are currently working on a `.unitypackage` for Unity developers. In the meantime, you can use the [NuGet](https://github.com/GlitchEnzo/NuGetForUnity) package manager to install the SDK into your Unity project.
+
+1. Open Package Manager window (Window | Package Manager)
+2. Click + button on the upper-left of a window, and select *Add package from git URL...*
+3. Enter the following URL and click Add button
+
+```
+https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity
+```
+
+4. Click on `Manage NuGet Packages` from the `NuGet` menu in the Unity Editor.
+
+![launch-nuget](https://github.com/GlitchEnzo/NuGetForUnity/raw/master/docs/screenshots/menu_item.png)
+
+1. Search for `Aptos`  and install the package. **Make sure to turn on `Show Prerelease` in the top left**.
+
+![search-aptos](https://i.imgur.com/8UTvYtj.png)
 
 ### Godot
 
-(WIP)
+To install the Aptos SDK into your Godot project, you will need to add the Aptos SDK into your Godot project's `.csproj` file.
+
+1. Find the `.csproj` file in the root of your Godot project.
+2. Add the following line to the `<ItemGroup>` section of the `.csproj` file. If it doesn't exist, create it the `<ItemGroup>` section.
+
+```xml
+<Project Sdk="Godot.NET.Sdk/4.3.0">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net7.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>AptosSDKExample</RootNamespace>
+  </PropertyGroup>
+
+  <!-- START: Add these lines -->
+  <ItemGroup>
+    <PackageReference Include="Aptos" Version="0.0.1-beta" />
+  </ItemGroup>
+  <!-- END -->
+
+</Project>
+```
+
+3. You can now use the Aptos SDK in your Godot project.
+
+```csharp
+using Aptos;
+
+public partial class MyClass : Node
+{
+    public override void _Ready()
+    {
+        var client = new AptosClient(Networks.Mainnet);
+        var ledgerInfo = await client.Block.GetLedgerInfo();
+        Console.WriteLine($"Ledger Block Height: {ledgerInfo.BlockHeight}");
+    }
+}
+```
 
 ## Usage
 

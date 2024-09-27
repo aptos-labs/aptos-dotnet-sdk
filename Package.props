@@ -13,7 +13,7 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>http://aptoslabs.dev/</PackageProjectUrl>
         <PackageIcon>icon.jpg</PackageIcon>
-        <PackageVersion>$(DefaultVersion)-beta.1</PackageVersion>
+        <PackageVersion>$(DefaultVersion)-beta</PackageVersion>
         <Copyright>Copyright (c) Aptos Labs 2024</Copyright>
     </PropertyGroup>
 
