@@ -11,7 +11,7 @@
         <FileVersion>$(DefaultVersion)</FileVersion>
         <AssemblyVersion>$(DefaultVersion)</AssemblyVersion>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <PackageProjectUrl>http://aptoslabs.dev/</PackageProjectUrl>
+        <PackageProjectUrl>https://aptos.dev/en/build/sdks/dotnet-sdk</PackageProjectUrl>
         <PackageIcon>icon.jpg</PackageIcon>
         <PackageVersion>$(DefaultVersion)-beta</PackageVersion>
         <Copyright>Copyright (c) Aptos Labs 2024</Copyright>

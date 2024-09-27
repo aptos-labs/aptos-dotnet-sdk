@@ -29,6 +29,8 @@ public class G1Bytes : Serializable
 
 public class G1BytesConverter : JsonConverter<G1Bytes>
 {
+    public override bool CanWrite => false;
+
     public override G1Bytes? ReadJson(
         JsonReader reader,
         Type objectType,
@@ -46,7 +48,7 @@ public class G1BytesConverter : JsonConverter<G1Bytes>
     }
 
     public override void WriteJson(JsonWriter writer, G1Bytes? value, JsonSerializer serializer) =>
-        serializer.Serialize(writer, value);
+        throw new NotImplementedException();
 }
 
 [JsonConverter(typeof(G2BytesConverter))]
@@ -71,6 +73,8 @@ public class G2Bytes : Serializable
 
 public class G2BytesConverter : JsonConverter<G2Bytes>
 {
+    public override bool CanWrite => false;
+
     public override G2Bytes? ReadJson(
         JsonReader reader,
         Type objectType,
@@ -88,7 +92,7 @@ public class G2BytesConverter : JsonConverter<G2Bytes>
     }
 
     public override void WriteJson(JsonWriter writer, G2Bytes? value, JsonSerializer serializer) =>
-        serializer.Serialize(writer, value);
+        throw new NotImplementedException();
 }
 
 public class Groth16Zkp : Proof

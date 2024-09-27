@@ -1,5 +1,6 @@
 namespace Aptos;
 
+using System.Reflection;
 using Aptos.Exceptions;
 using Aptos.Indexer.GraphQL;
 using Aptos.Indexer.Scalars;
@@ -29,7 +30,18 @@ public class IndexerClient
             .AddSerializer<BigIntSerializer>()
             .AddSerializer<JsonbSerializer>()
             .AddAptosIndexerClient()
-            .ConfigureHttpClient(client => client.BaseAddress = new Uri(_baseUrl));
+            .ConfigureHttpClient(client =>
+            {
+                client.BaseAddress = new Uri(_baseUrl);
+                client.DefaultRequestHeaders.Add(
+                    "x-aptos-client",
+                    $"aptos-dotnet-sdk/{Assembly.GetExecutingAssembly().GetName().Version}"
+                );
+                foreach (var header in _client.Config.Headers)
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            });
 
         IServiceProvider services = serviceCollection.BuildServiceProvider();
 

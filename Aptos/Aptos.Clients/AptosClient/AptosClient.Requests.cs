@@ -91,7 +91,8 @@ public partial class AptosClient
                 aptosRequest.Method,
                 aptosRequest.Body,
                 aptosRequest.ContentType,
-                aptosRequest.QueryParams
+                aptosRequest.QueryParams,
+                new Dictionary<string, string>(Config.Headers)
             );
 
         // Add default headers

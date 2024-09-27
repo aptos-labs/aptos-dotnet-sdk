@@ -84,7 +84,7 @@ public class MultiKeyAccount : Account
         // to ensure the signature is signed in ascending order according to the bitmap.
         // Authentication on chain will fail otherwise.
         var signersAndBitPosition = signers
-            .Select((signer, index) => new { signer, index })
+            .Select((signer, index) => new { signer, index = bitPositions.ElementAt(index) })
             .ToList();
         signersAndBitPosition.Sort((a, b) => a.index - b.index);
         Signers = signersAndBitPosition.Select(value => value.signer).ToList();
@@ -118,6 +118,22 @@ public class MultiKeyAccount : Account
         return true;
     }
 
+    /// <inheritdoc cref="Account.Sign(AnyRawTransaction)"/>
+    public override Signature Sign(AnyRawTransaction transaction) =>
+        // This must explictly be overriden because some accounts have specialized signing for Transactions
+        new MultiKeySignature(
+            Signers
+                .Select(s =>
+                    s.Sign(transaction) is PublicKeySignature publicKeySignature
+                        ? publicKeySignature
+                        : throw new Exception(
+                            "MultiKeyAccount cannot be used with unified accounts (e.g. MultiKeyAccount)"
+                        )
+                )
+                .ToList(),
+            MultiKey.CreateBitmap(SignerIndicies)
+        );
+
     /// <summary>
     /// Signs a message into a signature using the signer.
     /// </summary>
@@ -136,6 +152,11 @@ public class MultiKeyAccount : Account
                 .ToList(),
             MultiKey.CreateBitmap(SignerIndicies)
         );
+
+    /// <inheritdoc cref="Sign(AnyRawTransaction)"/>
+    public override AccountAuthenticator SignWithAuthenticator(AnyRawTransaction transaction) =>
+        // This must explictly be overriden because some accounts have specialized signing for Transactions
+        new AccountAuthenticatorMultiKey(_verifyingKey, (MultiKeySignature)Sign(transaction));
 
     /// <summary>
     /// Signs a message and returns an authenticator with the signature.

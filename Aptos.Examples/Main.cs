@@ -10,6 +10,7 @@ public class RunExample
         SimpleTransferEd25519Example.Run,
         SimpleTransferSingleKeyExample.Run,
         SimpleTransferMultiKeyExample.Run,
+        SimpleTransferComplexMultiKeyExample.Run,
         SponsoredTransferEd25519Example.Run,
         SimulateTransferEd25519Example.Run,
         AptosNamesExample.Run,

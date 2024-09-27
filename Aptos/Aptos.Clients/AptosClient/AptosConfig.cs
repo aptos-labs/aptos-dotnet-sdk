@@ -7,12 +7,19 @@ namespace Aptos;
 /// for a predefined list of networks.
 /// </summary>
 /// <param name="networkConfig">The endpoints and chain ID for the network. If none are provided, Devnet is used.</param>
+/// <param name="headers">Default headers to be added to all requests.</param>
 /// <param name="requestClient">The request client used to make HTTP requests. If none is provided, a default client is used.</param>
-public class AptosConfig(NetworkConfig? networkConfig = null, RequestClient? requestClient = null)
+public class AptosConfig(
+    NetworkConfig? networkConfig = null,
+    Dictionary<string, string>? headers = null,
+    RequestClient? requestClient = null
+)
 {
     public readonly NetworkConfig NetworkConfig = networkConfig ?? Networks.Devnet;
 
     public readonly RequestClient RequestClient = requestClient ?? new AptosRequestClient();
+
+    public readonly Dictionary<string, string> Headers = headers ?? [];
 
     public string GetRequestUrl(ApiType apiType)
     {
