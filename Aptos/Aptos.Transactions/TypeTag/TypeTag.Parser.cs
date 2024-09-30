@@ -60,7 +60,7 @@ partial class TypeTag
                 // Process last type, if there is no type string, then don't parse it
                 if (currentStr != "")
                 {
-                    TypeTag newType = ParseType(currentStr, curTypes, allowGenerics);
+                    TypeTag newType = ParseType(currentStr, innerTypes, allowGenerics);
                     curTypes.Add(newType);
                 }
 
@@ -73,6 +73,7 @@ partial class TypeTag
                         typeStr,
                         TypeTagParserExceptionReason.UnexpectedTypeArgumentClose
                     );
+
                 // If the expected types don't match the number of commas, then we also fail
                 if (expectedTypes != curTypes.Count)
                     throw new TypeTagParserException(
@@ -124,12 +125,16 @@ partial class TypeTag
                     innerTypes = [];
                     curTypes.Add(newType);
                     currentStr = "";
-                    expectedTypes += 1;
+                    parsedTypeTag = true;
                 }
 
+                // Skip ahead on any more whitespace
                 cur = ConsumeWhitespace(typeStr, cur);
 
-                // The enxt space MUST be a comma, or a closing > if there was something parsed before
+                if (cur >= typeStr.Length)
+                    continue;
+
+                // The next space MUST be a comma, or a closing > if there was something parsed before
                 // e.g. `u8 u8` is invalid but `u8, u8` is valid
                 char nextChar = typeStr[cur];
                 if (cur < typeStr.Length && parsedTypeTag && nextChar != ',' && nextChar != '>')
@@ -142,6 +147,7 @@ partial class TypeTag
             }
             else
             {
+                // Any other characters just append to the current string
                 currentStr += c;
             }
 
