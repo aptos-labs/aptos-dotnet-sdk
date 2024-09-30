@@ -107,7 +107,7 @@ public abstract partial class TypeTag(TypeTagVariant variant) : Serializable
     }
 }
 
-class TypeTagBool() : TypeTag(TypeTagVariant.Bool)
+public class TypeTagBool() : TypeTag(TypeTagVariant.Bool)
 {
     public static new TypeTagBool Deserialize(Deserializer d) => new();
 }
@@ -117,27 +117,27 @@ public class TypeTagU8() : TypeTag(TypeTagVariant.U8)
     public static new TypeTagU8 Deserialize(Deserializer d) => new();
 }
 
-class TypeTagU16() : TypeTag(TypeTagVariant.U16)
+public class TypeTagU16() : TypeTag(TypeTagVariant.U16)
 {
     public static new TypeTagU16 Deserialize(Deserializer d) => new();
 }
 
-class TypeTagU32() : TypeTag(TypeTagVariant.U32)
+public class TypeTagU32() : TypeTag(TypeTagVariant.U32)
 {
     public static new TypeTagU32 Deserialize(Deserializer d) => new();
 }
 
-class TypeTagU64() : TypeTag(TypeTagVariant.U64)
+public class TypeTagU64() : TypeTag(TypeTagVariant.U64)
 {
     public static new TypeTagU64 Deserialize(Deserializer d) => new();
 }
 
-class TypeTagU128() : TypeTag(TypeTagVariant.U128)
+public class TypeTagU128() : TypeTag(TypeTagVariant.U128)
 {
     public static new TypeTagU128 Deserialize(Deserializer d) => new();
 }
 
-class TypeTagU256() : TypeTag(TypeTagVariant.U256)
+public class TypeTagU256() : TypeTag(TypeTagVariant.U256)
 {
     public static new TypeTagU256 Deserialize(Deserializer d) => new();
 }
@@ -147,12 +147,12 @@ public class TypeTagAddress() : TypeTag(TypeTagVariant.Address)
     public static new TypeTagAddress Deserialize(Deserializer d) => new();
 }
 
-class TypeTagSigner() : TypeTag(TypeTagVariant.Signer)
+public class TypeTagSigner() : TypeTag(TypeTagVariant.Signer)
 {
     public static new TypeTagSigner Deserialize(Deserializer d) => new();
 }
 
-class TypeTagReference(TypeTag value) : TypeTag(TypeTagVariant.Reference)
+public class TypeTagReference(TypeTag value) : TypeTag(TypeTagVariant.Reference)
 {
     public readonly TypeTag Value = value;
 
@@ -161,7 +161,7 @@ class TypeTagReference(TypeTag value) : TypeTag(TypeTagVariant.Reference)
     public static new TypeTagReference Deserialize(Deserializer d) => new(TypeTag.Deserialize(d));
 }
 
-class TypeTagGeneric : TypeTag
+public class TypeTagGeneric : TypeTag
 {
     public readonly uint Value;
 
@@ -197,7 +197,7 @@ public class TypeTagVector(TypeTag value) : TypeTag(TypeTagVariant.Vector)
     public static new TypeTagVector Deserialize(Deserializer d) => new(TypeTag.Deserialize(d));
 }
 
-class TypeTagStruct(StructTag value) : TypeTag(TypeTagVariant.Struct)
+public class TypeTagStruct(StructTag value) : TypeTag(TypeTagVariant.Struct)
 {
     public readonly StructTag Value = value;
 
