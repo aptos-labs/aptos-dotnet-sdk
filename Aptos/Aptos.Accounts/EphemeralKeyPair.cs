@@ -79,7 +79,7 @@ public class EphemeralKeyPair : Serializable
         s.U32AsUleb128((uint)PublicKey.Type);
         s.Bytes(_privateKey.ToByteArray());
         s.U64(ExpiryTimestamp);
-        s.Bytes(Blinder);
+        s.FixedBytes(Blinder);
     }
 
     public static EphemeralKeyPair Deserialize(Deserializer d)
@@ -91,7 +91,7 @@ public class EphemeralKeyPair : Serializable
             _ => throw new ArgumentException($"Unsupported public key scheme for types {variant}"),
         };
         var expiryTimestamp = d.U64();
-        var blinder = d.Bytes();
+        var blinder = d.FixedBytes(BLINDER_LENGTH);
         return new EphemeralKeyPair(privateKey, expiryTimestamp, blinder);
     }
 

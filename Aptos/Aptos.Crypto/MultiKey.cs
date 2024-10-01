@@ -76,8 +76,19 @@ public partial class MultiKey : Serializable, IVerifyingKey
     public bool VerifySignature(string message, Signature signature) =>
         VerifySignature(SigningMessage.Convert(message), signature);
 
-    public bool VerifySignature(byte[] message, Signature signature) =>
-        throw new NotImplementedException();
+    public bool VerifySignature(byte[] message, Signature signature)
+    {
+        if (signature is not MultiKeySignature multiKeySignature)
+            return false;
+
+        for (int i = 0; i < PublicKeys.Count; i++)
+        {
+            if (!PublicKeys[i].VerifySignature(message, multiKeySignature.Signatures[i]))
+                return false;
+        }
+
+        return true;
+    }
 
     public override void Serialize(Serializer s)
     {

@@ -1,6 +1,6 @@
 Feature: SingleKey
 """
-Single is a verification key used to authenticate a public key. This specification aims to covers SingleKey signatures, serialization, and authentication keys.
+SingleKey is a verification key used to authenticate a public key. This specification aims to covers SingleKey signatures, serialization, and authentication keys.
 
 All key values are represented in BCS (Binary Canonical Serialization) format as a Hex string. It's important to use a Deserializer ensure compatibility.
 """
