@@ -12,14 +12,14 @@
         <AssemblyVersion>$(DefaultVersion)</AssemblyVersion>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://aptos.dev/en/build/sdks/dotnet-sdk</PackageProjectUrl>
-        <PackageIcon>icon.jpg</PackageIcon>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageVersion>$(DefaultVersion)-beta</PackageVersion>
         <Copyright>Copyright (c) Aptos Labs 2024</Copyright>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="..\assets\icon.jpg" PackagePath="\" />
+        <Content Include="..\assets\icon.png" PackagePath="\" />
         <Content Include="..\LICENSE" Pack="True" PackagePath="\" />
     </ItemGroup>
 
