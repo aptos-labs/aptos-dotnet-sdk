@@ -47,10 +47,10 @@ jobs:
 
           # Check if the latest version is the same as the current version
           if [ "$LATEST_VERSION" == "${{ steps.version.outputs.version }}" ]; then
-            echo "Nuget package exists"
+            echo "Nuget package exists (${{ steps.version.outputs.version }})"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Nuget package does not exist"
+            echo "Nuget package does not exist (${{ steps.version.outputs.version }})"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
@@ -82,3 +82,5 @@ jobs:
         run: |
           git tag v${{ needs.check.outputs.version }}
           git push origin v${{ needs.check.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

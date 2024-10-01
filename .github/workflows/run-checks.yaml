@@ -1,7 +1,7 @@
 env:
   GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-name: "C#/.NET Checks"
+name: "C# and .NET Checks"
 on:
   pull_request:
     types: [labeled, opened, synchronize, reopened, auto_merge_enabled]
