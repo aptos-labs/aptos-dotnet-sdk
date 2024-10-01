@@ -1,0 +1,84 @@
+name: "Check and Release NuGet Packages"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    name: Check Packages Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_published: ${{ steps.nuget_exists.outputs.exists }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: ./.github/actions/setup-dotnet
+
+      - name: Install xmllint
+        run: sudo apt install -y libxml2-utils
+        working-directory: ./
+        shell: bash
+
+      - name: Extract Version from Directory.Build.props
+        id: version
+        run: |
+          # Extract the default version from Directory.Build.props (e.g., 0.0.5)
+          DEFAULT_VERSION=$(xmllint --xpath "string(//*[local-name()='DefaultVersion'])" Directory.Build.props)
+
+          # Extract the template version from Package.props (e.g., "$(DefaultVersion)-beta")
+          VERSION_TEMPLATE=$(xmllint --xpath "string(//*[local-name()='PackageVersion'])" Package.props)
+
+          # Replace the template version with the actual version
+          VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/$DEFAULT_VERSION}
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check If Nuget Package Exists
+        id: nuget_exists
+        shell: bash
+        working-directory: ./
+        run: |
+          LATEST_VERSION=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" | jq -r '.versions | last') 
+
+          # Check if the latest version is the same as the current version
+          if [ "$LATEST_VERSION" == "${{ steps.version.outputs.version }}" ]; then
+            echo "Nuget package exists"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Nuget package does not exist"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  release:
+    name: Pack and Publish Packages
+    needs: check
+    runs-on: ubuntu-latest
+    if: ${{ needs.check.outputs.is_published == 'false' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: ./.github/actions/setup-dotnet
+
+      - name: Run Tests
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: ./Aptos.Tests
+        shell: bash
+
+      - name: Pack Packages
+        run: dotnet pack --configuration Release --no-build --output ./artifacts
+
+      - name: Publish Packages to NuGet
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+
+      - name: Tag Release
+        run: |
+          git tag v${{ needs.check.outputs.version }}
+          git push origin v${{ needs.check.outputs.version }}

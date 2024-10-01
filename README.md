@@ -147,3 +147,7 @@ This will prompt the follow console. You can select an example to run by enterin
 ![examples-demonstration](https://i.imgur.com/YS140Zb.png)
 
 [github-license]: https://img.shields.io/github/license/aptos-labs/aptos-ts-sdk
+
+## Release Process
+
+To release a new version of the SDK, you can bump the version in the `Directory.Build.props` file and push the changes to the `main` branch. The GitHub Actions workflow will automatically publish the new version to NuGet.
