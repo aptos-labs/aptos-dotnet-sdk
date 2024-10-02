@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   check:
     name: Check Packages Version
