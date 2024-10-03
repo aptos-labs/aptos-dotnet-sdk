@@ -68,25 +68,22 @@ The SDK is published onto [NuGet](https://www.nuget.org/packages/Aptos/) where y
 dotnet add package Aptos
 ```
 
-### Unity (WIP)
+### Unity
 
-> We are currently working on a `.unitypackage` for Unity developers. In the meantime, you can use the [NuGet](https://github.com/GlitchEnzo/NuGetForUnity) package manager to install the SDK into your Unity project.
+Find the Aptos Unity SDK repository at [aptos-labs/unity-sdk](https://github.com/aptos-labs/unity-sdk).
 
-1. Open Package Manager window (Window | Package Manager)
-2. Click + button on the upper-left of a window, and select *Add package from git URL...*
-3. Enter the following URL and click Add button
+### Unity Package Manager (UPM)
 
+1. Open the Unity Package Manager (`Window` > `Package Manager`).
+2. Click on the `+` button and select `Add package from git URL...`.
+3. Enter the URL of the Aptos Unity SDK path in this repository: 
+```bash
+https://github.com/aptos-labs/unity-sdk.git?path=/Packages/com.aptoslabs.aptos-unity-sdk
 ```
-https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity
-```
 
-4. Click on `Manage NuGet Packages` from the `NuGet` menu in the Unity Editor.
-
-![launch-nuget](https://i.imgur.com/DSvM5BM.png)
-
-5. Search for `Aptos`  and install the package. **Make sure to turn on `Show Prerelease` in the top left**.
-
-![search-aptos](https://i.imgur.com/8UTvYtj.png)
+### Import Asset Package
+1. Go to the [`aptos-labs/unity-sdk Releases`](https://github.com/aptos-labs/unity-sdk/releases) and download the latest release. 
+2. Drag and drop the `.unitypackage` file into your Unity project.
 
 ### Godot
 
