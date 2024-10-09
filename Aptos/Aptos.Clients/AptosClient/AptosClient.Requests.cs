@@ -106,7 +106,7 @@ public partial class AptosClient
 
         ClientResponse<Res> clientResponse = await ClientRequest<Res>(clientRequest);
 
-        AptosResponse<JObject> errorResponse =
+        AptosResponse<dynamic> errorResponse =
             new(
                 clientResponse.Status,
                 clientResponse.StatusText,

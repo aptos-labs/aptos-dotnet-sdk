@@ -66,7 +66,7 @@ public class IndexerClient
             throw new ApiException(
                 ApiType.Indexer,
                 request,
-                new AptosResponse<JObject>(
+                new AptosResponse<dynamic>(
                     200,
                     exception.Message,
                     JObject.FromObject(new { errors = exception.Errors }),

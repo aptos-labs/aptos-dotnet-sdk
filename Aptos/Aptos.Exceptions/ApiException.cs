@@ -13,11 +13,14 @@ namespace Aptos.Exceptions
 
         public readonly string StatusText;
 
-        public new readonly JObject Data;
+        /// <summary>
+        /// The error object returned by the API. This can be a JObject or a string.
+        /// </summary>
+        public new readonly dynamic Data;
 
         public readonly AptosRequest Request;
 
-        public ApiException(ApiType type, AptosRequest request, AptosResponse<JObject> response)
+        public ApiException(ApiType type, AptosRequest request, AptosResponse<dynamic> response)
             : base(DeriveErrorMessage(type, request, response))
         {
             Url = request.Url;
@@ -30,7 +33,7 @@ namespace Aptos.Exceptions
         private static string DeriveErrorMessage(
             ApiType type,
             AptosRequest request,
-            AptosResponse<JObject> response
+            AptosResponse<dynamic> response
         )
         {
             string? traceId = response.Headers.TryGetValue("traceparent", out string? value)
