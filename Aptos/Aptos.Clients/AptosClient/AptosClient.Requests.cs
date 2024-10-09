@@ -110,7 +110,7 @@ public partial class AptosClient
             new(
                 clientResponse.Status,
                 clientResponse.StatusText,
-                clientResponse.Error ?? [],
+                clientResponse.Error ?? new JObject(),
                 aptosRequest.Url,
                 clientResponse.Headers ?? [],
                 aptosRequest

@@ -3,6 +3,7 @@ namespace Aptos;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using Aptos.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -142,7 +143,7 @@ public class AptosRequestClient : RequestClient
                 response.ReasonPhrase ?? "",
                 response.IsSuccessStatusCode ? JsonConvert.DeserializeObject<Res>(content)! : null,
                 !response.IsSuccessStatusCode
-                    ? JsonConvert.DeserializeObject<JObject>(content)
+                    ? Utilities.DeserializeJObjectOrString(content)
                     : null,
                 response,
                 response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value))

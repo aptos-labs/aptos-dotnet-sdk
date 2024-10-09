@@ -28,7 +28,7 @@ public class ClientResponse<Res>(
     int status,
     string statusText,
     Res? data,
-    JObject? error = null,
+    dynamic? error = null,
     HttpResponseMessage? response = null,
     Dictionary<string, string>? headers = null
 )
@@ -36,7 +36,11 @@ public class ClientResponse<Res>(
     public int Status = status;
     public string StatusText = statusText;
     public Res? Data = data;
-    public JObject? Error = error;
+
+    /// <summary>
+    /// The error object returned by the API. This can be a JObject or a string.
+    /// </summary>
+    public dynamic? Error = error;
     public HttpResponseMessage? Response = response;
     public Dictionary<string, string>? Headers = headers ?? [];
 }

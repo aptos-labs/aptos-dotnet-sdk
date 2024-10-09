@@ -81,5 +81,17 @@ namespace Aptos.Core
             // Convert back to Unix timestamp and return
             return flooredDateTime.ToUnixTimeSeconds();
         }
+
+        public static dynamic? DeserializeJObjectOrString(string value)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<JObject>(value);
+            }
+            catch (Exception)
+            {
+                return value;
+            }
+        }
     }
 }
