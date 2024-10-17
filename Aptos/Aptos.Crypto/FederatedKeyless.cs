@@ -25,9 +25,7 @@ public class FederatedKeylessPublicKey : PublicKey
         : this(iss, Hex.FromHexInput(idCommitment).ToByteArray(), jwkAddress) { }
 
     public FederatedKeylessPublicKey(string iss, byte[] idCommitment, AccountAddress jwkAddress)
-    {
         : this(new KeylessPublicKey(iss, idCommitment), jwkAddress) { }
-    }
 
     public FederatedKeylessPublicKey(KeylessPublicKey keylessPublicKey, AccountAddress jwkAddress)
         : base(PublicKeyVariant.FederatedKeyless)
@@ -47,8 +45,8 @@ public class FederatedKeylessPublicKey : PublicKey
 
     public override void Serialize(Serializer s)
     {
-        jwkAddress.Serialize(s);
-        keylessPublicKey.Serialize(s);
+        JwkAddress.Serialize(s);
+        KeylessPublicKey.Serialize(s);
     }
 
     public static new FederatedKeylessPublicKey Deserialize(Deserializer d)
@@ -58,9 +56,9 @@ public class FederatedKeylessPublicKey : PublicKey
         return new FederatedKeylessPublicKey(keylessPublicKey, jwkAddress);
     }
 
-    public static FederatedKeylessPublicKey FromJwt(string jwt, string pepper, string uidKey = "sub", AccountAddress jwkAddress) =>
+    public static FederatedKeylessPublicKey FromJwt(string jwt, string pepper, AccountAddress jwkAddress, string uidKey = "sub") =>
         new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey), jwkAddress);
 
-    public static FederatedKeylessPublicKey FromJwt(string jwt, byte[] pepper, string uidKey = "sub", AccountAddress jwkAddress) =>
+    public static FederatedKeylessPublicKey FromJwt(string jwt, byte[] pepper, AccountAddress jwkAddress, string uidKey = "sub") =>
         new(new JsonWebToken(jwt).Issuer, Keyless.ComputeIdCommitment(jwt, pepper, uidKey), jwkAddress);
 }
