@@ -19,6 +19,9 @@ public enum PublicKeyVariant : uint
 
     [EnumMember(Value = "keyless")]
     Keyless,
+
+    [EnumMember(Value = "federated_keyless")]
+    FederatedKeyless,
 }
 
 [JsonConverter(typeof(PublicKeyConverter))]
@@ -45,6 +48,7 @@ public abstract class PublicKey(PublicKeyVariant type) : Serializable
             PublicKeyVariant.Ed25519 => new Ed25519PublicKey(d.Bytes()),
             PublicKeyVariant.Secp256k1Ecdsa => new Secp256k1PublicKey(d.Bytes()),
             PublicKeyVariant.Keyless => KeylessPublicKey.Deserialize(d),
+            PublicKeyVariant.FederatedKeyless => FederatedKeylessPublicKey.Deserialize(d),
             _ => throw new ArgumentException("Invalid public key variant"),
         };
     }
