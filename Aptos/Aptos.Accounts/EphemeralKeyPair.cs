@@ -18,7 +18,7 @@ public class EphemeralKeyPair : Serializable
     /// The private key is used to sign transactions. This private key is not tied to any account on the chain as it is
     /// ephemeral (not permanent) in nature.
     /// </summary>
-    private PrivateKey _privateKey;
+    private readonly PrivateKey _privateKey;
 
     /// <summary>
     /// A public key used to verify transactions. This public key is not tied to any account on the chain as it is
@@ -38,6 +38,9 @@ public class EphemeralKeyPair : Serializable
     /// The value passed to the IdP when the user logs in.
     /// </summary>
     public readonly string Nonce;
+
+    public EphemeralKeyPair(EphemeralKeyPair other)
+        : this(other._privateKey, other.ExpiryTimestamp, other.Blinder) { }
 
     public EphemeralKeyPair(
         PrivateKey privateKey,
@@ -64,7 +67,7 @@ public class EphemeralKeyPair : Serializable
         Nonce = Hash.PoseidonHash(fields).ToString();
     }
 
-    public bool IsExpired() => (ulong)DateTime.Now.ToUnixTimestamp() > ExpiryTimestamp;
+    public virtual bool IsExpired() => (ulong)DateTime.Now.ToUnixTimestamp() > ExpiryTimestamp;
 
     public EphemeralSignature Sign(byte[] data)
     {
