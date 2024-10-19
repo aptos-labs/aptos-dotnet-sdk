@@ -95,7 +95,7 @@ public partial class AccountAddress : TransactionArgument
 
     public static AccountAddress Deserialize(Deserializer d) => new(d.FixedBytes(LENGTH));
 
-    public static AccountAddress FromString(string str)
+    public static AccountAddress FromString(string str, int maxMissingChars = 4)
     {
         string parsedInput = str;
 
@@ -114,10 +114,16 @@ public partial class AccountAddress : TransactionArgument
                 AccountAddressInvalidReason.TooLong
             );
 
-        byte[] addressBytes;
+        if (maxMissingChars > 63 || maxMissingChars < 0)
+            throw new AccountAddressParsingException(
+                $"maxMissingChars must be between or equal to 0 and 63. Received {maxMissingChars}",
+                AccountAddressInvalidReason.InvalidPaddingStrictness
+            );
+
+        AccountAddress address;
         try
         {
-            addressBytes = Utilities.HexStringToBytes(parsedInput.PadLeft(64, '0'));
+            address = new AccountAddress(Utilities.HexStringToBytes(parsedInput.PadLeft(64, '0')));
         }
         catch
         {
@@ -127,7 +133,18 @@ public partial class AccountAddress : TransactionArgument
             );
         }
 
-        return new AccountAddress(addressBytes);
+        if (parsedInput.Length < 64 - maxMissingChars)
+        {
+            if (!address.IsSpecial())
+            {
+                throw new AccountAddressParsingException(
+                    $"Hex string is too short, must be between {64 - maxMissingChars} and 64 chars, excluding the leading 0x. You may need to fix the address by pading it with 0s before passing it to `fromString` (e.g. <addressString>.PadLeft(64, '0')). Received {str}",
+                    AccountAddressInvalidReason.TooShort
+                );
+            }
+        }
+
+        return address;
     }
 
     public static AccountAddress FromStringStrict(string str)
@@ -161,7 +178,8 @@ public partial class AccountAddress : TransactionArgument
         return address;
     }
 
-    public static AccountAddress From(string str) => FromString(str);
+    public static AccountAddress From(string str, int maxMissingChars = 4) =>
+        FromString(str, maxMissingChars);
 
     public static AccountAddress From(byte[] bytes) => new(bytes);
 
