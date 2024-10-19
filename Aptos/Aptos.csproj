@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="OneOf" Version="3.0.271" />
     <PackageReference Include="StrawberryShake.Transport.Http" Version="13.9.11" />
     <PackageReference Include="StrawberryShake" Version="13.9.11" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

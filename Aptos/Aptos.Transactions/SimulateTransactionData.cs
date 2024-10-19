@@ -1,3 +1,5 @@
+using OneOf;
+
 namespace Aptos;
 
 public class SimulateTransactionOptions(
@@ -13,15 +15,16 @@ public class SimulateTransactionOptions(
 
 public class SimulateTransactionData(
     AnyRawTransaction transaction,
-    PublicKey signerPublicKey,
-    PublicKey[]? secondarySignersPublicKeys = null,
-    PublicKey? feePayerPublicKey = null,
+    OneOf<PublicKey, IVerifyingKey> signerPublicKey,
+    OneOf<PublicKey, IVerifyingKey>[]? secondarySignersPublicKeys = null,
+    OneOf<PublicKey, IVerifyingKey>? feePayerPublicKey = null,
     SimulateTransactionOptions? options = null
 )
 {
     public AnyRawTransaction Transaction = transaction;
-    public PublicKey SignerPublicKey = signerPublicKey;
-    public PublicKey[]? SecondarySignersPublicKeys = secondarySignersPublicKeys;
-    public PublicKey? FeePayerPublicKey = feePayerPublicKey;
+    public OneOf<PublicKey, IVerifyingKey> SignerPublicKey = signerPublicKey;
+    public OneOf<PublicKey, IVerifyingKey>[]? SecondarySignersPublicKeys =
+        secondarySignersPublicKeys;
+    public OneOf<PublicKey, IVerifyingKey>? FeePayerPublicKey = feePayerPublicKey;
     public SimulateTransactionOptions? Options = options;
 }
