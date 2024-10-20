@@ -43,7 +43,6 @@ public static class TransactionBuilder
                         MultiKey.GetSimulationSignature(multiKey)
                     );
 
-        return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
                 throw new ArgumentException(
                     $"{verifyingKey.GetType().Name} is not supported for simulation."
                 );
