@@ -24,6 +24,11 @@ public static class TransactionBuilder
                         keylessPublicKey,
                         Keyless.GetSimulationSignature()
                     );
+                if (publicKey is FederatedKeylessPublicKey federatedKeylessPublicKey)
+                    return new AccountAuthenticatorSingleKey(
+                        federatedKeylessPublicKey,
+                        Keyless.GetSimulationSignature()
+                    );
 
                 return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
             },
