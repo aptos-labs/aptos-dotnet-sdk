@@ -40,6 +40,20 @@ public partial class MultiKey
         n = (n + (n >> 4)) & 0x0F0F0F0Fu;
         return (int)((n * 0x01010101u) >> 24);
     }
+
+    public static MultiKeySignature GetSimulationSignature(MultiKey multiKey) =>
+        GetSimulationSignature(multiKey.PublicKeys.Count);
+
+    public static MultiKeySignature GetSimulationSignature(int keysCount)
+    {
+        return new MultiKeySignature(
+            signatures: Enumerable
+                .Range(0, keysCount)
+                .Select(i => (PublicKeySignature)new Ed25519Signature(new byte[64]))
+                .ToList(),
+            bitmap: CreateBitmap(Enumerable.Range(0, keysCount).Select(i => i).ToArray())
+        );
+    }
 }
 
 public partial class MultiKey : Serializable, IVerifyingKey

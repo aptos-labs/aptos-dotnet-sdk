@@ -21,6 +21,7 @@ namespace Aptos.Exceptions
         LeadingZeroXRequired,
         LongFormRequiredUnlessSpecial,
         InvalidPaddingZeroes,
+        InvalidPaddingStrictness,
     }
 
     public class AccountAddressParsingException(string message, AccountAddressInvalidReason reason)

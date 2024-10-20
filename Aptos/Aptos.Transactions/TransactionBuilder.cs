@@ -1,38 +1,54 @@
 namespace Aptos;
 
 using Aptos.Core;
-using Aptos.Exceptions;
+using OneOf;
 
 public static class TransactionBuilder
 {
     #region GetAuthenticator
 
-    public static AccountAuthenticator GetAuthenticatorForSimulation(PublicKey publicKey)
+    public static AccountAuthenticator GetAuthenticatorForSimulation(
+        OneOf<PublicKey, IVerifyingKey> publicOrVerifyingKey
+    )
     {
         Ed25519Signature invalidSignature = new(new byte[64]);
 
-        if (publicKey is Ed25519PublicKey ed25519PublicKey)
-        {
-            return new AccountAuthenticatorEd25519(ed25519PublicKey, invalidSignature);
-        }
+        return publicOrVerifyingKey.Match<AccountAuthenticator>(
+            publicKey =>
+            {
+                if (publicKey is Ed25519PublicKey ed25519PublicKey)
+                    return new AccountAuthenticatorEd25519(ed25519PublicKey, invalidSignature);
 
-        if (publicKey is KeylessPublicKey keylessPublicKey)
-        {
-            return new AccountAuthenticatorSingleKey(
-                keylessPublicKey,
-                Keyless.GetSimulationSignature()
-            );
-        }
+                if (publicKey is KeylessPublicKey keylessPublicKey)
+                    return new AccountAuthenticatorSingleKey(
+                        keylessPublicKey,
+                        Keyless.GetSimulationSignature()
+                    );
+                if (publicKey is FederatedKeylessPublicKey federatedKeylessPublicKey)
+                    return new AccountAuthenticatorSingleKey(
+                      federatedKeylessPublicKey,
+                      Keyless.GetSimulationSignature()
+                    );
 
-        if (publicKey is FederatedKeylessPublicKey federatedKeylessPublicKey)
-        {
-            return new AccountAuthenticatorSingleKey(
-                federatedKeylessPublicKey,
-                Keyless.GetSimulationSignature()
-            );
-        }
+                return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
+            },
+            verifyingKey =>
+            {
+                if (verifyingKey is SingleKey singleKey)
+                    return new AccountAuthenticatorSingleKey(singleKey.PublicKey, invalidSignature);
+
+                if (verifyingKey is MultiKey multiKey)
+                    return new AccountAuthenticatorMultiKey(
+                        multiKey,
+                        MultiKey.GetSimulationSignature(multiKey)
+                    );
 
         return new AccountAuthenticatorSingleKey(publicKey, invalidSignature);
+                throw new ArgumentException(
+                    $"{verifyingKey.GetType().Name} is not supported for simulation."
+                );
+            }
+        );
     }
 
     #endregion
@@ -124,7 +140,7 @@ public static class TransactionBuilder
                 ?? [];
 
             AccountAuthenticator feePayerAuthenticator = GetAuthenticatorForSimulation(
-                data.FeePayerPublicKey
+                (OneOf<PublicKey, IVerifyingKey>)data.FeePayerPublicKey
             );
 
             TransactionAuthenticatorFeePayer feePayerTransactionAuthenticator =

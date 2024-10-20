@@ -1,4 +1,6 @@
+using System.Reflection;
 using dotenv.net;
+using Moq;
 
 namespace Aptos.Tests;
 
@@ -29,5 +31,20 @@ public class BaseTests
 
         // Split the input string by commas and convert to integers
         return [.. input.Split(',')];
+    }
+
+    /// <summary>
+    /// Mock a KeylessAccount to enable signing even if the EphemeralKeyPair is expired.
+    /// </summary>
+    /// <param name="keylessAccount">The keyless account with an expired values.</param>
+    public static void MockKeylessAccount(KeylessAccount keylessAccount)
+    {
+        var field = typeof(KeylessAccount).GetField(
+            "EphemeralKeyPair",
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public
+        );
+        var mock = new Mock<EphemeralKeyPair>(keylessAccount.EphemeralKeyPair);
+        mock.Setup(m => m.IsExpired()).Returns(false);
+        field?.SetValue(keylessAccount, mock.Object);
     }
 }

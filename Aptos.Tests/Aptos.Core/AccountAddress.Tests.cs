@@ -30,8 +30,8 @@ public sealed class AccountAddressFeatureTests : Feature
         {
             _output = outputType switch
             {
-                "string" => AccountAddress.From(_inputValue),
-                "string long" => AccountAddress.From(_inputValue).ToStringLong(),
+                "string" => AccountAddress.From(_inputValue, 63),
+                "string long" => AccountAddress.From(_inputValue, 63).ToStringLong(),
                 _ => throw new ArgumentException("Invalid type"),
             };
         }
@@ -50,7 +50,7 @@ public sealed class AccountAddressFeatureTests : Feature
         switch (type)
         {
             case "address":
-                Assert.Equal(AccountAddress.From(value), _output);
+                Assert.Equal(AccountAddress.From(value, 63), _output);
                 break;
             case "string":
                 Assert.Equal(value.Trim('\"'), _output.ToString());

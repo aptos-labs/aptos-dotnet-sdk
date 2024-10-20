@@ -1,7 +1,5 @@
 namespace Aptos.Tests.Crypto;
 
-using Aptos.Indexer.GraphQL;
-using Newtonsoft.Json;
 using Xunit.Gherkin.Quick;
 
 [FeatureFile("../../../../features/multi_key.feature")]
@@ -45,9 +43,10 @@ public sealed class MultiKeyFeatureTests : Feature
             var signerTypes = splitValues[1].Split(",");
             var signers = splitValues[2].Split(",");
             List<Account> deserializedSigners = signerTypes
-                .Select<string, Account>(
+                .Select(
                     (type, i) =>
-                        type switch
+                    {
+                        Account account = type switch
                         {
                             "ed25519_ed25519_pk" => new Ed25519Account(
                                 Ed25519PrivateKey.Deserialize(new(signers[i]))
@@ -57,7 +56,11 @@ public sealed class MultiKeyFeatureTests : Feature
                             ),
                             "account_keyless" => KeylessAccount.Deserialize(new(signers[i])),
                             _ => throw new ArgumentException("Invalid signer type"),
-                        }
+                        };
+                        if (account is KeylessAccount keylessAccount)
+                            BaseTests.MockKeylessAccount(keylessAccount);
+                        return account;
+                    }
                 )
                 .ToList();
             _inputValue = new MultiKeyAccount(MultiKey.Deserialize(new(key)), deserializedSigners);

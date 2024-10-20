@@ -84,8 +84,6 @@ public class KeylessAccount : Account
 
     public override Signature Sign(byte[] message)
     {
-        if (EphemeralKeyPair.IsExpired())
-            throw new Exception("Ephemeral keypair has expired");
         var token = new JsonWebToken(Jwt);
         return new KeylessSignature(
             ephemeralCertificate: new EphemeralCertificate(

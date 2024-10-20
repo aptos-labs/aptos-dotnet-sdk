@@ -41,7 +41,7 @@ public class AptosAccountClientTests(ITestOutputHelper output) : BaseTests(outpu
         Assert.Null(
             await client.Account.GetCoinBalance(
                 "0x66cb05df2d855fbae92cdb2dfac9a0b29c969a03998fa817735d27391b52b189",
-                "0x123a"
+                "0xc"
             )
         );
     }
