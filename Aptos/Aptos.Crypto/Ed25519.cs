@@ -114,14 +114,18 @@ public class Ed25519PrivateKey : PrivateKey
 
     private readonly Hex _key;
 
-    public Ed25519PrivateKey(string privateKey)
-        : this(Hex.FromHexInput(privateKey).ToByteArray()) { }
+    public Ed25519PrivateKey(string privateKey, bool? strict = null)
+        : this(ParseHexInput(privateKey, PrivateKeyVariant.Ed25519, strict)) { }
 
-    public Ed25519PrivateKey(byte[] privateKey)
+    public Ed25519PrivateKey(byte[] privateKey, bool? strict = null)
+        : this(ParseHexInput(privateKey, PrivateKeyVariant.Ed25519, strict)) { }
+
+    internal Ed25519PrivateKey(Hex privateKey)
+        : base(PrivateKeyVariant.Ed25519)
     {
-        if (privateKey.Length != LENGTH)
+        if (privateKey.ToByteArray().Length != LENGTH)
             throw new KeyLengthMismatch("Ed25519PrivateKey", LENGTH);
-        _key = new(privateKey);
+        _key = new(privateKey.ToByteArray());
     }
 
     public override PublicKey PublicKey() =>
@@ -146,7 +150,10 @@ public class Ed25519PrivateKey : PrivateKey
         Ed25519KeyPairGenerator keyPairGenerator = new();
         keyPairGenerator.Init(new Ed25519KeyGenerationParameters(new SecureRandom()));
         AsymmetricCipherKeyPair keyPair = keyPairGenerator.GenerateKeyPair();
-        return new Ed25519PrivateKey(((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded());
+        return new Ed25519PrivateKey(
+            ((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded(),
+            false
+        );
     }
 
     public static Ed25519PrivateKey FromDerivationPath(string path, string mnemonic)
@@ -166,10 +173,10 @@ public class Ed25519PrivateKey : PrivateKey
             (parentKeys, segment) => HdKey.CKDPriv(parentKeys, segment + HARDENED_OFFSET)
         );
 
-        return new Ed25519PrivateKey(keys.PrivateKey);
+        return new Ed25519PrivateKey(keys.PrivateKey, false);
     }
 
-    public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
+    public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes(), false);
 }
 
 public class Ed25519Signature : PublicKeySignature
