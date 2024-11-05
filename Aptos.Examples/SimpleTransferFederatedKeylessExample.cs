@@ -19,9 +19,7 @@ public class SimpleTransferFederatedKeylessExample
 
             Console.WriteLine("1. Open the link above in your browser");
             Console.WriteLine("2. Login with your Auth0 account");
-            Console.WriteLine(
-                "3. Copy the 'id_token' from the url bar\n"
-            );
+            Console.WriteLine("3. Copy the 'id_token' from the url bar\n");
 
             // Ask for the JWT token
 
