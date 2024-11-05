@@ -40,19 +40,20 @@ public class KeylessAccount : Account
 
     public readonly string Jwt;
 
-    public KeylessAccount(
+    private KeylessAccount(
+        SingleKey verifyingKey,
         string jwt,
         EphemeralKeyPair ekp,
         ZeroKnowledgeSignature proof,
         byte[] pepper,
-        string uidKey = "sub",
-        AccountAddress? address = null
+        string uidKey,
+        AccountAddress? address
     )
     {
         if (pepper.Length != PEPPER_LENGTH)
             throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
 
-        _verifyingKey = new SingleKey(KeylessPublicKey.FromJwt(jwt, pepper, uidKey));
+        _verifyingKey = verifyingKey;
         _address = address ?? _verifyingKey.AuthKey().DerivedAddress();
         EphemeralKeyPair = ekp;
         Proof = proof;
@@ -65,6 +66,43 @@ public class KeylessAccount : Account
         Aud = token.GetClaim("aud").Value;
         UidVal = token.GetClaim(uidKey).Value;
     }
+
+    public KeylessAccount(
+        string jwt,
+        EphemeralKeyPair ekp,
+        ZeroKnowledgeSignature proof,
+        byte[] pepper,
+        string uidKey = "sub",
+        AccountAddress? address = null
+    )
+        : this(
+            new SingleKey(KeylessPublicKey.FromJwt(jwt, pepper, uidKey)),
+            jwt,
+            ekp,
+            proof,
+            pepper,
+            uidKey,
+            address
+        ) { }
+
+    public KeylessAccount(
+        AccountAddress jwkAddress,
+        string jwt,
+        EphemeralKeyPair ekp,
+        ZeroKnowledgeSignature proof,
+        byte[] pepper,
+        string uidKey = "sub",
+        AccountAddress? address = null
+    )
+        : this(
+            new SingleKey(FederatedKeylessPublicKey.FromJwt(jwt, pepper, jwkAddress, uidKey)),
+            jwt,
+            ekp,
+            proof,
+            pepper,
+            uidKey,
+            address
+        ) { }
 
     public bool VerifySignature(byte[] message, KeylessSignature signature)
     {

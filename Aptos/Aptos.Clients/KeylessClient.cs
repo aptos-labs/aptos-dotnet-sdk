@@ -11,22 +11,29 @@ public class KeylessClient(AptosClient client)
         string jwt,
         EphemeralKeyPair ekp,
         string uidKey = "sub",
-        byte[]? pepper = null
+        byte[]? pepper = null,
+        AccountAddress? jwkAddress = null
     )
     {
         if (pepper == null)
             pepper = await GetPepper(jwt, ekp, uidKey);
         var proof = await GetProof(jwt, ekp, pepper, uidKey);
 
-        // Derive the keyless account from the JWT and EphemeralKeyPair
-        var publicKey = KeylessPublicKey.FromJwt(jwt, pepper, uidKey);
-
         var address = await _client.Account.LookupOriginalAccountAddress(
-            new SingleKey(publicKey).AuthKey().DerivedAddress().ToString()
+            new SingleKey(
+                jwkAddress != null
+                    ? FederatedKeylessPublicKey.FromJwt(jwt, pepper, jwkAddress, uidKey)
+                    : KeylessPublicKey.FromJwt(jwt, pepper, uidKey)
+            )
+                .AuthKey()
+                .DerivedAddress()
+                .ToString()
         );
 
-        // Create and return the keyless account
-        return new KeylessAccount(jwt, ekp, proof, pepper, uidKey, address);
+        // Create and return the keyless account using the appropriate constructor
+        return jwkAddress != null
+            ? new KeylessAccount(jwkAddress, jwt, ekp, proof, pepper, uidKey, address)
+            : new KeylessAccount(jwt, ekp, proof, pepper, uidKey, address);
     }
 
     public async Task<byte[]> GetPepper(

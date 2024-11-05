@@ -81,6 +81,9 @@ public class PublicKeyConverter : JsonConverter<PublicKey>
             "ed25519" => new Ed25519PublicKey(anyValue.Value),
             "secp256k1_ecdsa" => new Secp256k1PublicKey(anyValue.Value),
             "keyless" => KeylessPublicKey.Deserialize(new Deserializer(anyValue.Value)),
+            "federated_keyless" => FederatedKeylessPublicKey.Deserialize(
+                new Deserializer(anyValue.Value)
+            ),
             _ => throw new Exception($"Unknown public key type: {type}"),
         };
     }
