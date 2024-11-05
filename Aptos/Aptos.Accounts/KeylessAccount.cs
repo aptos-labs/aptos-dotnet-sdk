@@ -66,6 +66,34 @@ public class KeylessAccount : Account
         UidVal = token.GetClaim(uidKey).Value;
     }
 
+    public KeylessAccount(
+        AccountAddress jwkAddress,
+        string jwt,
+        EphemeralKeyPair ekp,
+        ZeroKnowledgeSignature proof,
+        byte[] pepper,
+        string uidKey = "sub",
+        AccountAddress? address = null)
+    {
+        if (pepper.Length != PEPPER_LENGTH)
+            throw new ArgumentException($"Pepper length in bytes should be {PEPPER_LENGTH}");
+
+        _verifyingKey = new SingleKey(
+            FederatedKeylessPublicKey.FromJwt(jwt, pepper, jwkAddress, uidKey)
+        );
+        _address = address ?? _verifyingKey.AuthKey().DerivedAddress();
+        EphemeralKeyPair = ekp;
+        Proof = proof;
+        Pepper = pepper;
+
+        // Decode the JWT and extract relevant claims
+        var token = new JsonWebToken(jwt);
+        Jwt = jwt;
+        UidKey = uidKey;
+        Aud = token.GetClaim("aud").Value;
+        UidVal = token.GetClaim(uidKey).Value;
+    }
+
     public bool VerifySignature(byte[] message, KeylessSignature signature)
     {
         if (EphemeralKeyPair.IsExpired())

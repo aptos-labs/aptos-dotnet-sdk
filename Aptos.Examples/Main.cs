@@ -9,6 +9,7 @@ public class RunExample
         ViewFunctionExample.Run,
         ComplexViewFunctionExample.Run,
         SimpleTransferKeylessExample.Run,
+        SimpleTransferFederatedKeylessExample.Run,
         SimpleTransferEd25519Example.Run,
         SimpleTransferSingleKeyExample.Run,
         SimpleTransferMultiKeyExample.Run,
