@@ -77,8 +77,8 @@ public class Secp256k1PrivateKey : PrivateKey
     public Secp256k1PrivateKey(string privateKey, bool? strict = null)
         : this(ParseHexInput(privateKey, PrivateKeyVariant.Secp256k1Ecdsa, strict)) { }
 
-    public Secp256k1PrivateKey(byte[] privateKey, bool? strict = null)
-        : this(ParseHexInput(privateKey, PrivateKeyVariant.Secp256k1Ecdsa, strict)) { }
+    public Secp256k1PrivateKey(byte[] privateKey)
+        : this(ParseHexInput(privateKey, PrivateKeyVariant.Secp256k1Ecdsa)) { }
 
     internal Secp256k1PrivateKey(Hex privateKey)
         : base(PrivateKeyVariant.Secp256k1Ecdsa)
@@ -145,8 +145,7 @@ public class Secp256k1PrivateKey : PrivateKey
         return new Secp256k1PrivateKey(
             (
                 (ECPrivateKeyParameters)keyPairGenerator.GenerateKeyPair().Private
-            ).D.ToByteArrayUnsigned(),
-            false
+            ).D.ToByteArrayUnsigned()
         );
     }
 
@@ -155,10 +154,10 @@ public class Secp256k1PrivateKey : PrivateKey
         if (!HdKey.IsValidBip44Path(path))
             throw new InvalidDerivationPath(path);
         ExtKey masterKey = new Mnemonic(mnemonic).DeriveExtKey().Derive(KeyPath.Parse(path));
-        return new Secp256k1PrivateKey(masterKey.PrivateKey.ToBytes(), false);
+        return new Secp256k1PrivateKey(masterKey.PrivateKey.ToBytes());
     }
 
-    public static Secp256k1PrivateKey Deserialize(Deserializer d) => new(d.Bytes(), false);
+    public static Secp256k1PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
 public class Secp256k1Signature : PublicKeySignature

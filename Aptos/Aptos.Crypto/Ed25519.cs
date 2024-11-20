@@ -117,8 +117,8 @@ public class Ed25519PrivateKey : PrivateKey
     public Ed25519PrivateKey(string privateKey, bool? strict = null)
         : this(ParseHexInput(privateKey, PrivateKeyVariant.Ed25519, strict)) { }
 
-    public Ed25519PrivateKey(byte[] privateKey, bool? strict = null)
-        : this(ParseHexInput(privateKey, PrivateKeyVariant.Ed25519, strict)) { }
+    public Ed25519PrivateKey(byte[] privateKey)
+        : this(ParseHexInput(privateKey, PrivateKeyVariant.Ed25519)) { }
 
     internal Ed25519PrivateKey(Hex privateKey)
         : base(PrivateKeyVariant.Ed25519)
@@ -150,10 +150,7 @@ public class Ed25519PrivateKey : PrivateKey
         Ed25519KeyPairGenerator keyPairGenerator = new();
         keyPairGenerator.Init(new Ed25519KeyGenerationParameters(new SecureRandom()));
         AsymmetricCipherKeyPair keyPair = keyPairGenerator.GenerateKeyPair();
-        return new Ed25519PrivateKey(
-            ((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded(),
-            false
-        );
+        return new Ed25519PrivateKey(((Ed25519PrivateKeyParameters)keyPair.Private).GetEncoded());
     }
 
     public static Ed25519PrivateKey FromDerivationPath(string path, string mnemonic)
@@ -173,10 +170,10 @@ public class Ed25519PrivateKey : PrivateKey
             (parentKeys, segment) => HdKey.CKDPriv(parentKeys, segment + HARDENED_OFFSET)
         );
 
-        return new Ed25519PrivateKey(keys.PrivateKey, false);
+        return new Ed25519PrivateKey(keys.PrivateKey);
     }
 
-    public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes(), false);
+    public static Ed25519PrivateKey Deserialize(Deserializer d) => new(d.Bytes());
 }
 
 public class Ed25519Signature : PublicKeySignature

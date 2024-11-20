@@ -45,25 +45,17 @@ public abstract partial class PrivateKey
     public static string FormatPrivateKey(string privateKey, PrivateKeyVariant type)
     {
         string aip80Prefix = AIP80_PREFIXES[type];
+        if (privateKey.StartsWith(aip80Prefix))
+        {
+            privateKey = privateKey.Split('-')[2];
+        }
         return $"{aip80Prefix}{Hex.FromHexInput(privateKey)}";
     }
 
     /// <inheritdoc cref="ParseHexInput(string, PrivateKeyVariant, bool?)" />
-    public static Hex ParseHexInput(byte[] value, PrivateKeyVariant type, bool? strict = null)
+    public static Hex ParseHexInput(byte[] value, PrivateKeyVariant type)
     {
-        if (strict == null)
-        {
-            Console.WriteLine(
-                "It is recommended that private keys are parsed as AIP-80 compliant strings instead of byte array (https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-80.md). You can fix the private key by formatting it with `PrivateKey.FormatPrivateKey(privateKey: byte[], type: PrivateKeyVariants)`."
-            );
-        }
-        else if (strict == true)
-        {
-            throw new ArgumentException(
-                "Invalid value while strictly parsing private key. MUST be AIP-80 compliant string, not byte array."
-            );
-        }
-        return ParseHexInput(Hex.FromHexInput(value).ToString(), type, strict);
+        return ParseHexInput(Hex.FromHexInput(value).ToString(), type, false);
     }
 
     /// <summary>
