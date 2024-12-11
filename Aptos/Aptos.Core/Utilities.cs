@@ -82,7 +82,7 @@ namespace Aptos.Core
             return flooredDateTime.ToUnixTimeSeconds();
         }
 
-        public static dynamic? DeserializeJObjectOrString(string value)
+        public static object? DeserializeJObjectOrString(string value)
         {
             try
             {

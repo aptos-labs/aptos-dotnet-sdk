@@ -25,7 +25,7 @@ public abstract partial class TypeTag(TypeTagVariant variant) : Serializable
 
     public override string ToString() => $"{Variant.ToString().ToLower()}";
 
-    public bool CheckType(dynamic value)
+    public bool CheckType(object value)
     {
         switch (Variant)
         {
@@ -51,7 +51,7 @@ public abstract partial class TypeTag(TypeTagVariant variant) : Serializable
                         if (value.GetType().Name.Contains("MoveVector"))
                         {
                             // Cannot pattern match on MoveVector<T> because it's a generic type
-                            MoveVector<dynamic>? vector = value as MoveVector<dynamic>;
+                            MoveVector<object>? vector = value as MoveVector<object>;
                             if (vector == null)
                                 return false;
                             return typeTagVector.Value.CheckType(vector.Values[0]);
@@ -71,10 +71,10 @@ public abstract partial class TypeTag(TypeTagVariant variant) : Serializable
                         if (value.GetType().Name.Contains("MoveOption"))
                         {
                             // Cannot pattern match on MoveVector<T> because it's a generic type
-                            MoveOption<dynamic>? option = value as MoveOption<dynamic>;
+                            MoveOption<object>? option = value as MoveOption<object>;
                             if (option?.Value != null && typeTagStruct.Value.TypeArgs.Count > 0)
                             {
-                                return typeTagStruct.Value.TypeArgs[0].CheckType(option?.Value);
+                                return typeTagStruct.Value.TypeArgs[0].CheckType(option?.Value!);
                             }
                         }
                     }

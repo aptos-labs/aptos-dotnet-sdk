@@ -8,7 +8,7 @@ public abstract class BaseAptosRequest
 {
     public abstract string? Path { get; set; }
 
-    public abstract dynamic? Body { get; set; }
+    public abstract object? Body { get; set; }
 
     public abstract string? ContentType { get; set; }
 
@@ -21,7 +21,7 @@ public class AptosRequest(
     string url,
     HttpMethod method,
     string? path = null,
-    dynamic? body = null,
+    object? body = null,
     string? contentType = null,
     Dictionary<string, string>? queryParams = null,
     string? originMethod = null
@@ -29,7 +29,7 @@ public class AptosRequest(
 {
     public string Url { get; set; } = url;
     public override string? Path { get; set; } = path;
-    public override dynamic? Body { get; set; } = body;
+    public override object? Body { get; set; } = body;
     public override string? ContentType { get; set; } = contentType;
     public override Dictionary<string, string>? QueryParams { get; set; } = queryParams;
     public override string? OriginMethod { get; set; } = originMethod;
@@ -46,7 +46,7 @@ public class AptosRequest(
             url,
             method,
             request.Path,
-            (object?)request.Body,
+            request.Body,
             request.ContentType,
             request.QueryParams,
             request.OriginMethod
@@ -106,7 +106,7 @@ public partial class AptosClient
 
         ClientResponse<Res> clientResponse = await ClientRequest<Res>(clientRequest);
 
-        AptosResponse<dynamic> errorResponse =
+        AptosResponse<object> errorResponse =
             new(
                 clientResponse.Status,
                 clientResponse.StatusText,

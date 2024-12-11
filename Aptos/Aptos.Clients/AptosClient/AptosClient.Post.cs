@@ -2,14 +2,14 @@ namespace Aptos;
 
 public class PostAptosRequest(
     string? path = null,
-    dynamic? body = null,
+    object? body = null,
     string? contentType = null,
     Dictionary<string, string>? queryParams = null,
     string? originMethod = null
 ) : BaseAptosRequest
 {
     public override string? Path { get; set; } = path;
-    public override dynamic? Body { get; set; } = body;
+    public override object? Body { get; set; } = body;
     public override string? ContentType { get; set; } = contentType;
     public override Dictionary<string, string>? QueryParams { get; set; } = queryParams;
     public override string? OriginMethod { get; set; } = originMethod;

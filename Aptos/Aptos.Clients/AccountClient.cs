@@ -4,6 +4,7 @@ using Aptos.Core;
 using Aptos.Exceptions;
 using Aptos.Indexer.GraphQL;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 public class AccountClient(AptosClient client)
 {
@@ -381,13 +382,15 @@ public class AccountClient(AptosClient client)
         }
         catch (Exception e)
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if (
                 e is ApiException apex
-                && apex.Data["error_code"]?.ToString() == "table_item_not_found"
+                && (apex.Data as JObject)["error_code"]?.ToString() == "table_item_not_found"
             )
             {
                 return AccountAddress.From(authenticationKey);
             }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             throw e;
         }
     }

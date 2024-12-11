@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 public class ClientRequest(
     string url,
     HttpMethod method,
-    dynamic? body = null,
+    object? body = null,
     string? contentType = null,
     Dictionary<string, string>? queryParams = null,
     Dictionary<string, string>? headers = null
@@ -15,7 +15,7 @@ public class ClientRequest(
 
     public HttpMethod Method = method;
 
-    public dynamic? Body = body;
+    public object? Body = body;
 
     public string? ContentType = contentType;
 
@@ -28,7 +28,7 @@ public class ClientResponse<Res>(
     int status,
     string statusText,
     Res? data,
-    dynamic? error = null,
+    object? error = null,
     HttpResponseMessage? response = null,
     Dictionary<string, string>? headers = null
 )
@@ -40,7 +40,7 @@ public class ClientResponse<Res>(
     /// <summary>
     /// The error object returned by the API. This can be a JObject or a string.
     /// </summary>
-    public dynamic? Error = error;
+    public object? Error = error;
     public HttpResponseMessage? Response = response;
     public Dictionary<string, string>? Headers = headers ?? [];
 }
