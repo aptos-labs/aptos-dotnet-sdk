@@ -14,12 +14,11 @@ public class TransactionPayloadResponseConverter : JsonConverter<TransactionPayl
 {
     public override bool CanWrite => false;
 
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new()
-        {
-            ContractResolver =
-                new SubclassSpecifiedConcreteClassConverter<TransactionPayloadResponse>(),
-        };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver =
+            new SubclassSpecifiedConcreteClassConverter<TransactionPayloadResponse>(),
+    };
 
     public override TransactionPayloadResponse? ReadJson(
         JsonReader reader,

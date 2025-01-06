@@ -12,8 +12,10 @@ public abstract class WriteSet(string type)
 
 public class WriteSetConverter : JsonConverter<WriteSet>
 {
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new() { ContractResolver = new SubclassSpecifiedConcreteClassConverter<WriteSet>() };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver = new SubclassSpecifiedConcreteClassConverter<WriteSet>(),
+    };
 
     public override WriteSet? ReadJson(
         JsonReader reader,

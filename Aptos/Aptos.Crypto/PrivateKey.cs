@@ -22,12 +22,11 @@ public abstract partial class PrivateKey
     /// <remarks>
     /// Read about AIP-80: https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-80.md
     /// </remarks>
-    public static readonly Dictionary<PrivateKeyVariant, string> AIP80_PREFIXES =
-        new()
-        {
-            { PrivateKeyVariant.Ed25519, "ed25519-priv-" },
-            { PrivateKeyVariant.Secp256k1Ecdsa, "secp256k1-priv-" },
-        };
+    public static readonly Dictionary<PrivateKeyVariant, string> AIP80_PREFIXES = new()
+    {
+        { PrivateKeyVariant.Ed25519, "ed25519-priv-" },
+        { PrivateKeyVariant.Secp256k1Ecdsa, "secp256k1-priv-" },
+    };
 
     /// <inheritdoc cref="FormatPrivateKey(string, PrivateKeyVariant)" />
     public static string FormatPrivateKey(byte[] privateKey, PrivateKeyVariant type) =>

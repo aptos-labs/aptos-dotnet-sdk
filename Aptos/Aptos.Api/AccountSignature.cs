@@ -13,11 +13,10 @@ public abstract class AccountSignature(SigningScheme type)
 
 public class AccountSignatureConverter : JsonConverter<AccountSignature>
 {
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new()
-        {
-            ContractResolver = new SubclassSpecifiedConcreteClassConverter<AccountSignature>(),
-        };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver = new SubclassSpecifiedConcreteClassConverter<AccountSignature>(),
+    };
 
     public override AccountSignature? ReadJson(
         JsonReader reader,

@@ -310,8 +310,10 @@ public class TransactionClient(AptosClient client)
             if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - startTime > timeoutMilliseconds)
                 throw new Exception("waitForLastSuccessIndexerVersionSync timeout");
 
-            processor_status_bool_exp condition =
-                new() { _and = [new() { Processor = new() { _eq = processorType } }] };
+            processor_status_bool_exp condition = new()
+            {
+                _and = [new() { Processor = new() { _eq = processorType } }],
+            };
 
             var status = await _client.Indexer.Query(async client =>
                 await client.GetProcessorStatus.ExecuteAsync(condition)

@@ -7,94 +7,91 @@ public class TypeTagParserTests(ITestOutputHelper output) : BaseTests(output)
 {
     const string TAG_STRUCT_NAME = "0x1::tag::Tag";
 
-    readonly Dictionary<string, TypeTag> primitiveTypesDict =
-        new()
-        {
-            { "bool", new TypeTagBool() },
-            { "address", new TypeTagAddress() },
-            { "signer", new TypeTagSigner() },
-            { "u8", new TypeTagU8() },
-            { "u16", new TypeTagU16() },
-            { "u32", new TypeTagU32() },
-            { "u64", new TypeTagU64() },
-            { "u128", new TypeTagU128() },
-            { "u256", new TypeTagU256() },
-        };
+    readonly Dictionary<string, TypeTag> primitiveTypesDict = new()
+    {
+        { "bool", new TypeTagBool() },
+        { "address", new TypeTagAddress() },
+        { "signer", new TypeTagSigner() },
+        { "u8", new TypeTagU8() },
+        { "u16", new TypeTagU16() },
+        { "u32", new TypeTagU32() },
+        { "u64", new TypeTagU64() },
+        { "u128", new TypeTagU128() },
+        { "u256", new TypeTagU256() },
+    };
 
-    readonly Dictionary<string, TypeTag> structTypesDict =
-        new()
+    readonly Dictionary<string, TypeTag> structTypesDict = new()
+    {
+        { "0x1::string::String", new TypeTagStruct(new StructTag(StructTag.STRING)) },
         {
-            { "0x1::string::String", new TypeTagStruct(new StructTag(StructTag.STRING)) },
-            {
-                "0x1::aptos_coin::AptosCoin",
-                new TypeTagStruct(
-                    new StructTag(AccountAddress.FromString("0x1"), "aptos_coin", "AptosCoin")
+            "0x1::aptos_coin::AptosCoin",
+            new TypeTagStruct(
+                new StructTag(AccountAddress.FromString("0x1"), "aptos_coin", "AptosCoin")
+            )
+        },
+        {
+            "0x1::option::Option<u8>",
+            new TypeTagStruct(new StructTag(StructTag.OPTION, [new TypeTagU8()]))
+        },
+        {
+            "0x1::object::Object<u8>",
+            new TypeTagStruct(new StructTag(StructTag.OBJECT, [new TypeTagU8()]))
+        },
+        { $"{TAG_STRUCT_NAME}", new TypeTagStruct(new StructTag(StructTag.TAG)) },
+        {
+            $"{TAG_STRUCT_NAME}<u8>",
+            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()]))
+        },
+        {
+            $"{TAG_STRUCT_NAME}<u8, u8>",
+            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8(), new TypeTagU8()]))
+        },
+        {
+            $"{TAG_STRUCT_NAME}<u64, u8>",
+            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU64(), new TypeTagU8()]))
+        },
+        {
+            $"{TAG_STRUCT_NAME}<{TAG_STRUCT_NAME}<u8>, u8>",
+            new TypeTagStruct(
+                new StructTag(
+                    StructTag.TAG,
+                    [
+                        new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()])),
+                        new TypeTagU8(),
+                    ]
                 )
-            },
-            {
-                "0x1::option::Option<u8>",
-                new TypeTagStruct(new StructTag(StructTag.OPTION, [new TypeTagU8()]))
-            },
-            {
-                "0x1::object::Object<u8>",
-                new TypeTagStruct(new StructTag(StructTag.OBJECT, [new TypeTagU8()]))
-            },
-            { $"{TAG_STRUCT_NAME}", new TypeTagStruct(new StructTag(StructTag.TAG)) },
-            {
-                $"{TAG_STRUCT_NAME}<u8>",
-                new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()]))
-            },
-            {
-                $"{TAG_STRUCT_NAME}<u8, u8>",
-                new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8(), new TypeTagU8()]))
-            },
-            {
-                $"{TAG_STRUCT_NAME}<u64, u8>",
-                new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU64(), new TypeTagU8()]))
-            },
-            {
-                $"{TAG_STRUCT_NAME}<{TAG_STRUCT_NAME}<u8>, u8>",
-                new TypeTagStruct(
-                    new StructTag(
-                        StructTag.TAG,
-                        [
-                            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()])),
-                            new TypeTagU8(),
-                        ]
-                    )
+            )
+        },
+        {
+            $"{TAG_STRUCT_NAME}<u8, {TAG_STRUCT_NAME}<u8>>",
+            new TypeTagStruct(
+                new StructTag(
+                    StructTag.TAG,
+                    [
+                        new TypeTagU8(),
+                        new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()])),
+                    ]
                 )
-            },
-            {
-                $"{TAG_STRUCT_NAME}<u8, {TAG_STRUCT_NAME}<u8>>",
-                new TypeTagStruct(
-                    new StructTag(
-                        StructTag.TAG,
-                        [
-                            new TypeTagU8(),
-                            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagU8()])),
-                        ]
-                    )
-                )
-            },
-        };
+            )
+        },
+    };
 
-    readonly Dictionary<string, TypeTag> genericTypesDict =
-        new()
+    readonly Dictionary<string, TypeTag> genericTypesDict = new()
+    {
+        { "T0", new TypeTagGeneric(0) },
+        { "T1", new TypeTagGeneric(1) },
+        { "T1337", new TypeTagGeneric(1337) },
         {
-            { "T0", new TypeTagGeneric(0) },
-            { "T1", new TypeTagGeneric(1) },
-            { "T1337", new TypeTagGeneric(1337) },
-            {
-                $"{TAG_STRUCT_NAME}<T0>",
-                new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagGeneric(0)]))
-            },
-            {
-                $"{TAG_STRUCT_NAME}<T0, T1>",
-                new TypeTagStruct(
-                    new StructTag(StructTag.TAG, [new TypeTagGeneric(0), new TypeTagGeneric(1)])
-                )
-            },
-        };
+            $"{TAG_STRUCT_NAME}<T0>",
+            new TypeTagStruct(new StructTag(StructTag.TAG, [new TypeTagGeneric(0)]))
+        },
+        {
+            $"{TAG_STRUCT_NAME}<T0, T1>",
+            new TypeTagStruct(
+                new StructTag(StructTag.TAG, [new TypeTagGeneric(0), new TypeTagGeneric(1)])
+            )
+        },
+    };
 
     private Dictionary<string, TypeTag> mergedTypes =>
         primitiveTypesDict

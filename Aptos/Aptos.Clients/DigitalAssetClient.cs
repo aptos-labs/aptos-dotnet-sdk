@@ -32,8 +32,10 @@ public class DigitalAssetClient(AptosClient client)
         current_token_ownerships_v2_order_by? orderBy = null
     )
     {
-        current_token_ownerships_v2_bool_exp condition =
-            new() { Owner_address = new() { _eq = address } };
+        current_token_ownerships_v2_bool_exp condition = new()
+        {
+            Owner_address = new() { _eq = address },
+        };
         if (where != null)
             condition._and = [where];
         return await GetDigitalAssetOwnerships(condition, offset, limit, orderBy);

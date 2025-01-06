@@ -348,8 +348,10 @@ public class AccountClient(AptosClient client)
         current_token_ownerships_v2_order_by? orderBy = null
     )
     {
-        current_token_ownerships_v2_bool_exp condition =
-            new() { Token_data_id = new() { _eq = tokenId } };
+        current_token_ownerships_v2_bool_exp condition = new()
+        {
+            Token_data_id = new() { _eq = tokenId },
+        };
         if (where != null)
             condition._and = [where];
         return (

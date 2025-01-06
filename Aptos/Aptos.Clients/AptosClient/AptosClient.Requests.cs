@@ -85,15 +85,14 @@ public partial class AptosClient
 
         aptosRequest.Url = request.Path != null ? $"{request.Url}/{request.Path}" : request.Url;
 
-        ClientRequest clientRequest =
-            new(
-                aptosRequest.Url,
-                aptosRequest.Method,
-                aptosRequest.Body,
-                aptosRequest.ContentType,
-                aptosRequest.QueryParams,
-                new Dictionary<string, string>(Config.Headers)
-            );
+        ClientRequest clientRequest = new(
+            aptosRequest.Url,
+            aptosRequest.Method,
+            aptosRequest.Body,
+            aptosRequest.ContentType,
+            aptosRequest.QueryParams,
+            new Dictionary<string, string>(Config.Headers)
+        );
 
         // Add default headers
         clientRequest.Headers ??= [];
@@ -106,15 +105,14 @@ public partial class AptosClient
 
         ClientResponse<Res> clientResponse = await ClientRequest<Res>(clientRequest);
 
-        AptosResponse<object> errorResponse =
-            new(
-                clientResponse.Status,
-                clientResponse.StatusText,
-                clientResponse.Error ?? new JObject(),
-                aptosRequest.Url,
-                clientResponse.Headers ?? [],
-                aptosRequest
-            );
+        AptosResponse<object> errorResponse = new(
+            clientResponse.Status,
+            clientResponse.StatusText,
+            clientResponse.Error ?? new JObject(),
+            aptosRequest.Url,
+            clientResponse.Headers ?? [],
+            aptosRequest
+        );
 
         // Handle case for `401 Unauthorized` responses (e.g. provided API key is invalid)
         if (clientResponse.Status == 401)

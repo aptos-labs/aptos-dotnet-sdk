@@ -15,8 +15,9 @@ using Org.BouncyCastle.Security;
 
 public static class Secp256k1
 {
-    public static readonly ECDomainParameters DOMAIN_PARAMS =
-        new(SecNamedCurves.GetByName("secp256k1"));
+    public static readonly ECDomainParameters DOMAIN_PARAMS = new(
+        SecNamedCurves.GetByName("secp256k1")
+    );
 
     public static readonly BigInteger HALF_CURVE_ORDER = CustomNamedCurves
         .GetByName("secp256k1")
@@ -52,8 +53,10 @@ public class Secp256k1PublicKey : PublicKey
         byte[] hash = DigestUtilities.CalculateDigest("SHA3-256", message);
 
         // Initialize the signer with the public key
-        ECPublicKeyParameters publicKeyParams =
-            new(Secp256k1.DOMAIN_PARAMS.Curve.DecodePoint(ToByteArray()), Secp256k1.DOMAIN_PARAMS);
+        ECPublicKeyParameters publicKeyParams = new(
+            Secp256k1.DOMAIN_PARAMS.Curve.DecodePoint(ToByteArray()),
+            Secp256k1.DOMAIN_PARAMS
+        );
         ECDsaSigner signer = new();
         signer.Init(false, publicKeyParams);
 
@@ -112,8 +115,10 @@ public class Secp256k1PrivateKey : PrivateKey
 
         // Create the ECDsaSigner
         ECDsaSigner signer = new(new HMacDsaKCalculator(new Sha256Digest()));
-        ECPrivateKeyParameters privateKeyParams =
-            new(new BigInteger(1, ToByteArray()), Secp256k1.DOMAIN_PARAMS);
+        ECPrivateKeyParameters privateKeyParams = new(
+            new BigInteger(1, ToByteArray()),
+            Secp256k1.DOMAIN_PARAMS
+        );
         signer.Init(true, privateKeyParams);
 
         // Generate the signature

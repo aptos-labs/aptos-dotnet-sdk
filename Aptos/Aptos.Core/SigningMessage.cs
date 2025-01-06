@@ -46,19 +46,20 @@ public static class SigningMessage
     {
         if (transaction.FeePayerAddress != null)
         {
-            FeePayerRawTransaction rawTxnWithData =
-                new(
-                    transaction.RawTransaction,
-                    transaction.SecondarySignerAddresses ?? [],
-                    transaction.FeePayerAddress
-                );
+            FeePayerRawTransaction rawTxnWithData = new(
+                transaction.RawTransaction,
+                transaction.SecondarySignerAddresses ?? [],
+                transaction.FeePayerAddress
+            );
             return Generate(rawTxnWithData.BcsToBytes(), RAW_TRANSACTION_WITH_DATA_SALT);
         }
 
         if (transaction.SecondarySignerAddresses != null)
         {
-            MultiAgentRawTransaction rawTxnWithData =
-                new(transaction.RawTransaction, transaction.SecondarySignerAddresses!);
+            MultiAgentRawTransaction rawTxnWithData = new(
+                transaction.RawTransaction,
+                transaction.SecondarySignerAddresses!
+            );
             return Generate(rawTxnWithData.BcsToBytes(), RAW_TRANSACTION_WITH_DATA_SALT);
         }
 

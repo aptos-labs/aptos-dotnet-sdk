@@ -45,11 +45,10 @@ public class TransactionResponseConverter : JsonConverter<TransactionResponse>
 {
     public override bool CanWrite => false;
 
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new()
-        {
-            ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionResponse>(),
-        };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionResponse>(),
+    };
 
     public override TransactionResponse? ReadJson(
         JsonReader reader,

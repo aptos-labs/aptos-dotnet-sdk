@@ -90,8 +90,10 @@ public class FungibleAssetClient(AptosClient client)
         current_fungible_asset_balances_order_by? orderBy = null
     )
     {
-        current_fungible_asset_balances_bool_exp condition =
-            new() { Owner_address = new() { _eq = address } };
+        current_fungible_asset_balances_bool_exp condition = new()
+        {
+            Owner_address = new() { _eq = address },
+        };
         if (where != null)
             condition._and = [where];
         return await GetFungibleAssetBalances(condition, offset, limit, orderBy);

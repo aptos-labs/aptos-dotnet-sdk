@@ -17,8 +17,10 @@ public class WritesSetChangeConverter : JsonConverter<WriteSetChange>
 {
     public override bool CanWrite => false;
 
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new() { ContractResolver = new SubclassSpecifiedConcreteClassConverter<WriteSetChange>() };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver = new SubclassSpecifiedConcreteClassConverter<WriteSetChange>(),
+    };
 
     public override WriteSetChange? ReadJson(
         JsonReader reader,

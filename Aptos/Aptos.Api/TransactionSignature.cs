@@ -35,11 +35,10 @@ public class TransactionSignatureConverter : JsonConverter<TransactionSignature>
 {
     public override bool CanWrite => false;
 
-    static readonly JsonSerializerSettings SpecifiedSubclassConversion =
-        new()
-        {
-            ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionSignature>(),
-        };
+    static readonly JsonSerializerSettings SpecifiedSubclassConversion = new()
+    {
+        ContractResolver = new SubclassSpecifiedConcreteClassConverter<TransactionSignature>(),
+    };
 
     public override TransactionSignature? ReadJson(
         JsonReader reader,

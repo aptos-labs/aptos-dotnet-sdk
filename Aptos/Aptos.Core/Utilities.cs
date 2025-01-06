@@ -67,16 +67,15 @@ namespace Aptos.Core
             DateTimeOffset dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampInSeconds);
 
             // Reset minutes, seconds, and milliseconds to zero
-            DateTimeOffset flooredDateTime =
-                new(
-                    dateTime.Year,
-                    dateTime.Month,
-                    dateTime.Day,
-                    dateTime.Hour,
-                    0,
-                    0,
-                    dateTime.Offset
-                );
+            DateTimeOffset flooredDateTime = new(
+                dateTime.Year,
+                dateTime.Month,
+                dateTime.Day,
+                dateTime.Hour,
+                0,
+                0,
+                dateTime.Offset
+            );
 
             // Convert back to Unix timestamp and return
             return flooredDateTime.ToUnixTimeSeconds();
