@@ -112,5 +112,5 @@ public abstract partial class PrivateKey(PrivateKeyVariant type) : Serializable
 
     public virtual string ToAIP80String() => FormatPrivateKey(ToByteArray(), Type);
 
-    public override string ToString() => ToHexString();
+    public override string ToString() => ToAIP80String();
 }

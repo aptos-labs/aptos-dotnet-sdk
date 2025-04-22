@@ -1,9 +1,10 @@
-# Aptos Dotnet SDK Changelog
-
-All notable changes to the Aptos Python SDK will be captured in this file. This changelog is written by hand for now.
+# Aptos .NET SDK Changelog
 
 ## Unreleased
 
-- Remove support for .NET 6 and 7, add support for .NET 9
+## 0.0.16-beta
 
-## Beta v0.0.15-beta
+- breaking: Remove support for .NET 6 and 7, add support for .NET 9
+- breaking: Default `ToString` implementation for `PrivateKey` classes to return AIP-80 compliant string representation of the key.
+
+## 0.0.15-beta
