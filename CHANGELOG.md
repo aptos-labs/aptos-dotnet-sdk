@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- fix: Fixed address deserialization for addresses without padding
+
 ## 0.0.16-beta
 
 - breaking: Remove support for .NET 6 and 7, add support for .NET 9

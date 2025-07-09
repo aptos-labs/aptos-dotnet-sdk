@@ -240,7 +240,7 @@ public class AccountAddressConverter : JsonConverter<AccountAddress>
     )
     {
         string? value = (string?)reader.Value;
-        return value != null ? AccountAddress.FromString(value) : null;
+        return value != null ? AccountAddress.FromString(value, 63) : null;
     }
 
     public override void WriteJson(
