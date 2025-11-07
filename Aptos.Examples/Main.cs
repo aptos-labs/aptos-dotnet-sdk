@@ -14,6 +14,7 @@ public class RunExample
         SimpleTransferSingleKeyExample.Run,
         SimpleTransferMultiKeyExample.Run,
         SimpleTransferComplexMultiKeyExample.Run,
+        SimpleTransferOrderlessExample.Run,
         SponsoredTransferEd25519Example.Run,
         SimulateTransferEd25519Example.Run,
         AptosNamesExample.Run,
