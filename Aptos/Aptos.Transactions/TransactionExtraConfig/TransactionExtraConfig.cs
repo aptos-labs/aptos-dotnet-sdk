@@ -16,4 +16,9 @@ public abstract class TransactionExtraConfig : Serializable
             _ => throw new ArgumentException("Invalid variant"),
         };
     }
+<<<<<<< Updated upstream
+=======
+
+    public abstract bool HasReplayProtectionNonce();
+>>>>>>> Stashed changes
 }

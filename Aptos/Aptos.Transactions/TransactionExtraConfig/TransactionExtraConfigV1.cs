@@ -18,4 +18,9 @@ public class TransactionExtraConfigV1(AccountAddress? multiSigAddress = null, ul
         var replayProtectionNonce = MoveOption<U64>.Deserialize(d, U64.Deserialize).Value?.Value;
         return new(multiSigAddress, replayProtectionNonce);
     }
+    
+    public override bool HasReplayProtectionNonce()
+    {
+        return ReplayProtectionNonce != null;
+    }
 }
