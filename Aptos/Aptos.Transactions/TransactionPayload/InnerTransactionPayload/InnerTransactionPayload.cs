@@ -16,4 +16,15 @@ public abstract class InnerTransactionPayload : Serializable
             _ => throw new ArgumentException("Invalid variant"),
         };
     }
+
+    public static InnerTransactionPayload FromLegacy(TransactionPayload payload, TransactionExtraConfig extraConfig)
+    {
+        return payload switch
+        {
+            TransactionScriptPayload scriptPayload => new InnerTransactionPayloadV1(new TransactionScriptExecutable(scriptPayload.Script), extraConfig),
+            TransactionEntryFunctionPayload entryFunctionPayload => new InnerTransactionPayloadV1(new TransactionEntryFunctionExecutable(entryFunctionPayload.Function), extraConfig),
+            TransactionInnerPayload innerPayload => innerPayload.InnerPayload,
+            _ => throw new ArgumentException($"Invalid payload: {payload.GetType().Name}"),
+        };
+    }
 }

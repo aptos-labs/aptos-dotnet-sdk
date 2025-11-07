@@ -12,4 +12,9 @@ public class TransactionInnerPayload(InnerTransactionPayload innerPayload) : Tra
 
     public static new TransactionInnerPayload Deserialize(Deserializer d) =>
         new(InnerTransactionPayload.Deserialize(d));
+
+    internal static TransactionInnerPayload FromLegacy(TransactionPayload payload, TransactionExtraConfig extraConfig)
+    {
+        return new (InnerTransactionPayload.FromLegacy(payload, extraConfig));
+    }
 }
