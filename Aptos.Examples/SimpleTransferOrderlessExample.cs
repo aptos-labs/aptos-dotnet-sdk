@@ -25,10 +25,7 @@ public class SimpleTransferOrderlessExample
                 functionArguments: [account.Address, "100000"]
             ),
             options: new TransactionBuilder.GenerateTransactionOptions(
-                extraConfig: new TransactionExtraConfigV1(
-                    
-                    replayProtectionNonce: 12345
-                )
+                extraConfig: new TransactionExtraConfigV1(replayProtectionNonce: 12345)
             )
         );
         Console.WriteLine($"{JsonConvert.SerializeObject(txn.RawTransaction)}");

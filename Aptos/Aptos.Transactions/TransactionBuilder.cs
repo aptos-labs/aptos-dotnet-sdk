@@ -386,7 +386,8 @@ public static class TransactionBuilder
 
     internal static bool CanSkipSequenceNumberFetch(GenerateTransactionOptions? options)
     {
-        return options?.AccountSequenceNumber != null || options?.ExtraConfig?.HasReplayProtectionNonce() == true;
+        return options?.AccountSequenceNumber != null
+            || options?.ExtraConfig?.HasReplayProtectionNonce() == true;
     }
 
     public static async Task<RawTransaction> GenerateRawTransaction(

@@ -7,6 +7,5 @@ public class TransactionEmptyExecutable() : TransactionExecutable
         s.U32AsUleb128((uint)TransactionExecutableVariant.Empty);
     }
 
-    public static new TransactionEmptyExecutable Deserialize(Deserializer d) =>
-        new();
+    public static new TransactionEmptyExecutable Deserialize(Deserializer d) => new();
 }

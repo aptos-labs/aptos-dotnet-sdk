@@ -25,14 +25,7 @@ public class TransactionBuilderTests(ITestOutputHelper output) : BaseTests(outpu
     private const int ChainId = 42;
 
     private static TransactionEntryFunctionPayload CreateTestPayload() =>
-        new(
-            new EntryFunction(
-                new ModuleId(AccountAddress.ZERO, "test"),
-                "func",
-                [],
-                []
-            )
-        );
+        new(new EntryFunction(new ModuleId(AccountAddress.ZERO, "test"), "func", [], []));
 
     private static TransactionBuilder.GenerateTransactionOptions CreateOptions(
         TransactionExtraConfig? extraConfig = null
@@ -102,4 +95,3 @@ public class TransactionBuilderTests(ITestOutputHelper output) : BaseTests(outpu
         Assert.Equal(ChainId, rawTransaction.ChainId.Value);
     }
 }
-

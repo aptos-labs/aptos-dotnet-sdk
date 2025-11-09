@@ -1,7 +1,9 @@
 namespace Aptos;
 
-
-public class InnerTransactionPayloadV1(TransactionExecutable executable, TransactionExtraConfig extraConfig) : InnerTransactionPayload
+public class InnerTransactionPayloadV1(
+    TransactionExecutable executable,
+    TransactionExtraConfig extraConfig
+) : InnerTransactionPayload
 {
     public readonly TransactionExecutable Executable = executable;
     public readonly TransactionExtraConfig ExtraConfig = extraConfig;

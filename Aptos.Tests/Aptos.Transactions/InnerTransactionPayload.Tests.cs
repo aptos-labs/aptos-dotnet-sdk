@@ -20,8 +20,7 @@ public class InnerTransactionPayloadTests(ITestOutputHelper output) : BaseTests(
 
         var payload = new InnerTransactionPayloadV1(executable, extraConfig);
 
-        var expectedBytes = Hex
-            .FromHexString(
+        var expectedBytes = Hex.FromHexString(
                 "0x0001000000000000000000000000000000000000000000000000000000000000000004746573740466756e6300000000013930000000000000"
             )
             .ToByteArray();
@@ -34,8 +33,7 @@ public class InnerTransactionPayloadTests(ITestOutputHelper output) : BaseTests(
     [Fact(Timeout = 10000)]
     public void DeserializeInnerTransactionPayloadV1()
     {
-        var bytes = Hex
-            .FromHexString(
+        var bytes = Hex.FromHexString(
                 "0x0001000000000000000000000000000000000000000000000000000000000000000004746573740466756e6300000000013930000000000000"
             )
             .ToByteArray();
@@ -93,18 +91,14 @@ public class InnerTransactionPayloadTests(ITestOutputHelper output) : BaseTests(
         var deserializedExecutable = (TransactionEntryFunctionExecutable)
             deserializedPayloadV1.Executable;
 
-        Assert.Equal(
-            AccountAddress.ZERO,
-            deserializedExecutable.Function.ModuleName.Address
-        );
+        Assert.Equal(AccountAddress.ZERO, deserializedExecutable.Function.ModuleName.Address);
         Assert.Equal("test", deserializedExecutable.Function.ModuleName.Name);
         Assert.Equal("func", deserializedExecutable.Function.FunctionName);
         Assert.Empty(deserializedExecutable.Function.TypeArgs);
         Assert.Empty(deserializedExecutable.Function.Args);
 
         Assert.IsType<TransactionExtraConfigV1>(deserializedPayloadV1.ExtraConfig);
-        var deserializedExtraConfig = (TransactionExtraConfigV1)
-            deserializedPayloadV1.ExtraConfig;
+        var deserializedExtraConfig = (TransactionExtraConfigV1)deserializedPayloadV1.ExtraConfig;
 
         Assert.Null(deserializedExtraConfig.MultiSigAddress);
         Assert.Equal(12345UL, deserializedExtraConfig.ReplayProtectionNonce);
@@ -168,8 +162,7 @@ public class InnerTransactionPayloadTests(ITestOutputHelper output) : BaseTests(
 
         var serializedBytes = wrappedPayload.BcsToBytes();
 
-        var expectedBytes = Hex
-            .FromHexString(
+        var expectedBytes = Hex.FromHexString(
                 "0x040001000000000000000000000000000000000000000000000000000000000000000004746573740466756e6300000000013930000000000000"
             )
             .ToByteArray();
@@ -177,4 +170,3 @@ public class InnerTransactionPayloadTests(ITestOutputHelper output) : BaseTests(
         Assert.Equal(expectedBytes, serializedBytes);
     }
 }
-

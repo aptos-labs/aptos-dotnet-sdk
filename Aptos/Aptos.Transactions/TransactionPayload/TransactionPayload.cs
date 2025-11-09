@@ -4,7 +4,7 @@ enum TransactionPayloadVariant : uint
 {
     Script = 0,
     EntryFunction = 2,
-    InnerPayload = 4
+    InnerPayload = 4,
 }
 
 public abstract class TransactionPayload : Serializable

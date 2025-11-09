@@ -4,7 +4,7 @@ enum TransactionExecutableVariant : uint
 {
     Script = 0,
     EntryFunction = 1,
-    Empty = 2
+    Empty = 2,
 }
 
 public abstract class TransactionExecutable : Serializable
@@ -15,9 +15,8 @@ public abstract class TransactionExecutable : Serializable
         return variant switch
         {
             TransactionExecutableVariant.Script => TransactionScriptExecutable.Deserialize(d),
-            TransactionExecutableVariant.EntryFunction => TransactionEntryFunctionExecutable.Deserialize(
-                d
-            ),
+            TransactionExecutableVariant.EntryFunction =>
+                TransactionEntryFunctionExecutable.Deserialize(d),
             TransactionExecutableVariant.Empty => TransactionEmptyExecutable.Deserialize(d),
             _ => throw new ArgumentException("Invalid variant"),
         };
