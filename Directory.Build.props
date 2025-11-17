@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- There should only be one <DefaultVersion> in the file. If moved, it should be updated in
     the GitHub Actions workflow. -->
-    <DefaultVersion>0.0.16</DefaultVersion>
+    <DefaultVersion>0.0.17</DefaultVersion>
     <DefaultTargetFrameworks>net9.0;net8.0;netstandard2.1</DefaultTargetFrameworks>
     <DefaultTestingFrameworks>net8.0</DefaultTestingFrameworks>
   </PropertyGroup>

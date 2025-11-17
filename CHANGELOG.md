@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 0.0.17-beta
+
+- feat: Add support for Orderless transactions
 - fix: Fixed address deserialization for addresses without padding
 
 ## 0.0.16-beta
