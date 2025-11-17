@@ -4,6 +4,7 @@ enum TransactionPayloadVariant : uint
 {
     Script = 0,
     EntryFunction = 2,
+    InnerPayload = 4,
 }
 
 public abstract class TransactionPayload : Serializable
@@ -17,6 +18,7 @@ public abstract class TransactionPayload : Serializable
             TransactionPayloadVariant.EntryFunction => TransactionEntryFunctionPayload.Deserialize(
                 d
             ),
+            TransactionPayloadVariant.InnerPayload => TransactionInnerPayload.Deserialize(d),
             _ => throw new ArgumentException("Invalid variant"),
         };
     }

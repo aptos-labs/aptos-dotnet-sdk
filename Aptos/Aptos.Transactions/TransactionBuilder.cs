@@ -204,13 +204,15 @@ public static class TransactionBuilder
         ulong? maxGasAmount = null,
         ulong? gasUnitPrice = null,
         ulong? expireTimestamp = null,
-        ulong? accountSequenceNumber = null
+        ulong? accountSequenceNumber = null,
+        TransactionExtraConfig? extraConfig = null
     )
     {
         public ulong? MaxGasAmount = maxGasAmount;
         public ulong? GasUnitPrice = gasUnitPrice;
         public ulong? ExpireTimestamp = expireTimestamp;
         public ulong? AccountSequenceNumber = accountSequenceNumber;
+        public TransactionExtraConfig? ExtraConfig = extraConfig;
     }
 
     public static async Task<SimpleTransaction> GenerateTransaction(
@@ -382,6 +384,12 @@ public static class TransactionBuilder
         return new SimpleTransaction(rawTxn, feePayerAddress);
     }
 
+    internal static bool CanSkipSequenceNumberFetch(GenerateTransactionOptions? options)
+    {
+        return options?.AccountSequenceNumber != null
+            || options?.ExtraConfig?.HasReplayProtectionNonce() == true;
+    }
+
     public static async Task<RawTransaction> GenerateRawTransaction(
         AptosClient client,
         AccountAddress sender,
@@ -406,8 +414,8 @@ public static class TransactionBuilder
 
         async Task<ulong> GetSequenceNumber()
         {
-            if (options?.AccountSequenceNumber != null)
-                return options.AccountSequenceNumber.Value;
+            if (CanSkipSequenceNumberFetch(options))
+                return options?.AccountSequenceNumber ?? 0;
 
             try
             {
@@ -440,6 +448,10 @@ public static class TransactionBuilder
         ChainId chainId = new(await chainIdTask);
         ulong sequenceNumber = await sequenceNumberTask;
         ulong gasUnitPrice = await gasUnitPriceTask;
+        if (options?.ExtraConfig != null)
+        {
+            payload = TransactionInnerPayload.FromLegacy(payload, options.ExtraConfig);
+        }
 
         return new RawTransaction(
             sender: AccountAddress.From(sender),
