@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: Increase default max gas amount by 10x (200000 -> 2000000)
+
 ## 0.0.17-beta
 
 - feat: Add support for Orderless transactions
