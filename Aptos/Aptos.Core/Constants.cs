@@ -4,7 +4,7 @@ namespace Aptos.Core
     {
         public const ulong DEFAULT_TIMEOUT_SECS = 20;
 
-        public const ulong DEFAULT_MAX_GAS_AMOUNT = 200000;
+        public const ulong DEFAULT_MAX_GAS_AMOUNT = 2000000;
 
         public const ulong DEFAULT_TXN_EXP_SEC = 20;
 
