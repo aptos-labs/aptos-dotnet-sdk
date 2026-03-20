@@ -73,9 +73,6 @@ public class PublicKeyConverter : JsonConverter<PublicKey>
         if (anyValue == null)
             throw new Exception("Invalid public key shape");
 
-        Deserializer deserializer = new(anyValue.Value);
-        deserializer.Uleb128AsU32();
-
         return type switch
         {
             "ed25519" => new Ed25519PublicKey(anyValue.Value),
