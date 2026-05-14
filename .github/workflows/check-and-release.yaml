@@ -6,19 +6,22 @@ on:
       - main
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 jobs:
   check:
     name: Check Packages Version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       version: ${{ steps.version.outputs.version }}
       is_published: ${{ steps.nuget_exists.outputs.exists }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
@@ -46,15 +49,17 @@ jobs:
         id: nuget_exists
         shell: bash
         working-directory: ./
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          LATEST_VERSION=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" | jq -r '.versions | last') 
+          LATEST_VERSION=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" | jq -r '.versions | last')
 
           # Check if the latest version is the same as the current version
-          if [ "$LATEST_VERSION" == "${{ steps.version.outputs.version }}" ]; then
-            echo "Nuget package exists (${{ steps.version.outputs.version }})"
+          if [ "$LATEST_VERSION" == "$PKG_VERSION" ]; then
+            echo "Nuget package exists ($PKG_VERSION)"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Nuget package does not exist (${{ steps.version.outputs.version }})"
+            echo "Nuget package does not exist ($PKG_VERSION)"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
@@ -62,10 +67,12 @@ jobs:
     name: Pack and Publish Packages
     needs: check
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: ${{ needs.check.outputs.is_published == 'false' }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
@@ -83,8 +90,9 @@ jobs:
           dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
       - name: Tag Release
-        run: |
-          git tag v${{ needs.check.outputs.version }}
-          git push origin v${{ needs.check.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          git tag "v${PKG_VERSION}"
+          git push origin "v${PKG_VERSION}"
