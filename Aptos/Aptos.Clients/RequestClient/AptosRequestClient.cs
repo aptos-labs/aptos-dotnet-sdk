@@ -11,11 +11,27 @@ public class AptosRequestClient : RequestClient
 {
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Creates a request client with the default 30s per-request timeout.
+    /// Use the overload that accepts a <see cref="TimeSpan"/> to configure
+    /// a different timeout, or pass <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>
+    /// to disable timeouts entirely.
+    /// </summary>
     public AptosRequestClient()
+        : this(AptosConfig.DefaultHttpTimeout) { }
+
+    /// <summary>
+    /// Creates a request client with the specified per-request timeout.
+    /// </summary>
+    /// <param name="httpTimeout">
+    /// Per-request timeout. Use <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>
+    /// to disable.
+    /// </param>
+    public AptosRequestClient(TimeSpan httpTimeout)
     {
         var cookieContainer = new CookieContainer();
         var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
-        _httpClient = new HttpClient(handler);
+        _httpClient = new HttpClient(handler) { Timeout = httpTimeout };
     }
 
     public override async Task<ClientResponse<Res>> Get<Res>(ClientRequest request)
