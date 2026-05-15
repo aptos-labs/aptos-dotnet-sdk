@@ -93,6 +93,7 @@ public class Secp256k1PrivateKey : PrivateKey
 
     public override PublicKey PublicKey()
     {
+        ThrowIfDisposed();
         // Load curve parameters
         X9ECParameters curve = ECNamedCurveTable.GetByName("secp256k1");
         ECDomainParameters domainParams = new(curve);
@@ -110,6 +111,7 @@ public class Secp256k1PrivateKey : PrivateKey
 
     public override PublicKeySignature Sign(byte[] message)
     {
+        ThrowIfDisposed();
         // Hash the message
         byte[] hash = DigestUtilities.CalculateDigest("SHA3-256", message);
 
@@ -135,9 +137,26 @@ public class Secp256k1PrivateKey : PrivateKey
         return new Secp256k1Signature([.. r.ToByteArrayUnsigned(), .. s.ToByteArrayUnsigned()]);
     }
 
-    public override byte[] ToByteArray() => _key.ToByteArray();
+    public override byte[] ToByteArray()
+    {
+        ThrowIfDisposed();
+        return _key.ToByteArray();
+    }
 
-    public override void Serialize(Serializer s) => s.Bytes(_key.ToByteArray());
+    public override void Serialize(Serializer s)
+    {
+        ThrowIfDisposed();
+        s.Bytes(_key.ToByteArray());
+    }
+
+    /// <inheritdoc/>
+    protected override void DisposeCore()
+    {
+        // Zero out the underlying byte array; see Ed25519PrivateKey for
+        // rationale.
+        var bytes = _key.ToByteArray();
+        Array.Clear(bytes, 0, bytes.Length);
+    }
 
     public static Secp256k1PrivateKey Generate()
     {
