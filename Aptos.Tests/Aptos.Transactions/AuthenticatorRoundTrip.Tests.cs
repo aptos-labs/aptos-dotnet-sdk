@@ -137,12 +137,12 @@ public class AuthenticatorRoundTripTests(ITestOutputHelper output) : BaseTests(o
         var roundTripped = (TransactionAuthenticatorMultiAgent)
             TransactionAuthenticator.Deserialize(new Deserializer(bytes));
 
-        Assert.Equal(auth.SecondarySignerAddresses.Count, roundTripped.SecondarySignerAddresses.Count);
-        Assert.Equal(auth.SecondarySigners.Count, roundTripped.SecondarySigners.Count);
         Assert.Equal(
-            auth.SecondarySignerAddresses[0],
-            roundTripped.SecondarySignerAddresses[0]
+            auth.SecondarySignerAddresses.Count,
+            roundTripped.SecondarySignerAddresses.Count
         );
+        Assert.Equal(auth.SecondarySigners.Count, roundTripped.SecondarySigners.Count);
+        Assert.Equal(auth.SecondarySignerAddresses[0], roundTripped.SecondarySignerAddresses[0]);
         Assert.Equal((byte)TransactionAuthenticatorVariant.MultiAgent, bytes[0]);
     }
 

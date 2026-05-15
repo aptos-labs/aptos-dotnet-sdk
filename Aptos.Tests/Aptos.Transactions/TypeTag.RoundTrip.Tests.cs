@@ -42,7 +42,12 @@ public class TypeTagRoundTripTests(ITestOutputHelper output) : BaseTests(output)
     public void TypeTagStruct_RoundTrip_WithGenerics()
     {
         var t = new TypeTagStruct(
-            new StructTag(AccountAddress.FromString("0x1", 63), "option", "Option", [new TypeTagU64()])
+            new StructTag(
+                AccountAddress.FromString("0x1", 63),
+                "option",
+                "Option",
+                [new TypeTagU64()]
+            )
         );
         var bytes = t.BcsToBytes();
         var d = (TypeTagStruct)TypeTag.Deserialize(new Deserializer(bytes));
@@ -84,9 +89,7 @@ public class TypeTagRoundTripTests(ITestOutputHelper output) : BaseTests(output)
     {
         var s = new Serializer();
         s.U32AsUleb128(100); // not a valid variant
-        Assert.Throws<ArgumentException>(
-            () => TypeTag.Deserialize(new Deserializer(s.ToBytes()))
-        );
+        Assert.Throws<ArgumentException>(() => TypeTag.Deserialize(new Deserializer(s.ToBytes())));
     }
 
     [Fact]

@@ -70,10 +70,11 @@ public abstract class RawTransactionWithData(
         RawTransactionVariant index = (RawTransactionVariant)d.Uleb128AsU32();
         return index switch
         {
-            RawTransactionVariant.MultiAgentTransaction =>
-                MultiAgentRawTransaction.Deserialize(d),
+            RawTransactionVariant.MultiAgentTransaction => MultiAgentRawTransaction.Deserialize(d),
             RawTransactionVariant.FeePayerTransaction => FeePayerRawTransaction.Deserialize(d),
-            _ => throw new ArgumentException($"Unsupported RawTransactionWithData variant: {index}"),
+            _ => throw new ArgumentException(
+                $"Unsupported RawTransactionWithData variant: {index}"
+            ),
         };
     }
 }

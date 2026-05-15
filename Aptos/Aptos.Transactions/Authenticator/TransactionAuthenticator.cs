@@ -25,7 +25,9 @@ public abstract class TransactionAuthenticator : Serializable
                 TransactionAuthenticatorFeePayer.Deserialize(d),
             TransactionAuthenticatorVariant.SingleSender =>
                 TransactionAuthenticatorSingleSender.Deserialize(d),
-            _ => throw new ArgumentException($"Unsupported TransactionAuthenticator variant: {variant}"),
+            _ => throw new ArgumentException(
+                $"Unsupported TransactionAuthenticator variant: {variant}"
+            ),
         };
     }
 }

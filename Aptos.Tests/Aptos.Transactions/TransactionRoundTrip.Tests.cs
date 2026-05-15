@@ -68,9 +68,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var payload = new TransactionEntryFunctionPayload(TestEntryFunction());
         var bytes = payload.BcsToBytes();
-        var d = (TransactionEntryFunctionPayload)TransactionPayload.Deserialize(
-            new Deserializer(bytes)
-        );
+        var d = (TransactionEntryFunctionPayload)
+            TransactionPayload.Deserialize(new Deserializer(bytes));
         Assert.Equal("func", d.Function.FunctionName);
         Assert.Equal("test", d.Function.ModuleName.Name);
     }
@@ -81,9 +80,7 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
         var script = new Script(new byte[] { 0xa1, 0xb2, 0xc3 }, [new TypeTagU8()], [new U8(7)]);
         var payload = new TransactionScriptPayload(script);
         var bytes = payload.BcsToBytes();
-        var d = (TransactionScriptPayload)TransactionPayload.Deserialize(
-            new Deserializer(bytes)
-        );
+        var d = (TransactionScriptPayload)TransactionPayload.Deserialize(new Deserializer(bytes));
         Assert.Equal(script.Bytecode, d.Script.Bytecode);
         Assert.Single(d.Script.TypeArgs);
         Assert.Single(d.Script.Args);
@@ -104,7 +101,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var account = Ed25519Account.Generate();
         var raw = TestRawTransaction();
-        var sig = (Ed25519Signature)account.Sign(SigningMessage.GenerateForTransaction(new SimpleTransaction(raw)));
+        var sig = (Ed25519Signature)
+            account.Sign(SigningMessage.GenerateForTransaction(new SimpleTransaction(raw)));
         var signed = new SignedTransaction(
             raw,
             new TransactionAuthenticatorEd25519((Ed25519PublicKey)account.VerifyingKey, sig)
@@ -143,22 +141,18 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var ex = new TransactionEntryFunctionExecutable(TestEntryFunction());
         var bytes = ex.BcsToBytes();
-        var d = (TransactionEntryFunctionExecutable)TransactionExecutable.Deserialize(
-            new Deserializer(bytes)
-        );
+        var d = (TransactionEntryFunctionExecutable)
+            TransactionExecutable.Deserialize(new Deserializer(bytes));
         Assert.Equal("func", d.Function.FunctionName);
     }
 
     [Fact]
     public void TransactionExecutable_Script_RoundTrip()
     {
-        var ex = new TransactionScriptExecutable(
-            new Script(new byte[] { 1 }, [], [])
-        );
+        var ex = new TransactionScriptExecutable(new Script(new byte[] { 1 }, [], []));
         var bytes = ex.BcsToBytes();
-        var d = (TransactionScriptExecutable)TransactionExecutable.Deserialize(
-            new Deserializer(bytes)
-        );
+        var d = (TransactionScriptExecutable)
+            TransactionExecutable.Deserialize(new Deserializer(bytes));
         Assert.Equal(new byte[] { 1 }, d.Script.Bytecode);
     }
 
@@ -214,19 +208,13 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     public void InnerTransactionPayload_FromLegacy_HandlesAllVariants()
     {
         var entryPayload = new TransactionEntryFunctionPayload(TestEntryFunction());
-        var scriptPayload = new TransactionScriptPayload(
-            new Script(new byte[] { 1 }, [], [])
-        );
+        var scriptPayload = new TransactionScriptPayload(new Script(new byte[] { 1 }, [], []));
         var extra = new TransactionExtraConfigV1(replayProtectionNonce: 99);
 
-        var fromEntry = (InnerTransactionPayloadV1)InnerTransactionPayload.FromLegacy(
-            entryPayload,
-            extra
-        );
-        var fromScript = (InnerTransactionPayloadV1)InnerTransactionPayload.FromLegacy(
-            scriptPayload,
-            extra
-        );
+        var fromEntry = (InnerTransactionPayloadV1)
+            InnerTransactionPayload.FromLegacy(entryPayload, extra);
+        var fromScript = (InnerTransactionPayloadV1)
+            InnerTransactionPayload.FromLegacy(scriptPayload, extra);
 
         Assert.IsType<TransactionEntryFunctionExecutable>(fromEntry.Executable);
         Assert.IsType<TransactionScriptExecutable>(fromScript.Executable);

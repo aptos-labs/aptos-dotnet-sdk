@@ -77,10 +77,7 @@ public class HexExtendedTests(ITestOutputHelper output) : BaseTests(output)
     [Fact]
     public void GetHashCode_WorksInHashSet()
     {
-        var set = new HashSet<Hex>
-        {
-            new(new byte[] { 1, 2, 3 }),
-        };
+        var set = new HashSet<Hex> { new(new byte[] { 1, 2, 3 }) };
         Assert.Contains(new Hex(new byte[] { 1, 2, 3 }), set);
         Assert.DoesNotContain(new Hex(new byte[] { 1, 2, 4 }), set);
     }

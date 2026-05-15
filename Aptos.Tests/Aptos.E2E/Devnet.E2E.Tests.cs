@@ -228,10 +228,7 @@ public class DevnetE2ETests(ITestOutputHelper output) : BaseTests(output)
             options: DefaultOptions()
         );
         var simulations = await client.Transaction.Simulate(
-            new SimulateTransactionData(
-                txn,
-                (PublicKey)(Ed25519PublicKey)alice.VerifyingKey
-            )
+            new SimulateTransactionData(txn, (PublicKey)(Ed25519PublicKey)alice.VerifyingKey)
         );
         Assert.Single(simulations);
     }

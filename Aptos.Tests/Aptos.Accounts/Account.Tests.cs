@@ -45,7 +45,10 @@ public class AccountTests(ITestOutputHelper output) : BaseTests(output)
         var account = Ed25519Account.Generate();
         var msg = new byte[] { 9 };
         var auth = (AccountAuthenticatorEd25519)account.SignWithAuthenticator(msg);
-        Assert.Equal(((Ed25519PublicKey)account.VerifyingKey).ToByteArray(), auth.PublicKey.ToByteArray());
+        Assert.Equal(
+            ((Ed25519PublicKey)account.VerifyingKey).ToByteArray(),
+            auth.PublicKey.ToByteArray()
+        );
         Assert.True(account.VerifySignature(msg, auth.Signature));
     }
 
@@ -101,9 +104,7 @@ public class AccountTests(ITestOutputHelper output) : BaseTests(output)
     [Fact]
     public void SingleKeyAccount_Generate_UnsupportedScheme_Throws()
     {
-        Assert.Throws<ArgumentException>(
-            () => SingleKeyAccount.Generate((PublicKeyVariant)999)
-        );
+        Assert.Throws<ArgumentException>(() => SingleKeyAccount.Generate((PublicKeyVariant)999));
     }
 
     [Fact]

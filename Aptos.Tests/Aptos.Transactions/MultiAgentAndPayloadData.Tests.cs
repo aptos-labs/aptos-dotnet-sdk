@@ -46,7 +46,8 @@ public class MultiAgentTransactionTests(ITestOutputHelper output) : BaseTests(ou
         var txn = new MultiAgentRawTransaction(MakeRaw(), [sec]);
         var bytes = txn.BcsToBytes();
         // Round-trip via the base dispatcher so the variant byte is consumed.
-        var d = (MultiAgentRawTransaction)RawTransactionWithData.Deserialize(new Deserializer(bytes));
+        var d = (MultiAgentRawTransaction)
+            RawTransactionWithData.Deserialize(new Deserializer(bytes));
         Assert.Single(d.SecondarySignerAddresses);
         Assert.Equal(sec, d.SecondarySignerAddresses[0]);
     }

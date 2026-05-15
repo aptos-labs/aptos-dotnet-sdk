@@ -30,7 +30,15 @@ public class NetworksAndConfigTests(ITestOutputHelper output) : BaseTests(output
     [Fact]
     public void AptosConfig_AcceptsCustomNetwork()
     {
-        var custom = new NetworkConfig("custom", "https://node", "https://idx", null, null, null, 99);
+        var custom = new NetworkConfig(
+            "custom",
+            "https://node",
+            "https://idx",
+            null,
+            null,
+            null,
+            99
+        );
         var config = new AptosConfig(custom);
         Assert.Equal("custom", config.NetworkConfig.Name);
         Assert.Equal(99, config.NetworkConfig.ChainId);

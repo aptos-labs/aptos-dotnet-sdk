@@ -30,7 +30,10 @@ public class TransactionArgumentTests(ITestOutputHelper output) : BaseTests(outp
             (ushort)7,
             ((U16)TransactionArgument.ConvertArgument("7", new TypeTagU16(), [])!).Value
         );
-        Assert.Equal(7u, ((U32)TransactionArgument.ConvertArgument("7", new TypeTagU32(), [])!).Value);
+        Assert.Equal(
+            7u,
+            ((U32)TransactionArgument.ConvertArgument("7", new TypeTagU32(), [])!).Value
+        );
         Assert.Equal(
             7UL,
             ((U64)TransactionArgument.ConvertArgument("7", new TypeTagU64(), [])!).Value

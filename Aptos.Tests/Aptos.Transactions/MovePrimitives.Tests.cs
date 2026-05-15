@@ -66,7 +66,9 @@ public class MovePrimitivesAndStructsTests(ITestOutputHelper output) : BaseTests
         {
             var s = new Serializer();
             arg.SerializeForScriptFunction(s);
-            var d = TransactionArgument.DeserializeFromScriptArgument(new Deserializer(s.ToBytes()));
+            var d = TransactionArgument.DeserializeFromScriptArgument(
+                new Deserializer(s.ToBytes())
+            );
             Assert.Equal(arg.GetType(), d.GetType());
         }
     }

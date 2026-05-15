@@ -79,9 +79,7 @@ public class ProofTests(ITestOutputHelper output) : BaseTests(output)
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => ZkProof.Deserialize(new Deserializer(s.ToBytes()))
-        );
+        Assert.Throws<ArgumentException>(() => ZkProof.Deserialize(new Deserializer(s.ToBytes())));
     }
 }
 
@@ -122,7 +120,14 @@ public class FederatedKeylessTests(ITestOutputHelper output) : BaseTests(output)
         var jwk = AccountAddress.ZERO;
 
         var byBytes = new FederatedKeylessPublicKey(iss, uidKey, uidVal, aud, pepper, jwk);
-        var byHex = new FederatedKeylessPublicKey(iss, uidKey, uidVal, aud, "0x" + new string('0', 62), jwk);
+        var byHex = new FederatedKeylessPublicKey(
+            iss,
+            uidKey,
+            uidVal,
+            aud,
+            "0x" + new string('0', 62),
+            jwk
+        );
         Assert.Equal(byBytes.BcsToBytes(), byHex.BcsToBytes());
     }
 }

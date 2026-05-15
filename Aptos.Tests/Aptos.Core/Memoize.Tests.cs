@@ -104,12 +104,12 @@ public class AccountSignatureJsonTests(ITestOutputHelper output) : BaseTests(out
     public void AccountEd25519Signature_RoundTripsViaJson()
     {
         const string json = """
-        {
-            "type": "ed25519_signature",
-            "public_key": "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
-            "signature": "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
-        }
-        """;
+            {
+                "type": "ed25519_signature",
+                "public_key": "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
+                "signature": "0xaabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+            }
+            """;
         var deserialized = (AccountEd25519Signature)
             JsonConvert.DeserializeObject<AccountSignature>(json)!;
         Assert.Equal(32, deserialized.PublicKey.ToByteArray().Length);
@@ -120,8 +120,7 @@ public class AccountSignatureJsonTests(ITestOutputHelper output) : BaseTests(out
     public void AccountSignature_UnknownType_Throws()
     {
         Assert.Throws<Exception>(
-            () =>
-                JsonConvert.DeserializeObject<AccountSignature>("{\"type\":\"not_a_type\"}")
+            () => JsonConvert.DeserializeObject<AccountSignature>("{\"type\":\"not_a_type\"}")
         );
     }
 }
@@ -146,9 +145,7 @@ public class ExceptionsCryptoTests
     [Fact]
     public void EphemeralSignatureVariantUnsupported_HasDescriptiveMessage()
     {
-        var ex = new EphemeralSignatureVariantUnsupported(
-            (PublicKeySignatureVariant)99
-        );
+        var ex = new EphemeralSignatureVariantUnsupported((PublicKeySignatureVariant)99);
         Assert.Contains("Ephemeral", ex.Message);
     }
 
@@ -170,10 +167,7 @@ public class ExceptionsCryptoTests
     [Fact]
     public void AccountAddressParsingException_StoresReason()
     {
-        var ex = new AccountAddressParsingException(
-            "bad",
-            AccountAddressInvalidReason.TooLong
-        );
+        var ex = new AccountAddressParsingException("bad", AccountAddressInvalidReason.TooLong);
         Assert.Equal(AccountAddressInvalidReason.TooLong, ex.Reason);
     }
 
@@ -191,7 +185,9 @@ public class ExceptionsCryptoTests
     [Fact]
     public void TypeTagParserException_AllReasonsMessagesNonEmpty()
     {
-        foreach (TypeTagParserExceptionReason reason in Enum.GetValues<TypeTagParserExceptionReason>())
+        foreach (
+            TypeTagParserExceptionReason reason in Enum.GetValues<TypeTagParserExceptionReason>()
+        )
         {
             var ex = new TypeTagParserException("tag", reason);
             Assert.NotEqual(string.Empty, ex.Message);

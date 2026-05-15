@@ -53,7 +53,10 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
             () => AccountAddress.FromStringStrict("0x123") // not LONG form and not 0x0-0xf
         );
         Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromStringStrict("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef") // missing 0x prefix
+            () =>
+                AccountAddress.FromStringStrict(
+                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                ) // missing 0x prefix
         );
     }
 
@@ -84,12 +87,8 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
     [Fact]
     public void FromString_InvalidPaddingStrictness_Throws()
     {
-        Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromString("0x1", -1)
-        );
-        Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromString("0x1", 64)
-        );
+        Assert.Throws<AccountAddressParsingException>(() => AccountAddress.FromString("0x1", -1));
+        Assert.Throws<AccountAddressParsingException>(() => AccountAddress.FromString("0x1", 64));
     }
 
     [Fact]
@@ -214,10 +213,7 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
         var s = new Serializer();
         addr.SerializeForScriptFunction(s);
         var bytes = s.ToBytes();
-        Assert.Equal(
-            (byte)ScriptTransactionArgumentVariants.Address,
-            bytes[0]
-        );
+        Assert.Equal((byte)ScriptTransactionArgumentVariants.Address, bytes[0]);
         Assert.Equal(33, bytes.Length);
     }
 }
