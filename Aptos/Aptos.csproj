@@ -38,4 +38,14 @@
     <ProjectReference Include="..\Aptos.Poseidon\Aptos.Poseidon.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!--
+      Expose `internal` symbols (e.g. Hex.GetUnsafeByteArrayReference and
+      AccountAddress's no-copy accessor used by IDisposable scrubbing) to
+      the test project so they can be exercised directly without forcing
+      them onto the public API.
+    -->
+    <InternalsVisibleTo Include="Aptos.Tests" />
+  </ItemGroup>
+
 </Project>

@@ -185,8 +185,9 @@ public class Secp256k1PrivateKey : PrivateKey
     protected override void DisposeCore()
     {
         // Zero out the underlying byte array; see Ed25519PrivateKey for
-        // rationale.
-        var bytes = _key.ToByteArray();
+        // rationale. Uses the internal-only no-copy accessor so the
+        // scrub actually targets the live key bytes rather than a clone.
+        var bytes = _key.GetUnsafeByteArrayReference();
         Array.Clear(bytes, 0, bytes.Length);
     }
 

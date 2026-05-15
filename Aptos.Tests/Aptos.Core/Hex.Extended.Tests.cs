@@ -81,4 +81,50 @@ public class HexExtendedTests(ITestOutputHelper output) : BaseTests(output)
         Assert.Contains(new Hex(new byte[] { 1, 2, 3 }), set);
         Assert.DoesNotContain(new Hex(new byte[] { 1, 2, 4 }), set);
     }
+
+    [Fact]
+    public void Constructor_DefensiveCopiesInput()
+    {
+        // Mutating the source array after construction must not affect the
+        // Hex instance — otherwise the hash code / equality drifts and
+        // callers that have already inserted the Hex into a Dictionary or
+        // HashSet would silently get wrong lookups.
+        var source = new byte[] { 1, 2, 3 };
+        var hex = new Hex(source);
+        var originalHash = hex.GetHashCode();
+
+        source[0] = 0xff;
+
+        Assert.Equal(originalHash, hex.GetHashCode());
+        Assert.Equal(new byte[] { 1, 2, 3 }, hex.ToByteArray());
+    }
+
+    [Fact]
+    public void ToByteArray_ReturnsDefensiveCopy()
+    {
+        var hex = new Hex(new byte[] { 1, 2, 3 });
+        var originalHash = hex.GetHashCode();
+
+        var got = hex.ToByteArray();
+        got[0] = 0xff;
+
+        Assert.Equal(originalHash, hex.GetHashCode());
+        Assert.Equal(new byte[] { 1, 2, 3 }, hex.ToByteArray());
+        // Two consecutive calls must return distinct array instances.
+        Assert.NotSame(hex.ToByteArray(), hex.ToByteArray());
+    }
+
+    [Fact]
+    public void HashSet_RemainsUsableAfterSourceMutation()
+    {
+        var source = new byte[] { 1, 2, 3 };
+        var key = new Hex(source);
+        var set = new HashSet<Hex> { key };
+
+        // Mutate the source array and confirm lookups still find the entry.
+        source[0] = 0;
+
+        Assert.Contains(new Hex(new byte[] { 1, 2, 3 }), set);
+        Assert.Single(set);
+    }
 }

@@ -216,4 +216,70 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
         Assert.Equal((byte)ScriptTransactionArgumentVariants.Address, bytes[0]);
         Assert.Equal(33, bytes.Length);
     }
+
+    [Fact]
+    public void Constructor_DefensiveCopiesInput()
+    {
+        // Mutating the source array after construction must not affect the
+        // AccountAddress's hash code or equality.
+        var source = new byte[32];
+        source[0] = 1;
+        var addr = new AccountAddress(source);
+        var originalHash = addr.GetHashCode();
+
+        source[0] = 0xff;
+
+        Assert.Equal(originalHash, addr.GetHashCode());
+        Assert.Equal(1, addr.Data[0]);
+    }
+
+    [Fact]
+    public void Data_ReturnsDefensiveCopy()
+    {
+        var addr = AccountAddress.From(LONG_ADDR);
+        var originalHash = addr.GetHashCode();
+
+        var got = addr.Data;
+        got[0] = 0xff;
+
+        Assert.Equal(originalHash, addr.GetHashCode());
+        Assert.NotEqual(0xff, addr.Data[0]);
+        // Two consecutive Data reads must return distinct array instances.
+        Assert.NotSame(addr.Data, addr.Data);
+    }
+
+    [Fact]
+    public void ToByteArray_ReturnsDefensiveCopy()
+    {
+        var addr = AccountAddress.From(LONG_ADDR);
+        var originalHash = addr.GetHashCode();
+
+        var got = addr.ToByteArray();
+        got[0] = 0xff;
+
+        Assert.Equal(originalHash, addr.GetHashCode());
+        Assert.NotEqual(0xff, addr.ToByteArray()[0]);
+    }
+
+    [Fact]
+    public void Dictionary_RemainsUsableAfterSourceMutation()
+    {
+        var source = new byte[32];
+        source[31] = 1;
+        var key = new AccountAddress(source);
+        var dict = new Dictionary<AccountAddress, string> { [key] = "hello" };
+
+        source[31] = 0;
+
+        // The dictionary entry is still keyed by the original 0x...01.
+        Assert.True(
+            dict.ContainsKey(
+                new AccountAddress(
+                    new byte[31]
+                        .Concat(new byte[] { 1 })
+                        .ToArray()
+                )
+            )
+        );
+    }
 }

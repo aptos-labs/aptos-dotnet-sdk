@@ -160,11 +160,11 @@ public class Ed25519PrivateKey : PrivateKey
     /// <inheritdoc/>
     protected override void DisposeCore()
     {
-        // Zero out the underlying byte array. `Hex.ToByteArray()` returns the
-        // internal array reference, so writing zeros over it scrubs the key
-        // material from the SDK's heap copy. Any other references to the
-        // same Hex value will also see zeros, which is the intended outcome.
-        var bytes = _key.ToByteArray();
+        // Zero out the underlying byte array. We use the internal-only
+        // GetUnsafeByteArrayReference to obtain the actual storage rather
+        // than a defensive copy — otherwise we would only scrub a copy and
+        // the real key bytes would remain on the heap.
+        var bytes = _key.GetUnsafeByteArrayReference();
         Array.Clear(bytes, 0, bytes.Length);
     }
 
