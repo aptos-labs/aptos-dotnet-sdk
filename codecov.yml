@@ -1,0 +1,60 @@
+# Codecov configuration. See https://docs.codecov.com/docs/codecov-yaml
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  precision: 2
+  round: down
+  range: 70..90
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+        if_ci_failed: error
+      indexer:
+        # The Aptos.Indexer project is auto-generated GraphQL bindings. Its
+        # coverage is reported separately and not held to the 90% target.
+        paths:
+          - Aptos.Indexer/
+        target: 0%
+        informational: true
+    patch:
+      default:
+        target: 90%
+        threshold: 1%
+
+ignore:
+  # Auto-generated Aptos.Indexer GraphQL bindings (huge surface area, not
+  # meaningful to test directly). Indexer client wrappers in Aptos/ are
+  # covered separately.
+  - "Aptos.Indexer/**/*.cs"
+  - "**/obj/**"
+  - "**/bin/**"
+  - "**/*.Designer.cs"
+  - "Aptos.Examples/**"
+  - "Aptos.Tests/**"
+
+comment:
+  layout: "header, diff, flags, components, files"
+  behavior: default
+  require_changes: false
+
+flags:
+  unittests:
+    paths:
+      - Aptos/
+      - Aptos.Poseidon/
+    carryforward: true
+
+# Component coverage allows tracking each sub-project independently.
+component_management:
+  individual_components:
+    - component_id: core_sdk
+      name: Aptos Core SDK
+      paths:
+        - Aptos/**
+    - component_id: poseidon
+      name: Poseidon
+      paths:
+        - Aptos.Poseidon/**
