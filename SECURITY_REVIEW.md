@@ -291,20 +291,50 @@ by the new test suite.
 
 ---
 
-## Recommended follow-ups (out of scope for this PR)
+## Recommended follow-ups
 
-1. **Implement `IDisposable` for `Ed25519PrivateKey` / `Secp256k1PrivateKey`**
-   to allow callers to scrub key bytes after use.
-2. **Add configurable HTTP timeout** to `AptosConfig`.
-3. **Scope the Memoize cache** by network so e.g. devnet and mainnet
-   don't share entries.
-4. **Add Dependabot / Renovate** for automated dependency updates.
-5. **Enable NuGetAudit** in `Directory.Build.props`.
-6. **Sign release NuGet packages.**
-7. **Fuzz BCS Deserializer**: feed random byte streams to `Deserializer`
-   to surface remaining panics / infinite loops; nothing observed in
-   review but coverage of error paths is limited.
-8. **AIP-80 strict-by-default**: consider making strict mode the default
-   for private-key parsing in a future major version.
-9. **Add a `SECURITY.md`** with disclosure instructions for downstream
-   consumers.
+The recommendations below were originally listed as out-of-scope for the
+initial audit PR. Subsequent commits on the same branch addressed seven
+of the nine; the remaining two are tracked here for future work.
+
+### Shipped in this PR
+
+1. **`IDisposable` on private keys (Done)** — `Ed25519PrivateKey` and
+   `Secp256k1PrivateKey` now implement `IDisposable`. `Dispose()` zeros
+   the underlying key bytes and subsequent operations throw
+   `ObjectDisposedException`. Standard `using` blocks are now the
+   recommended pattern.
+2. **Configurable HTTP timeout (Done)** — `AptosConfig` now takes an
+   optional `TimeSpan httpTimeout` (default 30s, was effectively 100s
+   via `HttpClient` default). Pass `Timeout.InfiniteTimeSpan` to opt
+   out.
+3. **Memoize cache scoped by network (Done)** — Cache keys in
+   `AccountClient.GetModule` and the `TransactionBuilder` ABI memoizers
+   now include `NetworkConfig.Name` so devnet / testnet / mainnet
+   clients running in the same process do not share entries.
+4. **Dependabot enabled (Done)** — `.github/dependabot.yml` raises
+   weekly PRs for NuGet and GitHub Actions versions.
+5. **NuGetAudit enabled (Done)** — `Directory.Build.props` now sets
+   `NuGetAudit=true`, `NuGetAuditMode=all`, `NuGetAuditLevel=low` so
+   restores fail when a known-vulnerable dependency lands in the
+   lockfile. Six existing transitive advisories (System.Text.Json,
+   System.Net.Http, System.Text.RegularExpressions) are pinned to
+   patched versions in the same commit.
+6. **`SECURITY.md` disclosure policy (Done)** — Documents the private
+   advisory flow, scope, acknowledgement / patch timelines, and the
+   supported-versions matrix.
+7. **BCS Deserializer fuzzing (Done)** — A new
+   `Deserializer.Fuzz.Tests.cs` runs 1,000 random byte streams per
+   entry point through every public deserialization surface and asserts
+   no unexpected exception types or infinite loops. Targeted regression
+   tests cover the worst-case uleb128 DoS pattern (all continuation
+   bits set) and oversized `Bytes()` length prefixes.
+
+### Still out-of-scope
+
+8. **Signed release NuGet packages.** Requires a code-signing
+   certificate maintained by Aptos Labs and is best handled in the
+   release pipeline rather than in source.
+9. **AIP-80 strict-by-default private-key parsing.** This is a breaking
+   change for downstream callers and should land alongside a major
+   version bump and migration guide.
