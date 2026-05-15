@@ -288,6 +288,9 @@ public static class TransactionBuilder
         (string moduleAddress, string moduleName, string functionName) =
             Utilities.ParseFunctionParts(data.Function);
 
+        // Scope the cache key by network so the same module on devnet vs.
+        // mainnet doesn't share an ABI entry in the static cache.
+        var network = client.Config.NetworkConfig.Name;
         EntryFunctionAbi functionAbi =
             data.Abi
             ?? await Memoize.MemoAsync(
@@ -297,7 +300,7 @@ public static class TransactionBuilder
                         moduleName,
                         functionName
                     ),
-                $"entry-function-abi-{moduleAddress}-{moduleName}-{functionName}",
+                $"entry-function-abi-{network}-{moduleAddress}-{moduleName}-{functionName}",
                 1000 * 60 * 5 // 5 minutes
             )();
 
@@ -318,6 +321,8 @@ public static class TransactionBuilder
         (string moduleAddress, string moduleName, string functionName) =
             Utilities.ParseFunctionParts(data.Function);
 
+        // Scope by network — see GenerateTransactionPayload for rationale.
+        var network = client.Config.NetworkConfig.Name;
         ViewFunctionAbi functionAbi =
             data.Abi
             ?? await Memoize.MemoAsync(
@@ -327,7 +332,7 @@ public static class TransactionBuilder
                         moduleName,
                         functionName
                     ),
-                $"view-function-abi-{moduleAddress}-{moduleName}-{functionName}",
+                $"view-function-abi-{network}-{moduleAddress}-{moduleName}-{functionName}",
                 1000 * 60 * 5 // 5 minutes
             )();
 
