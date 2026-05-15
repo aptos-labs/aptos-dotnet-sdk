@@ -111,6 +111,39 @@ public class CryptoExtendedTests(ITestOutputHelper output) : BaseTests(output)
     }
 
     [Fact]
+    public void Secp256k1PrivateKey_Generate_AlwaysReturns32Bytes()
+    {
+        // Regression test for BigInteger.ToByteArrayUnsigned dropping leading
+        // zero bytes. Without zero-padding, ~1 in 256 generated keys had
+        // fewer than 32 bytes and the constructor threw KeyLengthMismatch.
+        // Run many iterations so we'll catch a regression on at least one
+        // private key with a leading-zero byte.
+        for (int i = 0; i < 1000; i++)
+        {
+            var pk = Secp256k1PrivateKey.Generate();
+            Assert.Equal(32, pk.ToByteArray().Length);
+        }
+    }
+
+    [Fact]
+    public void Secp256k1PrivateKey_Sign_AlwaysReturns64ByteSignature()
+    {
+        // Companion regression test for the same leading-zero stripping bug
+        // in the signature path. Both r and s must be exactly 32 bytes; a
+        // leading-zero r or s would otherwise produce a sub-64-byte
+        // signature ~1 in 128 calls.
+        var pk = Secp256k1PrivateKey.Generate();
+        for (int i = 0; i < 1000; i++)
+        {
+            // Vary the message so each call picks a different deterministic k
+            // and exercises the r / s output space.
+            var msg = System.Text.Encoding.UTF8.GetBytes($"msg-{i}");
+            var sig = (Secp256k1Signature)pk.Sign(msg);
+            Assert.Equal(64, sig.ToByteArray().Length);
+        }
+    }
+
+    [Fact]
     public void PublicKey_Deserialize_DispatchesOnVariant()
     {
         var ed = Ed25519PrivateKey.Generate().PublicKey();

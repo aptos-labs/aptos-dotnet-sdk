@@ -22,6 +22,33 @@ public static class Secp256k1
     public static readonly BigInteger HALF_CURVE_ORDER = CustomNamedCurves
         .GetByName("secp256k1")
         .Curve.Order.ShiftRight(1);
+
+    /// <summary>
+    /// Convert a BouncyCastle <see cref="BigInteger"/> into a fixed-length
+    /// big-endian byte array, left-padding with zeros when the unsigned
+    /// representation is shorter than the requested length. Throws when the
+    /// value does not fit.
+    ///
+    /// This is critical for secp256k1 because BouncyCastle's BigInteger
+    /// <c>ToByteArrayUnsigned()</c> strips leading zero bytes — for the
+    /// ~1-in-256 keys whose top byte is zero, the resulting array is
+    /// shorter than 32 bytes, which the <see cref="Secp256k1PrivateKey"/>
+    /// / <see cref="Secp256k1Signature"/> constructors reject as a length
+    /// mismatch.
+    /// </summary>
+    internal static byte[] ToFixedBytes(BigInteger value, int length)
+    {
+        var unpadded = value.ToByteArrayUnsigned();
+        if (unpadded.Length == length)
+            return unpadded;
+        if (unpadded.Length > length)
+            throw new ArgumentException(
+                $"BigInteger does not fit in {length} bytes (got {unpadded.Length})"
+            );
+        var padded = new byte[length];
+        Array.Copy(unpadded, 0, padded, length - unpadded.Length, unpadded.Length);
+        return padded;
+    }
 }
 
 public class Secp256k1PublicKey : PublicKey
@@ -134,7 +161,12 @@ public class Secp256k1PrivateKey : PrivateKey
             s = Secp256k1.DOMAIN_PARAMS.N.Subtract(s);
         }
 
-        return new Secp256k1Signature([.. r.ToByteArrayUnsigned(), .. s.ToByteArrayUnsigned()]);
+        // Both r and s must be exactly 32 bytes. BigInteger.ToByteArrayUnsigned
+        // strips leading zero bytes which would otherwise yield a sub-64-byte
+        // signature ~1 in 128 calls.
+        return new Secp256k1Signature(
+            [.. Secp256k1.ToFixedBytes(r, 32), .. Secp256k1.ToFixedBytes(s, 32)]
+        );
     }
 
     public override byte[] ToByteArray()
@@ -166,11 +198,10 @@ public class Secp256k1PrivateKey : PrivateKey
         ECKeyPairGenerator keyPairGenerator = new("ECDSA");
         keyPairGenerator.Init(keyParams);
 
-        return new Secp256k1PrivateKey(
-            (
-                (ECPrivateKeyParameters)keyPairGenerator.GenerateKeyPair().Private
-            ).D.ToByteArrayUnsigned()
-        );
+        // Pad to exactly 32 bytes — see Secp256k1.ToFixedBytes for the
+        // BigInteger leading-zero stripping rationale.
+        var d = ((ECPrivateKeyParameters)keyPairGenerator.GenerateKeyPair().Private).D;
+        return new Secp256k1PrivateKey(Secp256k1.ToFixedBytes(d, LENGTH));
     }
 
     public static Secp256k1PrivateKey FromDerivationPath(string path, string mnemonic)
