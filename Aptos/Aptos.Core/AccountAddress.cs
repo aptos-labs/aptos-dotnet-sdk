@@ -217,12 +217,25 @@ public partial class AccountAddress : TransactionArgument
 
     public override bool Equals(object? obj)
     {
+        if (obj is null)
+            return false;
         if (obj is AccountAddress address)
             return Data.SequenceEqual(address.Data);
         if (obj is byte[] bytes)
             return Data.SequenceEqual(bytes);
         if (obj is string str)
-            return FromStringStrict(str).Data.SequenceEqual(Data);
+        {
+            // Returning false for malformed input matches the contract for
+            // object.Equals — equality comparisons must not throw.
+            try
+            {
+                return FromStringStrict(str).Data.SequenceEqual(Data);
+            }
+            catch
+            {
+                return false;
+            }
+        }
         return base.Equals(obj);
     }
 
