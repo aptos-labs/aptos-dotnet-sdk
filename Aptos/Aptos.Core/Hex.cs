@@ -40,7 +40,20 @@ public class Hex(byte[] data)
         return false;
     }
 
-    public override int GetHashCode() => _data.GetHashCode();
+    public override int GetHashCode()
+    {
+        // Hash by value so that two Hex instances containing the same bytes
+        // produce the same hash code. The previous implementation hashed the
+        // underlying byte array by reference which broke dictionary / hashset
+        // usage of Hex (and AccountAddress which wraps Hex semantics).
+        unchecked
+        {
+            int hash = (int)2166136261u;
+            foreach (byte b in _data)
+                hash = (hash ^ b) * 16777619;
+            return hash;
+        }
+    }
 
     public static Hex FromHexString(string str)
     {

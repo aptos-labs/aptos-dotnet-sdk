@@ -393,7 +393,8 @@ public class AccountClient(AptosClient client)
                 return AccountAddress.From(authenticationKey);
             }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-            throw e;
+            // Use `throw;` to preserve the original stack trace instead of resetting it.
+            throw;
         }
     }
 }

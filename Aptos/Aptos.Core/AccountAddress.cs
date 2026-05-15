@@ -226,7 +226,20 @@ public partial class AccountAddress : TransactionArgument
         return base.Equals(obj);
     }
 
-    public override int GetHashCode() => Data.GetHashCode();
+    public override int GetHashCode()
+    {
+        // Hash by value, not by reference. We use a stable FNV-1a-style hash over
+        // the address bytes so that two AccountAddress instances that compare
+        // Equal also produce the same hash code. The previous implementation
+        // hashed Data by reference which broke usage in dictionaries / hashsets.
+        unchecked
+        {
+            int hash = (int)2166136261u;
+            foreach (byte b in Data)
+                hash = (hash ^ b) * 16777619;
+            return hash;
+        }
+    }
 }
 
 public class AccountAddressConverter : JsonConverter<AccountAddress>

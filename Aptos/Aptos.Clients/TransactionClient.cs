@@ -299,9 +299,13 @@ public class TransactionClient(AptosClient client)
         return (CommittedTransactionResponse)lastTxn;
     }
 
-    public async void WaitForIndexer(long? minimumLedgerVersion, string processorType)
+    public async Task WaitForIndexer(long? minimumLedgerVersion, string processorType)
     {
-        int timeoutMilliseconds = 3000; // 3 seconds
+        // Use Task instead of `async void` so callers can await this method and
+        // observe its exceptions. `async void` would crash the process on any
+        // unhandled exception and is generally only appropriate for event
+        // handlers.
+        int timeoutMilliseconds = 3000;
         long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         long indexerVersion = -1;
 

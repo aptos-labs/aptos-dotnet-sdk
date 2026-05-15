@@ -421,7 +421,7 @@ public static class TransactionBuilder
             {
                 return (await client.Account.GetInfo(sender)).SequenceNumber;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Check if is sponsored transaction to honor AIP-52 (https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-52.md)
                 //
@@ -434,7 +434,8 @@ public static class TransactionBuilder
                 {
                     return 0;
                 }
-                throw e;
+                // Use `throw;` to preserve the original stack trace.
+                throw;
             }
         }
 

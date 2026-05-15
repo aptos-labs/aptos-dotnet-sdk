@@ -71,7 +71,9 @@ public class AptosRequestClient : RequestClient
         }
         catch (Exception e)
         {
-            throw new Exception($"Error making request to {request.Url}: {e.Message}");
+            // Preserve the original exception as the inner exception so the
+            // stack trace and underlying error type are not lost.
+            throw new Exception($"Error making request to {request.Url}", e);
         }
     }
 
