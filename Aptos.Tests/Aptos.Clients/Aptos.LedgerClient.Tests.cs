@@ -1,8 +1,12 @@
 namespace Aptos.Tests.LedgerClient;
 
+using Aptos.Tests.E2E;
+
 public class AptosLedgerClientTests(ITestOutputHelper output) : BaseTests(output)
 {
-    [Fact(Timeout = 10000)]
+    // Pre-existing network-bound test; gated behind DEVNET_E2E so the unit
+    // test suite remains deterministic.
+    [DevnetE2EFact(Timeout = 10000)]
     public async Task GetLedgerInfo()
     {
         var client = new AptosClient(new AptosConfig(Networks.Mainnet));

@@ -58,6 +58,9 @@ public class SkipException(string reason) : Exception(reason);
 
 /// <summary>
 /// Marks a test that should only run when the DEVNET_E2E env var is set.
+/// Tests using this attribute will appear as Skipped in the default unit-
+/// test run; they are executed in CI on `main` (or wherever the secret is
+/// configured to expose DEVNET_E2E=1) and locally on demand.
 /// </summary>
 public sealed class DevnetE2EFactAttribute : FactAttribute
 {

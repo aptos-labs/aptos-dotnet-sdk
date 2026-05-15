@@ -1,8 +1,13 @@
 namespace Aptos.Tests.LedgerClient;
 
+using Aptos.Tests.E2E;
+
 public class AptosAccountClientTests(ITestOutputHelper output) : BaseTests(output)
 {
-    [Fact(Timeout = 10000)]
+    // Pre-existing network-bound test; gated behind DEVNET_E2E so the unit
+    // test suite remains deterministic. This test hits Aptos mainnet via
+    // the indexer and can intermittently fail on network blips.
+    [DevnetE2EFact(Timeout = 10000)]
     public async Task GetCoinBalance()
     {
         var client = new AptosClient(new AptosConfig(Networks.Mainnet));
