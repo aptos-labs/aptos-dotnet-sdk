@@ -128,22 +128,45 @@ public class Ed25519PrivateKey : PrivateKey
         _key = new(privateKey.ToByteArray());
     }
 
-    public override PublicKey PublicKey() =>
-        new Ed25519PublicKey(
+    public override PublicKey PublicKey()
+    {
+        ThrowIfDisposed();
+        return new Ed25519PublicKey(
             new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0).GeneratePublicKey().GetEncoded()
         );
+    }
 
     public override PublicKeySignature Sign(byte[] message)
     {
+        ThrowIfDisposed();
         Ed25519Signer signer = new();
         signer.Init(true, new Ed25519PrivateKeyParameters(_key.ToByteArray(), 0));
         signer.BlockUpdate(message, 0, message.Length);
         return new Ed25519Signature(signer.GenerateSignature());
     }
 
-    public override byte[] ToByteArray() => _key.ToByteArray();
+    public override byte[] ToByteArray()
+    {
+        ThrowIfDisposed();
+        return _key.ToByteArray();
+    }
 
-    public override void Serialize(Serializer s) => s.Bytes(_key.ToByteArray());
+    public override void Serialize(Serializer s)
+    {
+        ThrowIfDisposed();
+        s.Bytes(_key.ToByteArray());
+    }
+
+    /// <inheritdoc/>
+    protected override void DisposeCore()
+    {
+        // Zero out the underlying byte array. We use the internal-only
+        // GetUnsafeByteArrayReference to obtain the actual storage rather
+        // than a defensive copy — otherwise we would only scrub a copy and
+        // the real key bytes would remain on the heap.
+        var bytes = _key.GetUnsafeByteArrayReference();
+        Array.Clear(bytes, 0, bytes.Length);
+    }
 
     public static Ed25519PrivateKey Generate()
     {

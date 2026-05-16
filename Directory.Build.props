@@ -16,4 +16,16 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
+
+  <PropertyGroup Label="NuGet supply-chain security">
+    <!--
+      Fail restores when any direct or transitive dependency has a known
+      vulnerability. Override locally with `-property:NuGetAuditMode=direct`
+      if a transitive low-severity advisory is blocking work on a downstream
+      fix. See: https://learn.microsoft.com/nuget/concepts/auditing-packages
+    -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+  </PropertyGroup>
 </Project>

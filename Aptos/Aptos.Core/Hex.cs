@@ -4,12 +4,48 @@ using Aptos.Core;
 using Aptos.Exceptions;
 using Newtonsoft.Json;
 
+/// <summary>
+/// An immutable wrapper around a byte sequence that supports hex parsing /
+/// formatting and value-based equality / hashing.
+///
+/// <para>
+/// The bytes are defensively copied on construction and on every read so
+/// that <see cref="Hex"/> can safely be used as a key in
+/// <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/> /
+/// <see cref="System.Collections.Generic.HashSet{T}"/>: external mutation
+/// of the input or returned arrays cannot perturb the instance's hash code
+/// or equality. Internal callers that need direct (non-copying) access to
+/// the underlying bytes use <see cref="GetUnsafeByteArrayReference"/>.
+/// </para>
+/// </summary>
 [JsonConverter(typeof(HexConverter))]
-public class Hex(byte[] data)
+public class Hex
 {
-    private readonly byte[] _data = data;
+    private readonly byte[] _data;
 
-    public byte[] ToByteArray() => _data;
+    public Hex(byte[] data)
+    {
+        // Defensive copy on input so the caller cannot mutate the bytes
+        // backing this Hex after construction.
+        _data = (byte[])data.Clone();
+    }
+
+    /// <summary>
+    /// Returns a <em>copy</em> of the underlying bytes. Mutating the
+    /// returned array is safe and will not affect this Hex instance.
+    /// </summary>
+    public byte[] ToByteArray() => (byte[])_data.Clone();
+
+    /// <summary>
+    /// Internal-only: returns the raw byte array without copying. Used by
+    /// trusted call sites (e.g. <see cref="PrivateKey.Dispose"/>) where the
+    /// caller is responsible for not mutating the returned reference.
+    ///
+    /// <para>This intentionally does <strong>not</strong> have a public
+    /// counterpart — public consumers must use <see cref="ToByteArray"/>
+    /// which preserves immutability.</para>
+    /// </summary>
+    internal byte[] GetUnsafeByteArrayReference() => _data;
 
     public string ToStringWithoutPrefix() =>
         BitConverter.ToString(_data).Replace("-", string.Empty).ToLower();
@@ -32,15 +68,33 @@ public class Hex(byte[] data)
             {
                 return _data.SequenceEqual(FromHexString(str)._data);
             }
-            catch
+            catch (HexException)
             {
+                // Malformed hex input is treated as not equal. Other
+                // exception types are intentionally not caught so genuine
+                // bugs (NullReferenceException, OutOfMemoryException, etc.)
+                // surface to the caller.
                 return false;
             }
         }
         return false;
     }
 
-    public override int GetHashCode() => _data.GetHashCode();
+    public override int GetHashCode()
+    {
+        // Hash by value so that two Hex instances containing the same bytes
+        // produce the same hash code. Combined with the defensive copies in
+        // the constructor and ToByteArray, this guarantees that a Hex used
+        // as a Dictionary / HashSet key never has its hash drift even if
+        // the source array is later mutated by the caller.
+        unchecked
+        {
+            int hash = (int)2166136261u;
+            foreach (byte b in _data)
+                hash = (hash ^ b) * 16777619;
+            return hash;
+        }
+    }
 
     public static Hex FromHexString(string str)
     {
@@ -88,7 +142,7 @@ public class Hex(byte[] data)
             FromHexString(str);
             return true;
         }
-        catch
+        catch (HexException)
         {
             return false;
         }

@@ -50,11 +50,31 @@ public class Deserializer
 
     public byte U8() => Read(1)[0];
 
-    public ushort U16() => BitConverter.ToUInt16(Read(2));
+    public ushort U16()
+    {
+        // BCS is little-endian. BitConverter is host-endian, so on big-endian
+        // platforms we must reverse the bytes before interpreting them.
+        var bytes = Read(2);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(bytes);
+        return BitConverter.ToUInt16(bytes, 0);
+    }
 
-    public uint U32() => BitConverter.ToUInt32(Read(4));
+    public uint U32()
+    {
+        var bytes = Read(4);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(bytes);
+        return BitConverter.ToUInt32(bytes, 0);
+    }
 
-    public ulong U64() => BitConverter.ToUInt64(Read(8));
+    public ulong U64()
+    {
+        var bytes = Read(8);
+        if (!BitConverter.IsLittleEndian)
+            Array.Reverse(bytes);
+        return BitConverter.ToUInt64(bytes, 0);
+    }
 
     public BigInteger U128()
     {

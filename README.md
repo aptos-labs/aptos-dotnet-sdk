@@ -1,6 +1,7 @@
 # C#/.NET SDK for Aptos (Beta)
 
 ![License][github-license]
+[![codecov](https://codecov.io/gh/aptos-labs/aptos-dotnet-sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/aptos-labs/aptos-dotnet-sdk)
 
 ## Overview
 
