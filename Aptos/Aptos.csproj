@@ -23,7 +23,7 @@
     <PackageReference Include="StrawberryShake" Version="13.9.11" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NBitcoin" Version="7.0.37" />
+    <PackageReference Include="NBitcoin" Version="10.0.4" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.2" />
     <!--
       Pin patched versions of transitive dependencies flagged by NuGetAudit
