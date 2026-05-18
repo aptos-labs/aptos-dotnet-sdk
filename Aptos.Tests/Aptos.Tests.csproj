@@ -8,13 +8,13 @@
 
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="Xunit.Gherkin.Quick" Version="4.5.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
-    <PackageReference Include="dotenv.net" Version="3.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="dotenv.net" Version="3.2.1" />
     <!--
       Pin patched transitive dependencies. System.Text.Json: GHSA-8g4q-xg66-9fp4
       and GHSA-hh2w-p6rv-4g7w. System.Net.Http and System.Text.RegularExpressions

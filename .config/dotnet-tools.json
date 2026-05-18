@@ -3,13 +3,17 @@
   "isRoot": true,
   "tools": {
     "strawberryshake.tools": {
-      "version": "13.9.11",
-      "commands": ["dotnet-graphql"],
+      "version": "13.9.16",
+      "commands": [
+        "dotnet-graphql"
+      ],
       "rollForward": false
     },
     "csharpier": {
-      "version": "0.30.5",
-      "commands": ["dotnet-csharpier"],
+      "version": "0.30.6",
+      "commands": [
+        "dotnet-csharpier"
+      ],
       "rollForward": false
     }
   }
