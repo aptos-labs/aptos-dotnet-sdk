@@ -19,11 +19,15 @@ public abstract class TransactionAuthenticator : Serializable
             TransactionAuthenticatorVariant.Ed25519 => TransactionAuthenticatorEd25519.Deserialize(
                 d
             ),
+            TransactionAuthenticatorVariant.MultiAgent =>
+                TransactionAuthenticatorMultiAgent.Deserialize(d),
             TransactionAuthenticatorVariant.FeePayer =>
                 TransactionAuthenticatorFeePayer.Deserialize(d),
             TransactionAuthenticatorVariant.SingleSender =>
                 TransactionAuthenticatorSingleSender.Deserialize(d),
-            _ => throw new ArgumentException("Invalid variant"),
+            _ => throw new ArgumentException(
+                $"Unsupported TransactionAuthenticator variant: {variant}"
+            ),
         };
     }
 }

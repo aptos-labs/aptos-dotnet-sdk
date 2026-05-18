@@ -57,7 +57,21 @@ public partial class AccountAddress : TransactionArgument
 
     public static AccountAddress ZERO { get; } = new(new byte[LENGTH]);
 
-    public readonly byte[] Data;
+    /// <summary>
+    /// Backing storage for the address bytes. Held privately so callers
+    /// cannot mutate it after construction — see <see cref="Data"/> for
+    /// the public accessor (which returns a defensive copy).
+    /// </summary>
+    private readonly byte[] _data;
+
+    /// <summary>
+    /// The 32 bytes of this address. Returns a fresh copy on every read so
+    /// external mutation cannot perturb this instance's hash code or
+    /// equality (which the type's <see cref="GetHashCode"/> derives from
+    /// these bytes). Internal callers that need direct (non-copying)
+    /// access use <see cref="GetDataReference"/>.
+    /// </summary>
+    public byte[] Data => (byte[])_data.Clone();
 
     public AccountAddress(byte[] data)
     {
@@ -66,31 +80,41 @@ public partial class AccountAddress : TransactionArgument
                 $"AccountAddress data should be exactly {LENGTH} bytes long but got {data.Length} bytes",
                 AccountAddressInvalidReason.IncorrectNumberOfBytes
             );
-        Data = data;
+        // Defensive copy on input so the caller cannot mutate the bytes
+        // backing this address after construction.
+        _data = (byte[])data.Clone();
     }
 
-    public bool IsSpecial() => Data.Take(Data.Length - 1).All(b => b == 0) && Data[^1] < 16;
+    /// <summary>
+    /// Internal-only accessor that returns the raw byte array without
+    /// copying. Used by trusted callers (BCS serialization, equality,
+    /// hashing) to avoid the per-call allocation that <see cref="Data"/>
+    /// pays. Callers must not mutate the returned reference.
+    /// </summary>
+    internal byte[] GetDataReference() => _data;
+
+    public bool IsSpecial() => _data.Take(_data.Length - 1).All(b => b == 0) && _data[^1] < 16;
 
     public string ToStringWithoutPrefix()
     {
-        string hex = Hex.FromHexInput(Data).ToStringWithoutPrefix();
+        string hex = Hex.FromHexInput(_data).ToStringWithoutPrefix();
         return IsSpecial() ? hex[^1].ToString() : hex;
     }
 
-    public string ToStringLongWithoutPrefix() => Hex.FromHexInput(Data).ToStringWithoutPrefix();
+    public string ToStringLongWithoutPrefix() => Hex.FromHexInput(_data).ToStringWithoutPrefix();
 
     public string ToStringLong() => $"0x{ToStringLongWithoutPrefix()}";
 
     public override string ToString() => $"0x{ToStringWithoutPrefix()}";
 
-    public byte[] ToByteArray() => Data;
+    public byte[] ToByteArray() => (byte[])_data.Clone();
 
-    public override void Serialize(Serializer s) => s.FixedBytes(Data);
+    public override void Serialize(Serializer s) => s.FixedBytes(_data);
 
     public override void SerializeForScriptFunction(Serializer s)
     {
         s.U32AsUleb128((uint)ScriptTransactionArgumentVariants.Address);
-        s.FixedBytes(Data);
+        s.FixedBytes(_data);
     }
 
     public static AccountAddress Deserialize(Deserializer d) => new(d.FixedBytes(LENGTH));
@@ -209,24 +233,56 @@ public partial class AccountAddress : TransactionArgument
             }
             return true;
         }
-        catch
+        catch (AccountAddressParsingException)
         {
+            // The only expected reason for parsing to fail is malformed
+            // input. Anything else (NullReferenceException, OOM, …) is a
+            // genuine bug we want to surface to the caller.
             return false;
         }
     }
 
     public override bool Equals(object? obj)
     {
+        if (obj is null)
+            return false;
         if (obj is AccountAddress address)
-            return Data.SequenceEqual(address.Data);
+            return _data.SequenceEqual(address._data);
         if (obj is byte[] bytes)
-            return Data.SequenceEqual(bytes);
+            return _data.SequenceEqual(bytes);
         if (obj is string str)
-            return FromStringStrict(str).Data.SequenceEqual(Data);
+        {
+            // Equality must not throw on malformed input. We narrowly catch
+            // AccountAddressParsingException so other exception types
+            // (NullReferenceException, OutOfMemoryException, etc.) still
+            // propagate to the caller as genuine bugs.
+            try
+            {
+                return FromStringStrict(str)._data.SequenceEqual(_data);
+            }
+            catch (AccountAddressParsingException)
+            {
+                return false;
+            }
+        }
         return base.Equals(obj);
     }
 
-    public override int GetHashCode() => Data.GetHashCode();
+    public override int GetHashCode()
+    {
+        // Hash by value, not by reference. We use a stable FNV-1a-style hash
+        // over the address bytes so that two AccountAddress instances that
+        // compare Equal also produce the same hash code. The hash is computed
+        // over the private storage so external callers cannot perturb it via
+        // the public Data property (which returns a defensive copy).
+        unchecked
+        {
+            int hash = (int)2166136261u;
+            foreach (byte b in _data)
+                hash = (hash ^ b) * 16777619;
+            return hash;
+        }
+    }
 }
 
 public class AccountAddressConverter : JsonConverter<AccountAddress>

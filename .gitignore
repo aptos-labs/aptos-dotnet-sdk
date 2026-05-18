@@ -13,3 +13,9 @@ artifacts
 .DS_Store
 docs
 _site
+
+# Test results
+Aptos.Tests/TestResults/
+TestResults/
+*.cobertura.xml
+coverage/

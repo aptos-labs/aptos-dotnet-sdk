@@ -1,0 +1,47 @@
+# Dependabot configuration for the Aptos .NET SDK.
+# Documentation: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# This file pairs with the NuGetAudit settings in Directory.Build.props.
+# NuGetAudit fails the build when a known vulnerable transitive dependency
+# ships in the lockfile; Dependabot raises the PRs to bump those packages
+# (and direct dependencies) on a regular cadence so audits stay clean.
+
+version: 2
+
+updates:
+  # Bump NuGet packages across every .csproj in the repo.
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "nuget"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Group routine non-major NuGet bumps so reviewers see one PR per
+      # week instead of one PR per package.
+      nuget-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Keep GitHub Actions versions current. The existing workflow files pin
+  # actions by SHA; Dependabot can still bump those.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

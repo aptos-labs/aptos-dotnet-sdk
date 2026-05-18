@@ -74,9 +74,12 @@ public class AccountClient(AptosClient client)
         if (ledgerVersion != null)
             return await GetModuleInner(address, moduleName, ledgerVersion);
 
+        // Scope the cache key by network so e.g. devnet and mainnet clients
+        // running in the same process don't share module ABIs.
+        var network = _client.Config.NetworkConfig.Name;
         return await Memoize.MemoAsync(
             async () => await GetModuleInner(address, moduleName),
-            $"module-{address}-{moduleName}",
+            $"module-{network}-{address}-{moduleName}",
             1000 * 60 * 5 // 5 minutes
         )();
     }
@@ -393,7 +396,8 @@ public class AccountClient(AptosClient client)
                 return AccountAddress.From(authenticationKey);
             }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-            throw e;
+            // Use `throw;` to preserve the original stack trace instead of resetting it.
+            throw;
         }
     }
 }

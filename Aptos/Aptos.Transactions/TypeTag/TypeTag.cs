@@ -156,6 +156,14 @@ public class TypeTagReference(TypeTag value) : TypeTag(TypeTagVariant.Reference)
 {
     public readonly TypeTag Value = value;
 
+    public override void Serialize(Serializer s)
+    {
+        // Reference carries an inner TypeTag — must be written after the
+        // variant byte, otherwise the round-trip deserialization is broken.
+        s.U32AsUleb128((uint)TypeTagVariant.Reference);
+        Value.Serialize(s);
+    }
+
     public override string ToString() => $"&{Value}";
 
     public static new TypeTagReference Deserialize(Deserializer d) => new(TypeTag.Deserialize(d));

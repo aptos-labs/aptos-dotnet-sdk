@@ -14,4 +14,9 @@
     <ProjectReference Include="..\Aptos\Aptos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Pin patched System.Text.Json (transitive). -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
 </Project>

@@ -25,11 +25,27 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NBitcoin" Version="7.0.37" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.2" />
+    <!--
+      Pin patched versions of transitive dependencies flagged by NuGetAudit
+      (GHSA-8g4q-xg66-9fp4 and GHSA-hh2w-p6rv-4g7w). These ride along via
+      StrawberryShake and Microsoft.IdentityModel.JsonWebTokens.
+    -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aptos.Indexer\Aptos.Indexer.csproj" />
     <ProjectReference Include="..\Aptos.Poseidon\Aptos.Poseidon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Expose `internal` symbols (e.g. Hex.GetUnsafeByteArrayReference and
+      AccountAddress's no-copy accessor used by IDisposable scrubbing) to
+      the test project so they can be exercised directly without forcing
+      them onto the public API.
+    -->
+    <InternalsVisibleTo Include="Aptos.Tests" />
   </ItemGroup>
 
 </Project>

@@ -50,6 +50,7 @@ public abstract class TransactionArgument
             ScriptTransactionArgumentVariants.U128 => U128.Deserialize(d),
             ScriptTransactionArgumentVariants.U256 => U256.Deserialize(d),
             ScriptTransactionArgumentVariants.Address => AccountAddress.Deserialize(d),
+            ScriptTransactionArgumentVariants.Bool => Bool.Deserialize(d),
             ScriptTransactionArgumentVariants.U8Vector => MoveVector<U8>.Deserialize(
                 d,
                 U8.Deserialize

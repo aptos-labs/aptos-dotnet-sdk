@@ -96,7 +96,7 @@ public abstract partial class PrivateKey
     }
 }
 
-public abstract partial class PrivateKey(PrivateKeyVariant type) : Serializable
+public abstract partial class PrivateKey(PrivateKeyVariant type) : Serializable, IDisposable
 {
     public virtual PublicKeySignature Sign(string message) => Sign(SigningMessage.Convert(message));
 
@@ -113,4 +113,49 @@ public abstract partial class PrivateKey(PrivateKeyVariant type) : Serializable
     public virtual string ToAIP80String() => FormatPrivateKey(ToByteArray(), Type);
 
     public override string ToString() => ToAIP80String();
+
+    /// <summary>
+    /// Whether this key has been disposed and its bytes zeroed out.
+    /// Use <see cref="ThrowIfDisposed"/> to enforce in concrete subclasses
+    /// before reading the underlying material.
+    /// </summary>
+    protected bool IsDisposed { get; private set; }
+
+    /// <summary>
+    /// Zeros out the in-memory copy of the private key material. After
+    /// <see cref="Dispose"/> is called, subsequent calls that read the key
+    /// (e.g. <see cref="Sign(byte[])"/> or <see cref="ToByteArray"/>) will
+    /// throw <see cref="ObjectDisposedException"/>.
+    ///
+    /// Notes:
+    /// - Managed memory may have been copied by the runtime garbage collector
+    ///   before <see cref="Dispose"/> is called. This API offers best-effort
+    ///   zeroization of the SDK's own reference; it cannot guarantee that no
+    ///   stale copy lives elsewhere in the heap.
+    /// - Calling <see cref="Dispose"/> more than once is safe and a no-op.
+    /// </summary>
+    public void Dispose()
+    {
+        if (IsDisposed)
+            return;
+        DisposeCore();
+        IsDisposed = true;
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Implemented by subclasses to perform the actual byte scrubbing.
+    /// </summary>
+    protected abstract void DisposeCore();
+
+    /// <summary>
+    /// Throws <see cref="ObjectDisposedException"/> if this key has been
+    /// disposed. Concrete subclasses should call this before reading their
+    /// key material.
+    /// </summary>
+    protected void ThrowIfDisposed()
+    {
+        if (IsDisposed)
+            throw new ObjectDisposedException(GetType().Name);
+    }
 }

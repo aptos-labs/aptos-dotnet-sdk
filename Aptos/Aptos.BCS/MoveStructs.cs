@@ -8,8 +8,12 @@ public class MoveVector<T>(List<T> values) : TransactionArgument
     {
         if (typeof(T) != typeof(U8))
             throw new ArgumentException("ScriptFunctionArgument only supports U8 vectors");
-        s.U32AsUleb128((uint)Values.Count);
-        s.Serialize(this);
+        // A script-function argument is encoded as the variant tag followed by
+        // the regular BCS payload for that variant. Previously the variant
+        // byte was missing which made the bytes unparseable as a script
+        // argument (the deserializer would dispatch to the wrong type).
+        s.U32AsUleb128((uint)ScriptTransactionArgumentVariants.U8Vector);
+        Serialize(s);
     }
 
     public override void Serialize(Serializer s) =>
@@ -33,11 +37,13 @@ public class MoveString(string value) : TransactionArgument
 
     public override void SerializeForScriptFunction(Serializer s)
     {
-        // Serialize the string as a fixed byte string, i.e., without the length prefix
-        var fixedStringBytes = BcsToBytes().Skip(1).ToList();
-        // Put those bytes into a vector<u8> and serialize it as a script function argument
-        var vectorU8 = new MoveVector<U8>(fixedStringBytes.Select(b => new U8(b)).ToList());
-        s.Serialize(vectorU8);
+        // A Move String is represented at the script level as vector<u8>. The
+        // script-function argument encoding therefore needs:
+        //   variant tag (U8Vector) || uleb128 length || bytes
+        // The raw UTF-8 bytes (BcsToBytes drops the length prefix below).
+        var rawBytes = System.Text.Encoding.UTF8.GetBytes(Value);
+        var vectorU8 = new MoveVector<U8>([.. rawBytes.Select(b => new U8(b))]);
+        vectorU8.SerializeForScriptFunction(s);
     }
 
     public static MoveString Deserialize(Deserializer d) => new(d.String());
