@@ -2,15 +2,14 @@ name: "Check and Release NuGet Packages"
 
 on:
   push:
-    branches:
-      - main
+    tags: ['v*']
 
 permissions:
   contents: read
 
 jobs:
-  check:
-    name: Check Packages Version
+  validate:
+    name: Validate Version and Check NuGet
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,49 +26,54 @@ jobs:
         uses: ./.github/actions/setup-dotnet
 
       - name: Install xmllint
-        run: sudo apt install -y libxml2-utils
-        working-directory: ./
+        run: sudo apt-get install -y libxml2-utils
         shell: bash
 
-      - name: Extract Version from Directory.Build.props
+      - name: Extract Version
         id: version
         run: |
-          # Extract the default version from Directory.Build.props (e.g., 0.0.5)
           DEFAULT_VERSION=$(xmllint --xpath "string(//*[local-name()='DefaultVersion'])" Directory.Build.props)
-
-          # Extract the template version from Package.props (e.g., "$(DefaultVersion)-beta")
           VERSION_TEMPLATE=$(xmllint --xpath "string(//*[local-name()='PackageVersion'])" Package.props)
-
-          # Replace the template version with the actual version
           VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/$DEFAULT_VERSION}
-
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Check If Nuget Package Exists
-        id: nuget_exists
         shell: bash
-        working-directory: ./
+
+      - name: Assert tag matches package version
         env:
           PKG_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          LATEST_VERSION=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" | jq -r '.versions | last')
+          EXPECTED="v${PKG_VERSION}"
+          ACTUAL="${{ github.ref_name }}"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "ERROR: tag '${ACTUAL}' does not match expected tag '${EXPECTED}'"
+            exit 1
+          fi
+          echo "Tag matches package version: ${PKG_VERSION}"
+        shell: bash
 
-          # Check if the latest version is the same as the current version
-          if [ "$LATEST_VERSION" == "$PKG_VERSION" ]; then
-            echo "Nuget package exists ($PKG_VERSION)"
+      - name: Check If NuGet Package Exists
+        id: nuget_exists
+        shell: bash
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          EXISTS=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" \
+            | jq -r --arg v "$PKG_VERSION" '.versions | contains([$v])')
+          if [ "$EXISTS" = "true" ]; then
+            echo "Package already published: $PKG_VERSION"
             echo "exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Nuget package does not exist ($PKG_VERSION)"
+            echo "Package not yet published: $PKG_VERSION"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
   release:
     name: Pack and Publish Packages
-    needs: check
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: ${{ needs.check.outputs.is_published == 'false' }}
+    if: ${{ needs.validate.outputs.is_published == 'false' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -84,15 +88,30 @@ jobs:
 
       - name: Pack Packages
         run: dotnet pack --configuration Release --no-build --output ./artifacts
+        shell: bash
 
-      - name: Publish Packages to NuGet
+      - name: Publish to NuGet
         run: |
-          dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }}
+        shell: bash
 
-      - name: Tag Release
+      - name: Extract Changelog Notes
+        run: |
+          awk '/^## Unreleased/{found=1; next} found && /^## /{exit} found{print}' \
+            CHANGELOG.md > /tmp/release-notes.md
+          echo "--- Release notes preview ---"
+          cat /tmp/release-notes.md
+        shell: bash
+
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PKG_VERSION: ${{ needs.check.outputs.version }}
+          PKG_VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          git tag "v${PKG_VERSION}"
-          git push origin "v${PKG_VERSION}"
+          gh release create "v${PKG_VERSION}" \
+            --title "v${PKG_VERSION}" \
+            --notes-file /tmp/release-notes.md \
+            ./artifacts/*.nupkg
+        shell: bash
