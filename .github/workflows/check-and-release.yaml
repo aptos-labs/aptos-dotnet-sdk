@@ -21,9 +21,12 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
+        with:
+          build: 'false'
 
       - name: Install xmllint
         run: sudo apt-get install -y libxml2-utils
@@ -50,6 +53,15 @@ jobs:
             exit 1
           fi
           echo "Tag matches package version: ${PKG_VERSION}"
+        shell: bash
+
+      - name: Assert tag is on main branch
+        run: |
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "ERROR: tagged commit is not on the main branch"
+            exit 1
+          fi
+          echo "Tagged commit is on main branch"
         shell: bash
 
       - name: Check If NuGet Package Exists
@@ -97,7 +109,8 @@ jobs:
         run: |
           dotnet nuget push ./artifacts/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
-            --api-key ${{ secrets.NUGET_API_KEY }}
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
         shell: bash
 
       - name: Extract Changelog Notes
