@@ -34,8 +34,9 @@ jobs:
         run: |
           DEFAULT_VERSION=$(xmllint --xpath "string(//*[local-name()='DefaultVersion'])" Directory.Build.props)
           VERSION_TEMPLATE=$(xmllint --xpath "string(//*[local-name()='PackageVersion'])" Package.props)
-          VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/$DEFAULT_VERSION}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          # shellcheck disable=SC2016
+          VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/"$DEFAULT_VERSION"}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
         shell: bash
 
       - name: Assert tag matches package version
@@ -61,10 +62,10 @@ jobs:
             | jq -r --arg v "$PKG_VERSION" '.versions | contains([$v])')
           if [ "$EXISTS" = "true" ]; then
             echo "Package already published: $PKG_VERSION"
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "Package not yet published: $PKG_VERSION"
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
   release:
