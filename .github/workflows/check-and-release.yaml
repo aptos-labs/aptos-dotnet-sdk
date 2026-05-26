@@ -86,7 +86,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: ${{ needs.validate.outputs.is_published == 'false' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -106,6 +105,7 @@ jobs:
         shell: bash
 
       - name: Publish to NuGet
+        if: ${{ needs.validate.outputs.is_published == 'false' }}
         run: |
           dotnet nuget push ./artifacts/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
@@ -117,11 +117,31 @@ jobs:
         run: |
           awk '/^## Unreleased/{found=1; next} found && /^## /{exit} found{print}' \
             CHANGELOG.md > /tmp/release-notes.md
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "ERROR: release notes are empty — update '## Unreleased' in CHANGELOG.md before tagging"
+            exit 1
+          fi
           echo "--- Release notes preview ---"
           cat /tmp/release-notes.md
         shell: bash
 
+      - name: Check If GitHub Release Exists
+        id: release_exists
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          if gh release view "v${PKG_VERSION}" > /dev/null 2>&1; then
+            echo "GitHub Release already exists: v${PKG_VERSION}"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "GitHub Release does not exist: v${PKG_VERSION}"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
       - name: Create GitHub Release
+        if: ${{ steps.release_exists.outputs.exists == 'false' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PKG_VERSION: ${{ needs.validate.outputs.version }}
