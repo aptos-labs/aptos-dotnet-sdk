@@ -2,15 +2,14 @@ name: "Check and Release NuGet Packages"
 
 on:
   push:
-    branches:
-      - main
+    tags: ['v*']
 
 permissions:
   contents: read
 
 jobs:
-  check:
-    name: Check Packages Version
+  validate:
+    name: Validate Version and Check NuGet
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,60 +18,79 @@ jobs:
       is_published: ${{ steps.nuget_exists.outputs.exists }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
+        with:
+          build: 'false'
 
       - name: Install xmllint
-        run: sudo apt install -y libxml2-utils
-        working-directory: ./
+        run: sudo apt-get install -y libxml2-utils
         shell: bash
 
-      - name: Extract Version from Directory.Build.props
+      - name: Extract Version
         id: version
         run: |
-          # Extract the default version from Directory.Build.props (e.g., 0.0.5)
           DEFAULT_VERSION=$(xmllint --xpath "string(//*[local-name()='DefaultVersion'])" Directory.Build.props)
-
-          # Extract the template version from Package.props (e.g., "$(DefaultVersion)-beta")
           VERSION_TEMPLATE=$(xmllint --xpath "string(//*[local-name()='PackageVersion'])" Package.props)
+          # shellcheck disable=SC2016
+          VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/"$DEFAULT_VERSION"}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        shell: bash
 
-          # Replace the template version with the actual version
-          VERSION=${VERSION_TEMPLATE/'$(DefaultVersion)'/$DEFAULT_VERSION}
+      - name: Assert tag matches package version
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.version }}
+          ACTUAL_TAG: ${{ github.ref_name }}
+        run: |
+          EXPECTED="v${PKG_VERSION}"
+          if [ "$ACTUAL_TAG" != "$EXPECTED" ]; then
+            echo "ERROR: tag '${ACTUAL_TAG}' does not match expected tag '${EXPECTED}'"
+            exit 1
+          fi
+          echo "Tag matches package version: ${PKG_VERSION}"
+        shell: bash
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Assert tag is on main branch
+        run: |
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "ERROR: tagged commit is not on the main branch"
+            exit 1
+          fi
+          echo "Tagged commit is on main branch"
+        shell: bash
 
-      - name: Check If Nuget Package Exists
+      - name: Check If NuGet Package Exists
         id: nuget_exists
         shell: bash
-        working-directory: ./
         env:
           PKG_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          LATEST_VERSION=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" | jq -r '.versions | last')
-
-          # Check if the latest version is the same as the current version
-          if [ "$LATEST_VERSION" == "$PKG_VERSION" ]; then
-            echo "Nuget package exists ($PKG_VERSION)"
-            echo "exists=true" >> $GITHUB_OUTPUT
+          EXISTS=$(curl -s "https://api.nuget.org/v3-flatcontainer/aptos/index.json" \
+            | jq -r --arg v "$PKG_VERSION" '.versions | contains([$v])')
+          if [ "$EXISTS" = "true" ]; then
+            echo "Package already published: $PKG_VERSION"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Nuget package does not exist ($PKG_VERSION)"
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Package not yet published: $PKG_VERSION"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
   release:
     name: Pack and Publish Packages
-    needs: check
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: ${{ needs.check.outputs.is_published == 'false' }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Setup .NET
         uses: ./.github/actions/setup-dotnet
@@ -84,15 +102,52 @@ jobs:
 
       - name: Pack Packages
         run: dotnet pack --configuration Release --no-build --output ./artifacts
+        shell: bash
 
-      - name: Publish Packages to NuGet
+      - name: Publish to NuGet
+        if: ${{ needs.validate.outputs.is_published == 'false' }}
         run: |
-          dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
+        shell: bash
 
-      - name: Tag Release
+      - name: Extract Changelog Notes
+        run: |
+          awk '/^## Unreleased/{found=1; next} found && /^## /{exit} found{print}' \
+            CHANGELOG.md > /tmp/release-notes.md
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "ERROR: release notes are empty — update '## Unreleased' in CHANGELOG.md before tagging"
+            exit 1
+          fi
+          echo "--- Release notes preview ---"
+          cat /tmp/release-notes.md
+        shell: bash
+
+      - name: Check If GitHub Release Exists
+        id: release_exists
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PKG_VERSION: ${{ needs.check.outputs.version }}
+          PKG_VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          git tag "v${PKG_VERSION}"
-          git push origin "v${PKG_VERSION}"
+          if gh release view "v${PKG_VERSION}" > /dev/null 2>&1; then
+            echo "GitHub Release already exists: v${PKG_VERSION}"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "GitHub Release does not exist: v${PKG_VERSION}"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+      - name: Create GitHub Release
+        if: ${{ steps.release_exists.outputs.exists == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          gh release create "v${PKG_VERSION}" \
+            --title "v${PKG_VERSION}" \
+            --notes-file /tmp/release-notes.md \
+            ./artifacts/*.nupkg
+        shell: bash
