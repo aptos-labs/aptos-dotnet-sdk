@@ -13,6 +13,15 @@
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!--
+      Suppress NU1510 ("PackageReference X will not be pruned") which fires
+      when a package is already provided by the target framework. We keep
+      explicit pins for System.Text.Json and Microsoft.CSharp to lock patched
+      versions of transitive dependencies flagged by NuGetAudit; the pins are
+      intentional even when the framework version would satisfy the request.
+    -->
+    <NoWarn>$(NoWarn);NU1510</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
