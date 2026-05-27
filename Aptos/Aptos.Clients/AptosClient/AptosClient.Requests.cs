@@ -50,8 +50,7 @@ public class AptosRequest(
             request.ContentType,
             request.QueryParams,
             request.OriginMethod
-        )
-    { }
+        ) { }
 }
 
 public class AptosResponse<Res>(

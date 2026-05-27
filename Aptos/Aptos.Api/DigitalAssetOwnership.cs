@@ -21,8 +21,7 @@ public class TokenOwnership(
         propertyVersionV1,
         storageId,
         tokenPropertiesMutatedV1
-    )
-{ }
+    ) { }
 
 public class DigitalAssetOwnership(
     decimal amount,
@@ -47,8 +46,7 @@ public class DigitalAssetOwnership(
             ownership.Property_version_v1,
             ownership.Storage_id,
             ownership.Token_properties_mutated_v1
-        )
-    { }
+        ) { }
 
     public decimal Amount = amount;
 
@@ -105,8 +103,7 @@ public class DigitalAssetData(
                     $"Expected DigitalAssetOwnership({data.Token_data_id}) to have collection data"
                 ),
             data.Cdn_asset_uris != null ? new CdnAssetUris(data.Cdn_asset_uris) : null
-        )
-    { }
+        ) { }
 
     public string Description = description;
 

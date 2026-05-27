@@ -85,10 +85,7 @@ public sealed class Secp256k1Tests
         var privateKey = Secp256k1PrivateKey.Deserialize(new Deserializer(key));
         var result = privateKey
             .PublicKey()
-            .VerifySignature(
-                message,
-                Secp256k1Signature.Deserialize(new Deserializer(signature))
-            );
+            .VerifySignature(message, Secp256k1Signature.Deserialize(new Deserializer(signature)));
         Assert.Equal(expected, result);
     }
 

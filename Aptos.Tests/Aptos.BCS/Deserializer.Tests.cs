@@ -225,9 +225,17 @@ public sealed class DeserializerTests
     [InlineData("u64", "0x0201000000000000000300000000000000", "[1,3]")]
     [InlineData("u128", "0x00", "[]")]
     [InlineData("u128", "0x0100000000000000000000000000000000", "[0]")]
-    [InlineData("u128", "0x020100000000000000000000000000000003000000000000000000000000000000", "[1,3]")]
+    [InlineData(
+        "u128",
+        "0x020100000000000000000000000000000003000000000000000000000000000000",
+        "[1,3]"
+    )]
     [InlineData("u256", "0x00", "[]")]
-    [InlineData("u256", "0x010000000000000000000000000000000000000000000000000000000000000000", "[0]")]
+    [InlineData(
+        "u256",
+        "0x010000000000000000000000000000000000000000000000000000000000000000",
+        "[0]"
+    )]
     [InlineData(
         "u256",
         "0x0201000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000",
@@ -237,7 +245,11 @@ public sealed class DeserializerTests
     [InlineData("uleb128", "0x0100", "[0]")]
     [InlineData("uleb128", "0x0280017F", "[128,127]")]
     [InlineData("address", "0x00", "[]")]
-    [InlineData("address", "0x010000000000000000000000000000000000000000000000000000000000000001", "[0x1]")]
+    [InlineData(
+        "address",
+        "0x010000000000000000000000000000000000000000000000000000000000000001",
+        "[0x1]"
+    )]
     [InlineData(
         "address",
         "0x0200000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000",
@@ -254,10 +266,7 @@ public sealed class DeserializerTests
         switch (type)
         {
             case "bool":
-                Assert.Equal(
-                    items.Select(bool.Parse).ToList(),
-                    d.Vector(x => x.Bool())
-                );
+                Assert.Equal(items.Select(bool.Parse).ToList(), d.Vector(x => x.Bool()));
                 break;
             case "u8":
                 Assert.Equal(items.Select(byte.Parse).ToList(), d.Vector(x => x.U8()));
@@ -272,22 +281,13 @@ public sealed class DeserializerTests
                 Assert.Equal(items.Select(ulong.Parse).ToList(), d.Vector(x => x.U64()));
                 break;
             case "u128":
-                Assert.Equal(
-                    items.Select(BigInteger.Parse).ToList(),
-                    d.Vector(x => x.U128())
-                );
+                Assert.Equal(items.Select(BigInteger.Parse).ToList(), d.Vector(x => x.U128()));
                 break;
             case "u256":
-                Assert.Equal(
-                    items.Select(BigInteger.Parse).ToList(),
-                    d.Vector(x => x.U256())
-                );
+                Assert.Equal(items.Select(BigInteger.Parse).ToList(), d.Vector(x => x.U256()));
                 break;
             case "uleb128":
-                Assert.Equal(
-                    items.Select(uint.Parse).ToList(),
-                    d.Vector(x => x.Uleb128AsU32())
-                );
+                Assert.Equal(items.Select(uint.Parse).ToList(), d.Vector(x => x.Uleb128AsU32()));
                 break;
             case "address":
                 Assert.Equal(
@@ -296,10 +296,7 @@ public sealed class DeserializerTests
                 );
                 break;
             case "string":
-                Assert.Equal(
-                    items.Select(s => s.Trim('"')).ToList(),
-                    d.Vector(x => x.String())
-                );
+                Assert.Equal(items.Select(s => s.Trim('"')).ToList(), d.Vector(x => x.String()));
                 break;
         }
     }

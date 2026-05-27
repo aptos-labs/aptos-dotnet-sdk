@@ -106,8 +106,7 @@ public class GenerateMultisigPayloadData(
             functionArguments,
             typeArguments,
             abi
-        )
-    { }
+        ) { }
 }
 
 public class GenerateScriptPayloadData(

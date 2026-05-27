@@ -158,7 +158,12 @@ public sealed class MultiKeyTests
 
     [Theory]
     [MemberData(nameof(VerifySignatureData))]
-    public void VerifySignature(string multiKeyHex, string signatureHex, string message, bool expected)
+    public void VerifySignature(
+        string multiKeyHex,
+        string signatureHex,
+        string message,
+        bool expected
+    )
     {
         var multiKey = MultiKey.Deserialize(new Deserializer(multiKeyHex));
         Assert.Equal(

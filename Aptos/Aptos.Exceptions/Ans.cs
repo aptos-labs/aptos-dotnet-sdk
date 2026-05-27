@@ -26,6 +26,5 @@ namespace Aptos.Exceptions
     }
 
     public class ANSUnsupportedNetwork()
-        : BaseException("No ANS resolver address is available for this network.")
-    { }
+        : BaseException("No ANS resolver address is available for this network.") { }
 }

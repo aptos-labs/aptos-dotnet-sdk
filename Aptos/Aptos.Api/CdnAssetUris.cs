@@ -9,8 +9,7 @@ public class CdnAssetUris(string? cdnImageUri, string? cdnJsonUri, string? cdnAn
             cdnAssetUris.Cdn_image_uri,
             cdnAssetUris.Cdn_json_uri,
             cdnAssetUris.Cdn_animation_uri
-        )
-    { }
+        ) { }
 
     public string? CdnImageUri = cdnImageUri;
 

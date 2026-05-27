@@ -116,7 +116,13 @@ public sealed class SingleKeyTests
 
     [Theory]
     [MemberData(nameof(VerifySignatureData))]
-    public void VerifySignature(string type, string key, string signature, string message, bool expected)
+    public void VerifySignature(
+        string type,
+        string key,
+        string signature,
+        string message,
+        bool expected
+    )
     {
         var singleKey = MakeSingleKey(type, key);
         PublicKeySignature sig = type switch
