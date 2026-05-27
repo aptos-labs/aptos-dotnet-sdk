@@ -83,7 +83,8 @@ public class KeylessAccount : Account
             pepper,
             uidKey,
             address
-        ) { }
+        )
+    { }
 
     public KeylessAccount(
         AccountAddress jwkAddress,
@@ -102,7 +103,8 @@ public class KeylessAccount : Account
             pepper,
             uidKey,
             address
-        ) { }
+        )
+    { }
 
     public bool VerifySignature(byte[] message, KeylessSignature signature)
     {

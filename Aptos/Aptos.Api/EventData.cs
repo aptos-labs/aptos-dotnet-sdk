@@ -26,7 +26,8 @@ public class EventData(
             eventData.Transaction_version,
             eventData.Type,
             eventData.Indexed_type
-        ) { }
+        )
+    { }
 
     public string AccountAddress = accountAddress;
     public long CreationNumber = creationNumber;

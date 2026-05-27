@@ -35,7 +35,8 @@ public class CollectionData(
             currentCollection.Cdn_asset_uris != null
                 ? new CdnAssetUris(currentCollection.Cdn_asset_uris)
                 : null
-        ) { }
+        )
+    { }
 
     public string CollectionId = collectionId;
 

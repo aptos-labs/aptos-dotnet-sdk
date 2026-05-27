@@ -22,7 +22,8 @@ public class CoinBalance(
         storageId,
         tokenStandard,
         metadata
-    ) { }
+    )
+{ }
 
 public class FungibleAssetBalance(
     decimal? amount,
@@ -52,7 +53,8 @@ public class FungibleAssetBalance(
                 : throw new UnexpectedResponseException(
                     $"Expected FungibleAssetBalance({balance.Asset_type}) to have metadata"
                 )
-        ) { }
+        )
+    { }
 
     public decimal? Amount = amount;
     public string AssetType = assetType;
@@ -93,7 +95,8 @@ public class FungibleAssetMetadata(
             metadata.Creator_address,
             metadata.Project_uri,
             metadata.Icon_uri
-        ) { }
+        )
+    { }
 
     public string Symbol = symbol;
     public string Name = name;
