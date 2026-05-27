@@ -1,4 +1,4 @@
-namespace Aptos.Tests.Core;
+namespace Aptos.Tests.Crypto;
 
 public sealed class SingleKeyTests
 {
