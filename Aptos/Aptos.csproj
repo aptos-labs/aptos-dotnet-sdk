@@ -17,20 +17,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
     <PackageReference Include="OneOf" Version="3.0.271" />
-    <PackageReference Include="StrawberryShake.Transport.Http" Version="13.9.11" />
-    <PackageReference Include="StrawberryShake" Version="13.9.11" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="StrawberryShake.Transport.Http" Version="16.0.9" />
+    <PackageReference Include="StrawberryShake" Version="16.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NBitcoin" Version="7.0.37" />
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.2" />
+    <PackageReference Include="NBitcoin" Version="10.0.4" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.18.0" />
     <!--
       Pin patched versions of transitive dependencies flagged by NuGetAudit
       (GHSA-8g4q-xg66-9fp4 and GHSA-hh2w-p6rv-4g7w). These ride along via
       StrawberryShake and Microsoft.IdentityModel.JsonWebTokens.
     -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>

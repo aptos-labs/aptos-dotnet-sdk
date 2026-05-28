@@ -1,66 +1,78 @@
 namespace Aptos.Tests.Core;
 
-using Xunit.Gherkin.Quick;
-
-[FeatureFile("../../../../features/account_address.feature")]
-public sealed class AccountAddressFeatureTests : Feature
+public sealed class AccountAddressTests
 {
-    private string? _inputValue;
-
-    private dynamic? _output;
-
-    private Exception? _exception;
-
-    [Given(@"(.*) (.*)")]
-    public void GivenValue(string _, string value)
+    [Theory]
+    [InlineData("0x1", "0x1")]
+    [InlineData("0x0000000000000000000000000000000000000001", "0x1")]
+    [InlineData("0x2", "0x2")]
+    [InlineData("0x0000000000000000000000000000000000000002", "0x2")]
+    [InlineData(
+        "0x1111111111111111111111111111111111111112",
+        "0x1111111111111111111111111111111111111112"
+    )]
+    [InlineData(
+        "0x0111111111111111111111111111111111111112",
+        "0x0111111111111111111111111111111111111112"
+    )]
+    [InlineData(
+        "0x111111111111111111111111111111111111112",
+        "0x111111111111111111111111111111111111112"
+    )]
+    public void ParseAccountAddress(string str, string expectedAddress)
     {
-        _inputValue = value.Trim('\"');
+        var result = AccountAddress.From(str, 63);
+        Assert.Equal(AccountAddress.From(expectedAddress, 63), result);
     }
 
-    [When(@"I parse the account address")]
-    public void WhenIParseTheAccountAddress() => WhenIConvertTheTypeToAType("", "string");
-
-    [When(@"I convert the (.*) to a (.*)")]
-    public void WhenIConvertTheTypeToAType(string _, string outputType)
+    [Theory]
+    [InlineData("0x1", "0x1")]
+    [InlineData("0x2", "0x2")]
+    [InlineData("0x0000000000000000000000000000000000000002", "0x2")]
+    [InlineData("0xA", "0xa")]
+    [InlineData("0xB", "0xb")]
+    [InlineData(
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    )]
+    [InlineData(
+        "0x0111111111111111111111111111111111111112",
+        "0x0000000000000000000000000111111111111111111111111111111111111112"
+    )]
+    public void AddressToString(string address, string expectedStr)
     {
-        if (_inputValue == null)
-            throw new ArgumentException("No input value");
-
-        try
-        {
-            _output = outputType switch
-            {
-                "string" => AccountAddress.From(_inputValue, 63),
-                "string long" => AccountAddress.From(_inputValue, 63).ToStringLong(),
-                _ => throw new ArgumentException("Invalid type"),
-            };
-        }
-        catch (Exception err)
-        {
-            _exception = err;
-        }
+        Assert.Equal(expectedStr, AccountAddress.From(address, 63).ToString());
     }
 
-    [Then(@"the result should be (.*) (.*)")]
-    public void ThenTheResultShouldBeTypeValue(string type, string value)
+    [Theory]
+    [InlineData("0x1", "0x0000000000000000000000000000000000000000000000000000000000000001")]
+    [InlineData("0x2", "0x0000000000000000000000000000000000000000000000000000000000000002")]
+    [InlineData("0xA", "0x000000000000000000000000000000000000000000000000000000000000000a")]
+    [InlineData("0xB", "0x000000000000000000000000000000000000000000000000000000000000000b")]
+    [InlineData(
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    )]
+    [InlineData(
+        "0x0111111111111111111111111111111111111112",
+        "0x0000000000000000000000000111111111111111111111111111111111111112"
+    )]
+    [InlineData(
+        "0x111111111111111111111111111111111111112",
+        "0x0000000000000000000000000111111111111111111111111111111111111112"
+    )]
+    public void AddressToStringLong(string address, string expectedStr)
     {
-        if (_output == null)
-            throw new ArgumentException("No output value");
-
-        switch (type)
-        {
-            case "address":
-                Assert.Equal(AccountAddress.From(value, 63), _output);
-                break;
-            case "string":
-                Assert.Equal(value.Trim('\"'), _output.ToString());
-                break;
-        }
+        Assert.Equal(expectedStr, AccountAddress.From(address, 63).ToStringLong());
     }
 
-    [Then(@"I should fail to parse the account address")]
-    public void ThenIShouldFailToParseTheAccountAddress()
+    [Theory]
+    [InlineData("0x")]
+    [InlineData("0xA0000000000000000000000000000000000000000000000000000000000000001")]
+    [InlineData("0x00000000000000000000000000000000000000000000000000000000000000001")]
+    [InlineData("0xG")]
+    public void ParseInvalidAccountAddress(string address)
     {
-        Assert.NotNull(_exception);
+        Assert.ThrowsAny<Exception>(() => AccountAddress.From(address, 63));
     }
 }

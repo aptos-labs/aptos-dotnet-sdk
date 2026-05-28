@@ -60,7 +60,7 @@ public class MemoizeTests(ITestOutputHelper output) : BaseTests(output)
             ttlMs: 1
         );
         Assert.Equal(1, await cached());
-        await Task.Delay(20);
+        await Task.Delay(20, TestContext.Current.CancellationToken);
         Assert.Equal(2, await cached());
     }
 

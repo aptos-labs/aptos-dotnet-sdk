@@ -64,11 +64,13 @@ public class SkipException(string reason) : Exception(reason);
 /// </summary>
 public sealed class DevnetE2EFactAttribute : FactAttribute
 {
-    public DevnetE2EFactAttribute()
+    public DevnetE2EFactAttribute(
+        [System.Runtime.CompilerServices.CallerFilePath] string? callerFilePath = null,
+        [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = -1
+    )
+        : base(callerFilePath, callerLineNumber)
     {
         if (!DevnetE2E.IsEnabled)
-        {
             Skip = "Set DEVNET_E2E=1 to run E2E tests against Aptos devnet.";
-        }
     }
 }

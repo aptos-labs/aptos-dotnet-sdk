@@ -1,86 +1,121 @@
-namespace Aptos.Tests.Core;
+namespace Aptos.Tests.Crypto;
 
-using Xunit.Gherkin.Quick;
-
-[FeatureFile("../../../../features/secp256k1.feature")]
-public sealed class Secp256k1FeatureTests : Feature
+public sealed class Secp256k1Tests
 {
-    private dynamic? _inputValue;
-
-    private dynamic? _output;
-
-    [Given(@"(private key|mnemonic) (.*)")]
-    public void GivenValue(string type, string value)
-    {
-        switch (type)
+    public static TheoryData<string, string> DerivePublicKeyData =>
+        new()
         {
-            case "private key":
-                _inputValue = Secp256k1PrivateKey.Deserialize(new Deserializer(value));
-                break;
-            case "mnemonic":
-                _inputValue = value;
-                break;
-        }
+            {
+                "0x20009e455c271746a009bfa80525aede0c3c75cc4dedf996fd4df2e3d72707eb0d",
+                "0x4104ffaf07a5268f92f86aa8be6a8047aaf2cceb33c3ac69628d9dde4e2ffdbe2d21551ecb9f69a6a79a509a7328a6641d81b4bb1fb39d4955549dad93d44ccc9d50"
+            },
+            {
+                "0x20337367d6a7c1b80ee3465eca7234bd30b9ededb742aab54a9fccc3e657a466e3",
+                "0x41042c203adf73f73adc79b3aa8c1d26d859aeac720c638b21d5bb189af16b2ed24836e698b53650f806be0ac2a87f4868e99dd404cd3785439607595c9d2cf90fc1"
+            },
+            {
+                "0x20ec9fcd3c3b269ccf8d5f1abddd792ed7445b7c5e193486bfe1d019bb713bebdb",
+                "0x41041e832c2c067ad83003e697842a9567a7b7d3a9740aa84efbcda8cd13ac44feb5ff1ebe3b76d931541b5e4b702e25d3cc504369eb191c52871de0ecef3043fd15"
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(DerivePublicKeyData))]
+    public void DerivePublicKey(string key, string expectedHex)
+    {
+        var privateKey = Secp256k1PrivateKey.Deserialize(new Deserializer(key));
+        Assert.Equal(Hex.FromHexString(expectedHex), privateKey.PublicKey().BcsToHex());
     }
 
-    [When(@"I derive public key")]
-    public void WhenIDerivePublicKey()
-    {
-        if (_inputValue == null)
-            throw new ArgumentException("No input value");
-        if (_inputValue is Secp256k1PrivateKey privateKey)
-            _output = privateKey.PublicKey().BcsToHex();
-    }
-
-    [When(@"I sign message (.*)")]
-    public void WhenISignMessage(string message)
-    {
-        if (_inputValue == null)
-            throw new ArgumentException("No input value");
-        if (_inputValue is Secp256k1PrivateKey privateKey)
-            _output = privateKey.Sign(message).BcsToHex();
-    }
-
-    [When(@"I verify signature (.*) with message (.*)")]
-    public void WhenIVerifySignatureWithMessage(string signature, string message)
-    {
-        if (_inputValue == null)
-            throw new ArgumentException("No input value");
-
-        if (_inputValue is Secp256k1PrivateKey privateKey)
+    public static TheoryData<string, string, string> SignMessageData =>
+        new()
         {
-            _output = privateKey
-                .PublicKey()
-                .VerifySignature(
-                    message,
-                    Secp256k1Signature.Deserialize(new Deserializer(signature))
-                );
-        }
+            {
+                "0x20009e455c271746a009bfa80525aede0c3c75cc4dedf996fd4df2e3d72707eb0d",
+                "hello world",
+                "0x40882b4ddbc14df439c222300c051d1039a62d36026ecd5789fd777224fef0ab7e07bb0891c5b411ec0938456a4b250067e8ff6c996d31f0186019521fc8f6fb25"
+            },
+            {
+                "0x20337367d6a7c1b80ee3465eca7234bd30b9ededb742aab54a9fccc3e657a466e3",
+                "aptos",
+                "0x40d7e57555345ab41f3e936a49ffa1c47a9857fbc3041b5df5fbb9e6bf93304b540445031001c4d8c328632878641354d0323fe5dfcb91d9cb305261024f031678"
+            },
+            {
+                "0x20ec9fcd3c3b269ccf8d5f1abddd792ed7445b7c5e193486bfe1d019bb713bebdb",
+                "random",
+                "0x40e593a7eeee0e8007398f2ef1512a3ab3fdcc0bb2d2536a21a15cfa5d7034753043e4e728ceb150d68a90dc22666b15897cb1918caac736d4576b5aab5747466d"
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(SignMessageData))]
+    public void SignMessage(string key, string message, string expectedHex)
+    {
+        var privateKey = Secp256k1PrivateKey.Deserialize(new Deserializer(key));
+        Assert.Equal(Hex.FromHexString(expectedHex), privateKey.Sign(message).BcsToHex());
     }
 
-    [When(@"I derive from derivation path (.*)")]
-    public void WhenIDeriveFromDerivationPath(string path)
-    {
-        if (_inputValue == null)
-            throw new ArgumentException("No input value");
-        if (_inputValue is string mnemonic)
-            _output = Secp256k1PrivateKey.FromDerivationPath(path, mnemonic).BcsToHex();
-    }
-
-    [Then(@"the result should be (.*) (.*)")]
-    public void ThenTheResultShouldBeTypeValue(string type, string value)
-    {
-        if (_output == null)
-            throw new ArgumentException("No output value");
-
-        switch (type)
+    public static TheoryData<string, string, string, bool> VerifySignatureData =>
+        new()
         {
-            case "bool":
-                Assert.Equal(bool.Parse(value), _output);
-                break;
-            case "hex":
-                Assert.Equal(Hex.FromHexString(value), _output);
-                break;
-        }
+            {
+                "0x20009e455c271746a009bfa80525aede0c3c75cc4dedf996fd4df2e3d72707eb0d",
+                "0x40882b4ddbc14df439c222300c051d1039a62d36026ecd5789fd777224fef0ab7e07bb0891c5b411ec0938456a4b250067e8ff6c996d31f0186019521fc8f6fb25",
+                "hello world",
+                true
+            },
+            {
+                "0x20337367d6a7c1b80ee3465eca7234bd30b9ededb742aab54a9fccc3e657a466e3",
+                "0x40d7e57555345ab41f3e936a49ffa1c47a9857fbc3041b5df5fbb9e6bf93304b540445031001c4d8c328632878641354d0323fe5dfcb91d9cb305261024f031678",
+                "aptos",
+                true
+            },
+            {
+                "0x20ec9fcd3c3b269ccf8d5f1abddd792ed7445b7c5e193486bfe1d019bb713bebdb",
+                "0x40e593a7eeee0e8007398f2ef1512a3ab3fdcc0bb2d2536a21a15cfa5d7034753043e4e728ceb150d68a90dc22666b15897cb1918caac736d4576b5aab5747466d",
+                "experience",
+                false
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(VerifySignatureData))]
+    public void VerifySignature(string key, string signature, string message, bool expected)
+    {
+        var privateKey = Secp256k1PrivateKey.Deserialize(new Deserializer(key));
+        var result = privateKey
+            .PublicKey()
+            .VerifySignature(message, Secp256k1Signature.Deserialize(new Deserializer(signature)));
+        Assert.Equal(expected, result);
+    }
+
+    public static TheoryData<string, string, string> DeriveFromDerivationPathData =>
+        new()
+        {
+            {
+                "claw swim mixed dance neck shop wool stool swarm inch umbrella universe",
+                "m/44'/637'/0'/0/0",
+                "0x20a6545793f6d2dea9f8394c0ee71c7b2ba9e35adf8f9081c2243b69d6d3072b4b"
+            },
+            {
+                "pumpkin cousin pyramid pull announce steak mom junior method present knee reform",
+                "m/44'/637'/0'/0/0",
+                "0x206eaa191a8649444398b565c21cbeb32dc83bbb19c01f9323c5747e31d0e980de"
+            },
+            {
+                "bright similar note plastic wheel tide daughter desk silver rifle uncle alien",
+                "m/44'/637'/0'/0/0",
+                "0x20ae803c3ce20f7b01bcb401588cfb9faea05e470fdb2a83f2720780b348962443"
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(DeriveFromDerivationPathData))]
+    public void DeriveFromDerivationPath(string mnemonic, string path, string expectedHex)
+    {
+        Assert.Equal(
+            Hex.FromHexString(expectedHex),
+            Secp256k1PrivateKey.FromDerivationPath(path, mnemonic).BcsToHex()
+        );
     }
 }

@@ -67,7 +67,7 @@ public class ANSClient(AptosClient client)
         var response = await _client.Contract.View(
             new(
                 function: $"{routerAddress}::router::get_target_addr",
-                functionArguments: [domain, subdomain]
+                functionArguments: [domain, subdomain ?? ""]
             )
         );
 
