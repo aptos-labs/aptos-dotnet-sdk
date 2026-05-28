@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <!-- Pin patched System.Text.Json (transitive). -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
 
 </Project>

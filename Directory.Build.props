@@ -4,8 +4,8 @@
     <!-- There should only be one <DefaultVersion> in the file. If moved, it should be updated in
     the GitHub Actions workflow. -->
     <DefaultVersion>0.0.17</DefaultVersion>
-    <DefaultTargetFrameworks>net9.0;net8.0;netstandard2.1</DefaultTargetFrameworks>
-    <DefaultTestingFrameworks>net8.0</DefaultTestingFrameworks>
+    <DefaultTargetFrameworks>net10.0;net9.0</DefaultTargetFrameworks>
+    <DefaultTestingFrameworks>net10.0</DefaultTestingFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Label="C#">
@@ -13,6 +13,15 @@
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!--
+      Suppress NU1510 ("PackageReference X will not be pruned") which fires
+      when a package is already provided by the target framework. We keep
+      explicit pins for System.Text.Json and Microsoft.CSharp to lock patched
+      versions of transitive dependencies flagged by NuGetAudit; the pins are
+      intentional even when the framework version would satisfy the request.
+    -->
+    <NoWarn>$(NoWarn);NU1510</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
