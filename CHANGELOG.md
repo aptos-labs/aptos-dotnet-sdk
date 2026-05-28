@@ -1,6 +1,6 @@
 # Aptos .NET SDK Changelog
 
-## Unreleased
+## 0.1.0-beta (2026-05-28)
 
 ### Breaking
 
