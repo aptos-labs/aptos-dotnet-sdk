@@ -114,11 +114,13 @@ jobs:
         shell: bash
 
       - name: Extract Changelog Notes
+        env:
+          PKG_VERSION: ${{ needs.validate.outputs.version }}
         run: |
-          awk '/^## Unreleased/{found=1; next} found && /^## /{exit} found{print}' \
+          awk -v ver="## ${PKG_VERSION}" '$0 ~ ver{found=1; next} found && /^## /{exit} found{print}' \
             CHANGELOG.md > /tmp/release-notes.md
           if [ ! -s /tmp/release-notes.md ]; then
-            echo "ERROR: release notes are empty — update '## Unreleased' in CHANGELOG.md before tagging"
+            echo "ERROR: release notes are empty — add a '## ${PKG_VERSION}' section to CHANGELOG.md before tagging"
             exit 1
           fi
           echo "--- Release notes preview ---"
