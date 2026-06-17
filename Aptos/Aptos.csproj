@@ -23,14 +23,14 @@
     <PackageReference Include="StrawberryShake" Version="16.1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NBitcoin" Version="10.0.5" />
+    <PackageReference Include="NBitcoin" Version="10.0.6" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.1" />
     <!--
       Pin patched versions of transitive dependencies flagged by NuGetAudit
       (GHSA-8g4q-xg66-9fp4 and GHSA-hh2w-p6rv-4g7w). These ride along via
       StrawberryShake and Microsoft.IdentityModel.JsonWebTokens.
     -->
-    <PackageReference Include="System.Text.Json" Version="10.0.8" />
+    <PackageReference Include="System.Text.Json" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>
