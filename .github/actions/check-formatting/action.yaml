@@ -6,6 +6,6 @@ runs:
   using: composite
   steps:
     - name: Check Formatting
-      run: dotnet csharpier --check .
+      run: dotnet csharpier check .
       working-directory: ./
       shell: bash

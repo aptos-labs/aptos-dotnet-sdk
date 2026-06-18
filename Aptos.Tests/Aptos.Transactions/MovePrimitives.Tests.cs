@@ -78,8 +78,8 @@ public class MovePrimitivesAndStructsTests(ITestOutputHelper output) : BaseTests
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => TransactionArgument.DeserializeFromScriptArgument(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            TransactionArgument.DeserializeFromScriptArgument(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -142,8 +142,8 @@ public class MovePrimitivesAndStructsTests(ITestOutputHelper output) : BaseTests
     [Fact]
     public void MoveOption_DoesNotSupportScriptArgument()
     {
-        Assert.Throws<NotImplementedException>(
-            () => new MoveOption<U64>(null).SerializeForScriptFunction(new Serializer())
+        Assert.Throws<NotImplementedException>(() =>
+            new MoveOption<U64>(null).SerializeForScriptFunction(new Serializer())
         );
     }
 }

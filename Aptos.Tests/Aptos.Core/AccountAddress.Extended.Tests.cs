@@ -49,14 +49,13 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
     [Fact]
     public void FromStringStrict_RejectsShortAddress()
     {
-        Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromStringStrict("0x123") // not LONG form and not 0x0-0xf
+        Assert.Throws<AccountAddressParsingException>(() =>
+            AccountAddress.FromStringStrict("0x123") // not LONG form and not 0x0-0xf
         );
-        Assert.Throws<AccountAddressParsingException>(
-            () =>
-                AccountAddress.FromStringStrict(
-                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-                ) // missing 0x prefix
+        Assert.Throws<AccountAddressParsingException>(() =>
+            AccountAddress.FromStringStrict(
+                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            ) // missing 0x prefix
         );
     }
 
@@ -71,8 +70,8 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
     [Fact]
     public void FromString_TooLong_Throws()
     {
-        var ex = Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromString("0x" + new string('a', 65))
+        var ex = Assert.Throws<AccountAddressParsingException>(() =>
+            AccountAddress.FromString("0x" + new string('a', 65))
         );
         Assert.Equal(AccountAddressInvalidReason.TooLong, ex.Reason);
     }
@@ -94,8 +93,8 @@ public class AccountAddressExtendedTests(ITestOutputHelper output) : BaseTests(o
     [Fact]
     public void FromString_InvalidHex_Throws()
     {
-        Assert.Throws<AccountAddressParsingException>(
-            () => AccountAddress.FromString("0xZZ0102030405060708090a0b0c0d0e0f")
+        Assert.Throws<AccountAddressParsingException>(() =>
+            AccountAddress.FromString("0xZZ0102030405060708090a0b0c0d0e0f")
         );
     }
 

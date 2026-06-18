@@ -37,7 +37,8 @@ namespace Aptos.Core
                     : t is TypeTag typeTag ? typeTag
                     : throw new ArgumentException("Invalid TypeTag, expected string or TypeTag")
                 )
-                .ToList() ?? [];
+                .ToList()
+            ?? [];
 
         public static T? UnwrapOption<T>(object val)
             where T : class

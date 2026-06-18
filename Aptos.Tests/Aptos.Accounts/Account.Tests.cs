@@ -132,8 +132,8 @@ public class AccountTests(ITestOutputHelper output) : BaseTests(output)
         );
         Assert.IsType<Secp256k1PrivateKey>(secp.PrivateKey);
 
-        Assert.Throws<ArgumentException>(
-            () => SingleKeyAccount.FromDerivationPath((PublicKeyVariant)99, "m/0'", MNEMONIC)
+        Assert.Throws<ArgumentException>(() =>
+            SingleKeyAccount.FromDerivationPath((PublicKeyVariant)99, "m/0'", MNEMONIC)
         );
     }
 

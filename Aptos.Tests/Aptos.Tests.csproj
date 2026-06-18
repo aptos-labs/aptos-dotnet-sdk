@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>$(DefaultTestingFrameworks)</TargetFrameworks>
     <OutputType>Exe</OutputType>
@@ -7,7 +6,6 @@
     <IsTestProject>true</IsTestProject>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1">
@@ -30,5 +28,4 @@
     <ProjectReference Include="..\Aptos.Indexer\Aptos.Indexer.csproj" />
     <ProjectReference Include="..\Aptos.Poseidon\Aptos.Poseidon.csproj" />
   </ItemGroup>
-
 </Project>

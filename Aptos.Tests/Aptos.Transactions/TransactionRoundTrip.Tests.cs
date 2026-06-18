@@ -58,8 +58,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => RawTransactionWithData.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            RawTransactionWithData.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -91,8 +91,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => TransactionPayload.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            TransactionPayload.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -170,8 +170,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => TransactionExecutable.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            TransactionExecutable.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -180,8 +180,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => TransactionExtraConfig.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            TransactionExtraConfig.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -199,8 +199,8 @@ public class TransactionRoundTripTests(ITestOutputHelper output) : BaseTests(out
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => InnerTransactionPayload.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            InnerTransactionPayload.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 

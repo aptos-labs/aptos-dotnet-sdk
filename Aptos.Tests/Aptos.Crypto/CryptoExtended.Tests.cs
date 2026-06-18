@@ -83,12 +83,11 @@ public class CryptoExtendedTests(ITestOutputHelper output) : BaseTests(output)
     [Fact]
     public void Ed25519PrivateKey_FromDerivationPath_InvalidPath_Throws()
     {
-        Assert.Throws<InvalidDerivationPath>(
-            () =>
-                Ed25519PrivateKey.FromDerivationPath(
-                    "not-a-path",
-                    "shoot island position soft burden budget tooth cruel issue economy destroy above"
-                )
+        Assert.Throws<InvalidDerivationPath>(() =>
+            Ed25519PrivateKey.FromDerivationPath(
+                "not-a-path",
+                "shoot island position soft burden budget tooth cruel issue economy destroy above"
+            )
         );
     }
 
@@ -159,8 +158,8 @@ public class CryptoExtendedTests(ITestOutputHelper output) : BaseTests(output)
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => PublicKey.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            PublicKey.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
@@ -181,8 +180,8 @@ public class CryptoExtendedTests(ITestOutputHelper output) : BaseTests(output)
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => PublicKeySignature.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            PublicKeySignature.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 
