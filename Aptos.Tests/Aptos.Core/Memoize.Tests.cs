@@ -119,8 +119,8 @@ public class AccountSignatureJsonTests(ITestOutputHelper output) : BaseTests(out
     [Fact]
     public void AccountSignature_UnknownType_Throws()
     {
-        Assert.Throws<Exception>(
-            () => JsonConvert.DeserializeObject<AccountSignature>("{\"type\":\"not_a_type\"}")
+        Assert.Throws<Exception>(() =>
+            JsonConvert.DeserializeObject<AccountSignature>("{\"type\":\"not_a_type\"}")
         );
     }
 }

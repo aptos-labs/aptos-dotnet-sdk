@@ -164,9 +164,10 @@ public class Secp256k1PrivateKey : PrivateKey
         // Both r and s must be exactly 32 bytes. BigInteger.ToByteArrayUnsigned
         // strips leading zero bytes which would otherwise yield a sub-64-byte
         // signature ~1 in 128 calls.
-        return new Secp256k1Signature(
-            [.. Secp256k1.ToFixedBytes(r, 32), .. Secp256k1.ToFixedBytes(s, 32)]
-        );
+        return new Secp256k1Signature([
+            .. Secp256k1.ToFixedBytes(r, 32),
+            .. Secp256k1.ToFixedBytes(s, 32),
+        ]);
     }
 
     public override byte[] ToByteArray()

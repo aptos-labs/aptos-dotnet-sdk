@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\Package.props"></Import>
 
   <PropertyGroup>
@@ -47,5 +46,4 @@
     -->
     <InternalsVisibleTo Include="Aptos.Tests" />
   </ItemGroup>
-
 </Project>

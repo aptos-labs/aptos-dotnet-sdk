@@ -86,8 +86,8 @@ public class AuthenticatorRoundTripTests(ITestOutputHelper output) : BaseTests(o
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        var ex = Assert.Throws<ArgumentException>(
-            () => AccountAuthenticator.Deserialize(new Deserializer(s.ToBytes()))
+        var ex = Assert.Throws<ArgumentException>(() =>
+            AccountAuthenticator.Deserialize(new Deserializer(s.ToBytes()))
         );
         Assert.Contains("Invalid", ex.Message);
     }
@@ -175,8 +175,8 @@ public class AuthenticatorRoundTripTests(ITestOutputHelper output) : BaseTests(o
     {
         var s = new Serializer();
         s.U32AsUleb128(99);
-        Assert.Throws<ArgumentException>(
-            () => TransactionAuthenticator.Deserialize(new Deserializer(s.ToBytes()))
+        Assert.Throws<ArgumentException>(() =>
+            TransactionAuthenticator.Deserialize(new Deserializer(s.ToBytes()))
         );
     }
 }

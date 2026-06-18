@@ -125,8 +125,8 @@ public class TransactionArgumentTests(ITestOutputHelper output) : BaseTests(outp
     public void ConvertArgument_GenericTypeTag_OutOfRange_Throws()
     {
         var generic = new TypeTagGeneric(5);
-        Assert.Throws<ArgumentException>(
-            () => TransactionArgument.ConvertArgument("7", generic, [new TypeTagU8()])
+        Assert.Throws<ArgumentException>(() =>
+            TransactionArgument.ConvertArgument("7", generic, [new TypeTagU8()])
         );
     }
 

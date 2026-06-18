@@ -150,8 +150,8 @@ public class DeserializerFuzzTests(ITestOutputHelper output) : BaseTests(output)
         {
             var bytes = new byte[rng.Next(1, MaxBytes)];
             rng.NextBytes(bytes);
-            AssertSafeOrSucceeds(
-                () => TransactionAuthenticator.Deserialize(new Deserializer(bytes))
+            AssertSafeOrSucceeds(() =>
+                TransactionAuthenticator.Deserialize(new Deserializer(bytes))
             );
         }
     }

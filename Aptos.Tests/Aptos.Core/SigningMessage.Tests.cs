@@ -26,8 +26,8 @@ public class SigningMessageTests(ITestOutputHelper output) : BaseTests(output)
     [Fact]
     public void Generate_InvalidDomainSeparator_Throws()
     {
-        Assert.Throws<ArgumentException>(
-            () => SigningMessage.Generate(new byte[] { 1 }, "NOT_APTOS::foo")
+        Assert.Throws<ArgumentException>(() =>
+            SigningMessage.Generate(new byte[] { 1 }, "NOT_APTOS::foo")
         );
     }
 

@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>
     <OutputType>Exe</OutputType>
@@ -18,5 +17,4 @@
     <!-- Pin patched System.Text.Json (transitive). -->
     <PackageReference Include="System.Text.Json" Version="10.0.9" />
   </ItemGroup>
-
 </Project>
