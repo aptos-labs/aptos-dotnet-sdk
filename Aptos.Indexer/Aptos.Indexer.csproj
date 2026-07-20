@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StrawberryShake" Version="16.1.3" />
-    <PackageReference Include="StrawberryShake.Server" Version="16.1.3" />
-    <PackageReference Include="StrawberryShake.Transport.Http" Version="16.1.3" />
+    <PackageReference Include="StrawberryShake" Version="16.5.0" />
+    <PackageReference Include="StrawberryShake.Server" Version="16.5.0" />
+    <PackageReference Include="StrawberryShake.Transport.Http" Version="16.5.0" />
     <!--
       Pin patched System.Text.Json transitively brought in by StrawberryShake.
       See GHSA-8g4q-xg66-9fp4 / GHSA-hh2w-p6rv-4g7w.
     -->
-    <PackageReference Include="System.Text.Json" Version="10.0.9" />
+    <PackageReference Include="System.Text.Json" Version="10.0.10" />
   </ItemGroup>
 </Project>

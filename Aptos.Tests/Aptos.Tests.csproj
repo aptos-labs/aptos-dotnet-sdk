@@ -16,7 +16,7 @@
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="dotenv.net" Version="4.0.2" />
     <!-- Pin patched transitive dependency. System.Text.Json: GHSA-8g4q-xg66-9fp4 and GHSA-hh2w-p6rv-4g7w. -->
-    <PackageReference Include="System.Text.Json" Version="10.0.9" />
+    <PackageReference Include="System.Text.Json" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>
