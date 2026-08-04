@@ -1,5 +1,20 @@
 # Aptos .NET SDK Changelog
 
+## 0.1.1-beta (2026-08-04)
+
+### Maintenance
+
+- chore: Add `CONTRIBUTING.md` documenting development setup and the release process.
+- chore: Upgrade CSharpier from 0.30.x to 1.3.0; adapt the formatting check action to the 1.x CLI (`csharpier check` subcommand).
+- chore: Upgrade `actions/setup-dotnet` composite action from v4 to v5.3.0.
+- deps: Bump `BouncyCastle.Cryptography` from 2.6.2 to 2.7.0.
+- deps: Bump `StrawberryShake` / `StrawberryShake.Server` / `StrawberryShake.Transport.Http` / `strawberryshake.tools` from 16.0.9 / 13.9.x to 16.5.1.
+- deps: Bump `NBitcoin` from 10.0.4 to 10.0.7.
+- deps: Bump `Microsoft.IdentityModel.JsonWebTokens` from 8.18.0 to 8.22.0.
+- deps: Bump `System.Text.Json` from 10.0.8 to 10.0.10.
+- ci: Pin GitHub Actions to SHA hashes (Dependabot).
+- ci: Bump `codecov/codecov-action` from 5.3.1 to 7.0.0, `actions/checkout` from 6.0.2 to 7.0.1, and `actions/upload-pages-artifact` from 3.0.1 to 5.0.0.
+
 ## 0.1.0-beta (2026-05-28)
 
 ### Breaking
